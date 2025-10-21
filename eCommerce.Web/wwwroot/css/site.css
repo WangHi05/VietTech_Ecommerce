@@ -1,0 +1,209 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    background-color: #f8f9fa;
+    color: #212529;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header & Navigation */
+header {
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #495057;
+    font-weight: 500;
+}
+
+/* Main Content */
+main {
+    padding: 40px 0;
+}
+
+
+.slider-container {
+    max-width: 1200px;
+    margin: 0 auto 40px auto;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    /* === CẬP NHẬT: THÊM CHIỀU CAO CỐ ĐỊNH CHO BANNER === */
+    height: 400px;
+    background-color: #e9ecef; /* Màu nền khi ảnh đang tải */
+}
+
+.slides {
+    width: 300%; 
+    height: 100%; /* Đảm bảo wrapper cao bằng container */
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+    width: 33.3333%;
+    height: 100%; /* Đảm bảo slide cao bằng container */
+}
+
+.slide img {
+    width: 100%;
+    height: 100%; /* Đảm bảo ảnh cao bằng container */
+    object-fit: cover; /* Giữ ảnh lấp đầy mà không bị méo */
+    display: block;
+}
+
+/* Product Grid */
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-info {
+    padding: 20px;
+    text-align: center;
+}
+
+.product-info h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+}
+
+.product-price {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #28a745;
+    margin-bottom: 15px;
+}
+
+.btn-primary {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* Footer */
+.site-footer {
+    background-color: #343a40; /* Màu nền tối cho footer */
+    color: #adb5bd; /* Màu chữ nhạt */
+    padding: 40px 0;
+    font-size: 0.9rem;
+    margin-top: 40px;
+    border-top: 5px solid #007bff; /* Viền màu xanh để tạo điểm nhấn */
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.footer-column h4 {
+    color: #ffffff; /* Màu chữ cho tiêu đề cột */
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.footer-column p {
+    margin: 0;
+    line-height: 1.8;
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-column ul li {
+    margin-bottom: 10px;
+}
+
+.footer-column ul a {
+    text-decoration: none;
+    color: #adb5bd;
+    transition: color 0.2s;
+}
+
+.footer-column ul a:hover {
+    color: #ffffff; /* Đổi màu khi hover */
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #495057;
+    padding-top: 20px;
+    font-size: 0.85rem;
+}
+
+/* === CẬP NHẬT: THÊM CÁC CLASS SAU ĐỂ CĂN CHỈNH ẢNH === */
+.product-image {
+    width: 100%;
+    height: 200px; /* Cố định chiều cao của khung chứa ảnh */
+    overflow: hidden; /* Ẩn phần ảnh thừa */
+    background-color: #f0f0f0; /* Màu nền cho ảnh nếu load chậm */
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Đây là thuộc tính quan trọng: ảnh sẽ lấp đầy khung mà không bị méo */
+    display: block;
+}

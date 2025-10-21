@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VietTech - Cửa hàng điện tử</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a class="logo" href="/">VietTech</a>
+            <ul>
+                <li><a href="/">Trang Chủ</a></li>
+                <li><a href="/products">Sản Phẩm</a></li>
+                <li><a href="#">Giỏ Hàng</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main role="main" class="container">
+        @RenderBody()
+    </main>
+
+    <!-- === CẬP NHẬT: THAY THẾ TOÀN BỘ FOOTER CŨ BẰNG CẤU TRÚC MỚI === -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Cột 1: Về VietTech -->
+                <div class="footer-column">
+                    <h4>Về VietTech</h4>
+                    <p>VietTech là cửa hàng chuyên cung cấp các thiết bị điện tử, máy tính, phụ kiện chính hãng với giá tốt nhất và dịch vụ hậu mãi uy tín.</p>
+                </div>
+
+                <!-- Cột 2: Liên kết nhanh -->
+                <div class="footer-column">
+                    <h4>Liên kết nhanh</h4>
+                    <ul>
+                        <li><a href="#">Về chúng tôi</a></li>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">Điều khoản dịch vụ</a></li>
+                        <li><a href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Cột 3: Thông tin liên hệ -->
+                <div class="footer-column">
+                    <h4>Thông tin liên hệ</h4>
+                    <p>
+                        <strong>Địa chỉ:</strong> 123 Đường ABC, Quận 1, TP.HCM<br>
+                        <strong>Email:</strong> support@viettech.vn<br>
+                        <strong>Điện thoại:</strong> 0987 654 321
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2025 - VietTech - All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const slides = document.querySelector(".slides");
+            if (slides) {
+                const slideCount = slides.children.length;
+                let currentIndex = 0;
+
+                setInterval(() => {
+                    currentIndex = (currentIndex + 1) % slideCount;
+                    const offset = currentIndex * -100;
+                    slides.style.transform = `translateX(${offset / slideCount}%)`;
+                }, 3000); 
+            }
+        });
+    </script>
+
+</body>
+</html>
