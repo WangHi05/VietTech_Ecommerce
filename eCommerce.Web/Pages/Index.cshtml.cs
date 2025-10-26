@@ -21,9 +21,9 @@ namespace eCommerce.Web.Pages
 
         public async Task OnGetAsync()
         {
-            // Lấy tất cả sản phẩm và hiển thị 3 sản phẩm đầu tiên làm sản phẩm nổi bật
+            // Lấy tất cả sản phẩm và hiển thị 4 sản phẩm đầu tiên làm sản phẩm nổi bật
             var allProducts = await _productService.GetAllProductsAsync();
-            Products = allProducts.Take(3); 
+            Products = allProducts.Take(4); 
         }
     }
 }

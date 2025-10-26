@@ -72,8 +72,22 @@ namespace eCommerce.Infrastructure.Data
                     {
                         {"DPI", "1600"}, {"Kết nối", "Wireless 2.4Ghz"}, {"Pin", "AA"}
                     }
+                },
+                new Product
+                {
+                    Name="Tai nghe Studio Pro",
+                    Description="Tai nghe chống ồn chủ động, âm thanh Hi-Res",
+                    Price=3200000,
+                    StockQuantity=80,
+                    ImageUrl="/images/products/tainghe1.png", // Bạn cần thêm ảnh này
+                    CategoryId=4,
+                    Specifications = new Dictionary<string, string>
+                    {
+                        {"Chống ồn", "Active Noise Cancellation"}, {"Kết nối", "Bluetooth 5.2, Jack 3.5mm"}, {"Thời lượng pin", "40 giờ"}
+                    }
                 }
             };
+            
             await context.Products.AddRangeAsync(products);
             await context.SaveChangesAsync();
         }

@@ -1,3 +1,19 @@
+@using Microsoft.AspNetCore.Identity
+@using eCommerce.Core.Entities 
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ApplicationUser currentUser = null;
+    string profilePictureUrl = null;
+    if (SignInManager.IsSignedIn(User))
+    {
+        // Lấy thông tin người dùng hiện tại để lấy URL ảnh đại diện
+        currentUser = await UserManager.GetUserAsync(User);
+        profilePictureUrl = currentUser?.ProfilePictureUrl; // Lấy URL ảnh (có thể null)
+    }
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,12 +25,59 @@
 <body>
     <header>
         <nav class="container">
-            <a class="logo" href="/">VietTech</a>
-            <ul>
-                <li><a href="/">Trang Chủ</a></li>
-                <li><a href="/products">Sản Phẩm</a></li>
-                <li><a href="#">Giỏ Hàng</a></li>
-            </ul>
+            <div class="nav-left">
+                <a class="logo" href="/">VietTech</a>
+                <ul class="main-menu">
+                    <li><a href="/">Trang Chủ</a></li>
+                    <li><a href="/Products">Sản Phẩm</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-center">
+                <form class="search-form" action="/Search" method="get">
+                    <input type="text" name="query" class="search-input" placeholder="Nhập tên điện thoại, laptop, phụ kiện... cần tìm">
+                    <button type="submit" class="search-button">
+                        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
+                </form>
+            </div>
+
+            <div class="nav-right">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <!-- === CẬP NHẬT: Hiển thị ảnh đại diện hoặc icon === -->
+                    <a class="header-action user-avatar-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Quản lý tài khoản">
+                        @if (!string.IsNullOrEmpty(profilePictureUrl))
+                        {
+                            <img src="@profilePictureUrl" alt="Avatar" class="header-avatar-img" />
+                        }
+                        else
+                        {
+                            @* Icon mặc định nếu không có ảnh *@
+                            <span class="user-icon"> @* Giữ lại class cũ để kế thừa style cơ bản *@
+                                <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </span>
+                        }
+                    </a>
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                        <button type="submit" class="header-action logout-button">Đăng xuất</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="header-action user-icon" asp-area="Identity" asp-page="/Account/Login" title="Đăng nhập">
+                        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </a>
+                    <a class="header-action" asp-area="Identity" asp-page="/Account/Register">Đăng ký</a>
+                }
+
+                <a href="/Cart" class="header-action cart-button">
+                    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span>Giỏ hàng</span>
+                    <span class="cart-item-count">0</span>
+                </a>
+            </div>
+
         </nav>
     </header>
 
@@ -22,17 +85,13 @@
         @RenderBody()
     </main>
 
-    <!-- === CẬP NHẬT: THAY THẾ TOÀN BỘ FOOTER CŨ BẰNG CẤU TRÚC MỚI === -->
     <footer class="site-footer">
         <div class="container">
             <div class="footer-grid">
-                <!-- Cột 1: Về VietTech -->
                 <div class="footer-column">
                     <h4>Về VietTech</h4>
                     <p>VietTech là cửa hàng chuyên cung cấp các thiết bị điện tử, máy tính, phụ kiện chính hãng với giá tốt nhất và dịch vụ hậu mãi uy tín.</p>
                 </div>
-
-                <!-- Cột 2: Liên kết nhanh -->
                 <div class="footer-column">
                     <h4>Liên kết nhanh</h4>
                     <ul>
@@ -42,8 +101,6 @@
                         <li><a href="#">Liên hệ</a></li>
                     </ul>
                 </div>
-
-                <!-- Cột 3: Thông tin liên hệ -->
                 <div class="footer-column">
                     <h4>Thông tin liên hệ</h4>
                     <p>
@@ -59,22 +116,22 @@
         </div>
     </footer>
 
-
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const slides = document.querySelector(".slides");
             if (slides) {
                 const slideCount = slides.children.length;
                 let currentIndex = 0;
-
                 setInterval(() => {
                     currentIndex = (currentIndex + 1) % slideCount;
                     const offset = currentIndex * -100;
                     slides.style.transform = `translateX(${offset / slideCount}%)`;
-                }, 3000); 
+                }, 3000);
             }
         });
     </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
 
 </body>
 </html>

@@ -1,10 +1,12 @@
 using eCommerce.Core.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore; // Thêm using này
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace eCommerce.Infrastructure.Data
 {
-    public class AppDbContext : DbContext
+    // Kế thừa từ IdentityDbContext thay vì DbContext
+    public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -12,10 +14,11 @@ namespace eCommerce.Infrastructure.Data
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
+        // Không cần khai báo DbSet<ApplicationUser>, IdentityDbContext đã làm điều đó
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder); // Dòng này rất quan trọng khi dùng Identity
 
             modelBuilder.Entity<Product>()
                 .Property(p => p.Specifications)
