@@ -1,0 +1,42 @@
+@page "{id:int}"
+@model eCommerce.Web.Pages.Orders.DetailsModel
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<h2>Chi tiết đơn hàng</h2>
+
+@if (Model.Order == null)
+{
+    <p>Không tìm thấy đơn hàng.</p>
+}
+else
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>Đơn hàng #@Model.Order.Id</h5>
+            <p>Ngày: @Model.Order.CreatedAt.ToLocalTime().ToString("g")</p>
+            <p>Địa chỉ: @Model.Order.ShippingName - @Model.Order.ShippingAddress</p>
+            <p>Tổng: @String.Format("{0:N0}", Model.Order.Total)</p>
+
+            <h6>Items</h6>
+            <ul class="list-group mb-3">
+                @foreach (var it in Model.Order.Items)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>@it.Name</strong>
+                            <div>SL: @it.Quantity</div>
+                        </div>
+                        <div>@String.Format("{0:N0}", it.Price)</div>
+                    </li>
+                }
+            </ul>
+
+            <form method="post">
+                <button type="submit" class="btn btn-success">Mua lại</button>
+                <a class="btn btn-secondary" asp-page="/Orders/Index">Quay lại</a>
+            </form>
+        </div>
+    </div>
+}

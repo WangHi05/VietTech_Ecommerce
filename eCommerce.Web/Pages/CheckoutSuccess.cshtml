@@ -1,0 +1,10 @@
+@page "\CheckoutSuccess"
+@model eCommerce.Web.Pages.CheckoutSuccessModel
+@{
+    ViewData["Title"] = "Thanh toán thành công";
+}
+
+<h2>Thanh toán thành công</h2>
+<p>Đơn hàng của bạn đã được tạo. Mã đơn hàng: <strong>@Model.OrderId</strong></p>
+
+<p><a asp-page="/Index">Quay về trang chủ</a></p>

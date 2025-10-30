@@ -1,20 +1,4 @@
-@using Microsoft.AspNetCore.Identity
-@using eCommerce.Core.Entities 
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
-@using System.Linq
-@inject eCommerce.Web.Services.ICartService CartService
-
-@{
-    ApplicationUser? currentUser = null;
-    string? profilePictureUrl = null;
-    if (SignInManager.IsSignedIn(User))
-    {
-        // Lấy thông tin người dùng hiện tại để lấy URL ảnh đại diện
-        currentUser = await UserManager.GetUserAsync(User);
-        profilePictureUrl = currentUser?.ProfilePictureUrl; // Lấy URL ảnh (có thể null)
-    }
-}
+﻿
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,8 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VietTech - Cửa hàng điện tử</title>
-    <link rel="stylesheet" href="@(Url.Content("~/css/site.css"))" asp-append-version="true" />
-    <link rel="stylesheet" href="@(Url.Content("~/css/cart.css"))" asp-append-version="true" />
+    <link rel="stylesheet" href="/css/site.css?v=ebCBzEJzhMgKPic7ktN3jVTWZv3sAFB3fNnmvmA-LHo" />
+    <link rel="stylesheet" href="/css/cart.css?v=F3OgL_hXtxV8yEubqHPcMrBK4UUE5VDI2VSmpY53CZU" />
 </head>
 <body>
     <header>
@@ -33,10 +17,6 @@
                 <ul class="main-menu">
                     <li><a href="/">Trang Chủ</a></li>
                     <li><a href="/Products">Sản Phẩm</a></li>
-                    @if (SignInManager.IsSignedIn(User))
-                    {
-                        <li><a href="/Orders">Đơn hàng của tôi</a></li>
-                    }
                 </ul>
             </div>
 
@@ -50,39 +30,15 @@
             </div>
 
             <div class="nav-right">
-                @if (SignInManager.IsSignedIn(User))
-                {
-                    <!-- === CẬP NHẬT: Hiển thị ảnh đại diện hoặc icon === -->
-                    <a class="header-action user-avatar-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Quản lý tài khoản">
-                        @if (!string.IsNullOrEmpty(profilePictureUrl))
-                        {
-                            <img src="@profilePictureUrl" alt="Avatar" class="header-avatar-img" />
-                        }
-                        else
-                        {
-                            @* Icon mặc định nếu không có ảnh *@
-                            <span class="user-icon"> @* Giữ lại class cũ để kế thừa style cơ bản *@
-                                <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                            </span>
-                        }
-                    </a>
-                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
-                        <button type="submit" class="header-action logout-button">Đăng xuất</button>
-                    </form>
-                }
-                else
-                {
-                    <a class="header-action user-icon" asp-area="Identity" asp-page="/Account/Login" title="Đăng nhập">
+                    <a class="header-action user-icon" title="Đăng nhập" href="/Identity/Account/Login">
                         <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </a>
-                    <a class="header-action" asp-area="Identity" asp-page="/Account/Register">Đăng ký</a>
-                }
+                    <a class="header-action" href="/Identity/Account/Register">Đăng ký</a>
 
-                @{ var _cartCount = 0; var _cartItems = await CartService.GetCartAsync(); if (_cartItems != null) { _cartCount = _cartItems.Sum(i => i.Quantity); } }
                 <a href="/Cart" class="header-action cart-button" data-test="header-cart">
                     <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                     <span>Giỏ hàng</span>
-                    <span class="cart-item-count" data-test="header-cart-count">@_cartCount</span>
+                    <span class="cart-item-count" data-test="header-cart-count">0</span>
                 </a>
             </div>
 
@@ -90,7 +46,12 @@
     </header>
 
     <main role="main" class="container">
-        @RenderBody()
+        
+<h1>Giỏ Hàng Của Bạn</h1>
+
+
+    <p>Giỏ hàng trống.</p>
+
     </main>
 
     <footer class="site-footer">
@@ -139,9 +100,7 @@
         });
     </script>
 
-    <script src="@(Url.Content("~/js/cart.js"))" asp-append-version="true"></script>
-
-    @await RenderSectionAsync("Scripts", required: false)
+    
 
 </body>
 </html>

@@ -1,0 +1,43 @@
+@page
+@model eCommerce.Web.Pages.Orders.IndexModel
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<h2>Đơn hàng của tôi</h2>
+
+@if (Model.Orders == null || Model.Orders.Count == 0)
+{
+    <p>Bạn chưa có đơn hàng nào.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Ngày</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var o in Model.Orders)
+            {
+                <tr>
+                    <td>@o.Id</td>
+                    <td>@o.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td>@String.Format("{0:N0}", o.Total)</td>
+                    <td>Hoàn tất</td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-primary" asp-page="/Orders/Details" asp-route-id="@o.Id">Xem</a>
+                        <form method="post" asp-page="/Orders/Details" asp-route-id="@o.Id" style="display:inline">
+                            <button type="submit" name="reorder" value="1" class="btn btn-sm btn-success">Mua lại</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

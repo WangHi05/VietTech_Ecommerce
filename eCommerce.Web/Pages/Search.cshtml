@@ -28,7 +28,11 @@
                 <div class="product-info">
                     <h3>@product.Name</h3>
                     <p class="product-price">@product.Price.ToString("N0") ₫</p>
-                    <a href="#" class="btn-primary">Thêm vào giỏ</a>
+                    <form method="post" asp-page="/Cart" asp-route-handler="Add" class="inline-form">
+                        <input type="hidden" name="productId" value="@product.Id" />
+                        <input type="hidden" name="qty" value="1" />
+                        <button type="submit" class="btn-primary">Thêm vào giỏ</button>
+                    </form>
                 </div>
             </div>
         }

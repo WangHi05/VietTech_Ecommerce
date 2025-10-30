@@ -1,0 +1,184 @@
+﻿
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VietTech - Cửa hàng điện tử</title>
+    <link rel="stylesheet" href="/css/site.css?v=ebCBzEJzhMgKPic7ktN3jVTWZv3sAFB3fNnmvmA-LHo" />
+    <link rel="stylesheet" href="/css/cart.css?v=F3OgL_hXtxV8yEubqHPcMrBK4UUE5VDI2VSmpY53CZU" />
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="nav-left">
+                <a class="logo" href="/">VietTech</a>
+                <ul class="main-menu">
+                    <li><a href="/">Trang Chủ</a></li>
+                    <li><a href="/Products">Sản Phẩm</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-center">
+                <form class="search-form" action="/Search" method="get">
+                    <input type="text" name="query" class="search-input" placeholder="Nhập tên điện thoại, laptop, phụ kiện... cần tìm">
+                    <button type="submit" class="search-button">
+                        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
+                </form>
+            </div>
+
+            <div class="nav-right">
+                    <a class="header-action user-icon" title="Đăng nhập" href="/Identity/Account/Login">
+                        <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </a>
+                    <a class="header-action" href="/Identity/Account/Register">Đăng ký</a>
+
+                <a href="/Cart" class="header-action cart-button" data-test="header-cart">
+                    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span>Giỏ hàng</span>
+                    <span class="cart-item-count" data-test="header-cart-count">1</span>
+                </a>
+            </div>
+
+        </nav>
+    </header>
+
+    <main role="main" class="container">
+        
+<h1>Giỏ Hàng Của Bạn</h1>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Tổng</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <img src="/images/products/laptop1.jpg" alt="" style="width:60px;height:60px;object-fit:cover;margin-right:8px;" />
+                    Laptop Gaming Pro X
+                </td>
+                <td>$35,000,000.00</td>
+                <td>
+                    <form method="post" action="/Cart?handler=Update">
+                        <input type="hidden" name="productId" value="1" />
+                        <input type="number" name="quantity" value="1" min="0" style="width:70px;" />
+                        <button class="btn btn-sm btn-primary" type="submit">Cập nhật</button>
+                    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8GZLZOzu_JhKmJqH-K9sRoZaRAXCebl8x1syl7heUHQ03AXRPDQjS32uwqQBi1C9K4esHf1bxE8BSLQ2Q8EpsviqhI_C_snaEptXflobay9K7i3q1U3CDlauAiFHtGffnMC60adUq50hbljDVQz2iCo" /></form>
+                </td>
+                <td>$35,000,000.00</td>
+                <td>
+                    <form method="post" action="/Cart?handler=Remove">
+                        <input type="hidden" name="productId" value="1" />
+                        <button class="btn btn-sm btn-danger" type="submit">Xóa</button>
+                    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8GZLZOzu_JhKmJqH-K9sRoZaRAXCebl8x1syl7heUHQ03AXRPDQjS32uwqQBi1C9K4esHf1bxE8BSLQ2Q8EpsviqhI_C_snaEptXflobay9K7i3q1U3CDlauAiFHtGffnMC60adUq50hbljDVQz2iCo" /></form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="cart-actions">
+        <h3>Áp dụng mã giảm giá</h3>
+        <div class="cart-controls">
+            <div class="controls-left">
+                <div class="voucher-box">
+                <label>Voucher</label>
+                <form method="post" class="voucher-form" action="/Cart?handler=ApplyVoucher">
+                    <select name="VoucherCode">
+                        <option value="">-- Chọn voucher --</option>
+                            <option value="WELCOME10" selected="selected">WELCOME10 - 10% off</option>
+                            <option value="SHIPFREE">SHIPFREE - Free shipping</option>
+                            <option value="OFF50K">OFF50K - 50,000 &#x20AB; off</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Áp dụng</button>
+                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8GZLZOzu_JhKmJqH-K9sRoZaRAXCebl8x1syl7heUHQ03AXRPDQjS32uwqQBi1C9K4esHf1bxE8BSLQ2Q8EpsviqhI_C_snaEptXflobay9K7i3q1U3CDlauAiFHtGffnMC60adUq50hbljDVQz2iCo" /></form>
+                </div>
+
+                <div class="shipping-box">
+                <label>Phí vận chuyển</label>
+                <form method="post" class="shipping-form" action="/Cart?handler=CalculateShipping">
+                    <input type="hidden" name="Country" value="Vietnam" />
+                    <select id="provinceSelect" name="Province">
+                            <option value="H&#x1ED3; Ch&#xED; Minh">H&#x1ED3; Ch&#xED; Minh</option>
+                            <option value="H&#xE0; N&#x1ED9;i">H&#xE0; N&#x1ED9;i</option>
+                            <option value="&#x110;&#xE0; N&#x1EB5;ng">&#x110;&#xE0; N&#x1EB5;ng</option>
+                            <option value="H&#x1EA3;i Ph&#xF2;ng">H&#x1EA3;i Ph&#xF2;ng</option>
+                            <option value="C&#x1EA7;n Th&#x1A1;">C&#x1EA7;n Th&#x1A1;</option>
+                            <option value="Kh&#xE1;c">Kh&#xE1;c</option>
+                    </select>
+                    <button type="submit" class="btn btn-secondary">Tính phí</button>
+                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8GZLZOzu_JhKmJqH-K9sRoZaRAXCebl8x1syl7heUHQ03AXRPDQjS32uwqQBi1C9K4esHf1bxE8BSLQ2Q8EpsviqhI_C_snaEptXflobay9K7i3q1U3CDlauAiFHtGffnMC60adUq50hbljDVQz2iCo" /></form>
+            </div>
+
+            </div>
+
+            <div class="controls-right">
+                <div class="cart-summary" data-test="cart-summary">
+                <div class="summary-row" data-test="subtotal"><span>Tạm tính:</span><span class="value">35,000,000 ₫</span></div>
+                <div class="summary-row" data-test="discount"><span>Giảm giá:</span><span class="value">- 3,500,000 ₫</span></div>
+                <div class="summary-row" data-test="shipping"><span>Phí vận chuyển:</span><span class="value">35,000 ₫</span></div>
+                <div class="summary-row total" data-test="total"><span>Tổng cộng:</span><span class="value">31,535,000 ₫</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>Về VietTech</h4>
+                    <p>VietTech là cửa hàng chuyên cung cấp các thiết bị điện tử, máy tính, phụ kiện chính hãng với giá tốt nhất và dịch vụ hậu mãi uy tín.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Liên kết nhanh</h4>
+                    <ul>
+                        <li><a href="#">Về chúng tôi</a></li>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">Điều khoản dịch vụ</a></li>
+                        <li><a href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Thông tin liên hệ</h4>
+                    <p>
+                        <strong>Địa chỉ:</strong> 123 Đường ABC, Quận 1, TP.HCM<br>
+                        <strong>Email:</strong> support@viettech.vn<br>
+                        <strong>Điện thoại:</strong> 0987 654 321
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2025 - VietTech - All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const slides = document.querySelector(".slides");
+            if (slides) {
+                const slideCount = slides.children.length;
+                let currentIndex = 0;
+                setInterval(() => {
+                    currentIndex = (currentIndex + 1) % slideCount;
+                    const offset = currentIndex * -100;
+                    slides.style.transform = `translateX(${offset / slideCount}%)`;
+                }, 3000);
+            }
+        });
+    </script>
+
+    
+
+</body>
+</html>
