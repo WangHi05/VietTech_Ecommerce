@@ -14,6 +14,8 @@ namespace eCommerce.Infrastructure.Data
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<eCommerce.Core.Entities.Order> Orders { get; set; }
+        public DbSet<eCommerce.Core.Entities.OrderItem> OrderItems { get; set; }
         // Không cần khai báo DbSet<ApplicationUser>, IdentityDbContext đã làm điều đó
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,9 +25,16 @@ namespace eCommerce.Infrastructure.Data
             modelBuilder.Entity<Product>()
                 .Property(p => p.Specifications)
                 .HasConversion(
-                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
-                    v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, (JsonSerializerOptions)null) ?? new Dictionary<string, string>()
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                    v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, (JsonSerializerOptions?)null) ?? new Dictionary<string, string>()
                 );
+            
+            // Order -> OrderItems relationship
+            modelBuilder.Entity<eCommerce.Core.Entities.Order>()
+                .HasMany(o => o.Items)
+                .WithOne()
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

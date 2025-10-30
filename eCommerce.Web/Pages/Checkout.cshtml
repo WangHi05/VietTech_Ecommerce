@@ -1,0 +1,67 @@
+@page
+@model eCommerce.Web.Pages.CheckoutModel
+@{
+    ViewData["Title"] = "Thanh toán";
+}
+
+<h2>Thanh toán (One-step)</h2>
+
+<div class="checkout-grid" style="display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start;">
+    <div class="checkout-form">
+        <form method="post">
+            <h3>Thông tin giao hàng</h3>
+            <div class="form-group">
+                <label asp-for="ShippingName">Tên người nhận</label>
+                <input asp-for="ShippingName" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="ShippingAddress">Địa chỉ</label>
+                <input asp-for="ShippingAddress" class="form-control" />
+            </div>
+            <div class="form-group" style="display:flex;gap:12px;">
+                <div style="flex:1">
+                    <label asp-for="Country">Quốc gia</label>
+                    <input asp-for="Country" class="form-control" />
+                </div>
+                <div style="width:140px">
+                    <label asp-for="Province">Tỉnh/TP</label>
+                    <input asp-for="Province" class="form-control" />
+                </div>
+            </div>
+
+            <h3 style="margin-top:18px">Chi tiết đơn hàng</h3>
+            <div style="overflow:auto">
+                <table class="table">
+                    <thead>
+                        <tr><th>Sản phẩm</th><th>SL</th><th>Giá</th><th>Thành tiền</th></tr>
+                    </thead>
+                    <tbody>
+                    @foreach(var it in Model.Items)
+                    {
+                        <tr>
+                            <td>@it.Name</td>
+                            <td>@it.Quantity</td>
+                            <td>@it.Price.ToString("N0") + " ₫"</td>
+                            <td>@(it.Price * it.Quantity).ToString("N0") + " ₫"</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:12px;align-items:center;">
+                <button type="submit" class="btn btn-primary btn-lg">Thanh toán ngay</button>
+                <a asp-page="/Cart" class="btn btn-secondary">Quay lại giỏ hàng</a>
+            </div>
+        </form>
+    </div>
+
+    <aside class="checkout-summary">
+        <h4>Đơn hàng</h4>
+        <div class="summary-row"><span>Tạm tính</span><strong>@Model.SubTotal.ToString("N0") ₫</strong></div>
+        <div class="summary-row"><span>Giảm</span><strong>- @Model.Discount.ToString("N0") ₫</strong></div>
+        <div class="summary-row"><span>Phí vận chuyển</span><strong>@Model.ShippingFee.ToString("N0") ₫</strong></div>
+        <hr />
+        <div class="summary-row total"><span>Tổng</span><strong>@Model.Total.ToString("N0") ₫</strong></div>
+    </aside>
+</div>
