@@ -1,0 +1,66 @@
+@page
+@model eCommerce.Web.Pages.ProductsModel
+@{
+    ViewData["Title"] = "Danh sách Sản phẩm";
+    var currentCategoryId = Request.Query["categoryId"];
+}
+
+<h1 class="page-title">@ViewData["Title"]</h1>
+
+<div class="product-page-layout">
+    <aside class="sidebar">
+        <h4>Danh Mục Sản Phẩm</h4>
+        <ul class="category-list">
+            <li>
+                <a asp-page="/Products"
+                   class="@(string.IsNullOrEmpty(currentCategoryId) ? "active" : "")">
+                   Tất cả sản phẩm
+                </a>
+            </li>
+            @if (Model.Categories != null)
+            {
+                @foreach (var category in Model.Categories)
+                {
+                    <li>
+                        <a asp-page="/Products"
+                           asp-route-categoryId="@category.Id"
+                           class="@(currentCategoryId == category.Id.ToString() ? "active" : "")">
+                           @category.Name
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+    </aside>
+
+    <section class="main-content">
+        @if (Model.Products != null && Model.Products.Any())
+        {
+            <div class="product-grid">
+                @foreach (var product in Model.Products)
+                {
+                    <div class="product-card">
+                        <div class="product-image">
+                            @* === CẬP NHẬT: Trỏ đến trang Detail trong thư mục ProductDetails === *@
+                            <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">
+                                <img src="@product.ImageUrl" alt="@product.Name" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Not+Found';">
+                            </a>
+                        </div>
+                        <div class="product-info">
+                            <h3>
+                                @* === CẬP NHẬT: Trỏ đến trang Detail trong thư mục ProductDetails === *@
+                                <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">@product.Name</a>
+                            </h3>
+                            <p class="product-price">@product.Price.ToString("N0") ₫</p>
+                            <a href="#" class="btn btn-primary">Thêm vào giỏ</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-center">Không có sản phẩm nào để hiển thị.</p>
+        }
+    </section>
+</div>

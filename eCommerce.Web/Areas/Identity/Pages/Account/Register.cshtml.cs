@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using eCommerce.Core.Entities; // <-- SỬA LỖI: Thêm using này
+using eCommerce.Core.Entities; // Using này đã chính xác
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -21,27 +21,29 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        // === SỬA LỖI: Thay thế IdentityUser bằng ApplicationUser ===
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserStore<ApplicationUser> _userStore;
-        private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        
+        // === BƯỚC 1: THÊM RoleManager ===
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager) // === BƯỚC 2: Thêm tham số roleManager ===
         {
             _userManager = userManager;
             _userStore = userStore;
-            _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager; // === BƯỚC 3: Gán roleManager ===
         }
 
         [BindProperty]
@@ -53,20 +55,27 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
+            [Required(ErrorMessage = "Email là bắt buộc")]
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            // === BƯỚC 4: THÊM TRƯỜNG "Họ và Tên" ===
+            [Required(ErrorMessage = "Họ và Tên là bắt buộc")]
+            [Display(Name = "Họ và Tên")]
+            [StringLength(100, ErrorMessage = "Họ tên phải dài từ 5 đến 100 ký tự.", MinimumLength = 5)]
+            public string FullName { get; set; }
+            // === HẾT BƯỚC 4 ===
+
+            [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
+            [StringLength(100, ErrorMessage = "{0} phải dài ít nhất {2} và tối đa {1} ký tự.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "Mật khẩu")]
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "Xác nhận mật khẩu")]
+            [Compare("Password", ErrorMessage = "Mật khẩu và mật khẩu xác nhận không khớp.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -81,17 +90,34 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+            
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
 
+                // Gán Email và UserName
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                await _userManager.SetEmailAsync(user, Input.Email); // Dùng UserManager để set email
+                
+                // === BƯỚC 5: GÁN HỌ VÀ TÊN (FullName) TỪ FORM ===
+                user.FullName = Input.FullName;
+                // === HẾT BƯỚC 5 ===
+                
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("Người dùng đã tạo tài khoản mới thành công.");
+
+                    // === BƯỚC 6: TỰ ĐỘNG GÁN ROLE "Customer" ===
+                    // Đảm bảo role "Customer" tồn tại (giống trong DbInitializer)
+                    if (!await _roleManager.RoleExistsAsync("Customer"))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole("Customer"));
+                    }
+                    // Gán role "Customer" cho user mới
+                    await _userManager.AddToRoleAsync(user, "Customer");
+                    // === HẾT BƯỚC 6 ===
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -102,8 +128,8 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Xác nhận email của bạn",
+                        $"Vui lòng xác nhận tài khoản của bạn bằng cách <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>nhấn vào đây</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -121,7 +147,7 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // Nếu có lỗi, hiển thị lại form
             return Page();
         }
 
@@ -133,19 +159,20 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
-                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+                throw new InvalidOperationException($"Không thể tạo một thực thể của '{nameof(ApplicationUser)}'. " +
+                    $"Đảm bảo rằng '{nameof(ApplicationUser)}' không phải là một lớp abstract và có một hàm khởi tạo không tham số, hoặc " +
+                    $"ghi đè trang đăng ký trong /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
-        private IUserEmailStore<ApplicationUser> GetEmailStore()
-        {
-            if (!_userManager.SupportsUserEmail)
-            {
-                throw new NotSupportedException("The default UI requires a user store with email support.");
-            }
-            return (IUserEmailStore<ApplicationUser>)_userStore;
-        }
+        // Không cần hàm này vì đã dùng _userManager.SetEmailAsync
+        // private IUserEmailStore<ApplicationUser> GetEmailStore()
+        // {
+        //     if (!_userManager.SupportsUserEmail)
+        //     {
+        //         throw new NotSupportedException("The default UI requires a user store with email support.");
+        //     }
+        //     return (IUserEmailStore<ApplicationUser>)_userStore;
+        // }
     }
 }

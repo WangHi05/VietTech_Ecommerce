@@ -1,0 +1,146 @@
+@page
+@model eCommerce.Web.Pages.Admin.AddProductModel
+@{
+    ViewData["Title"] = "Thêm Sản Phẩm Mới";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="post" enctype="multipart/form-data">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Product.Name" class="form-label"></label>
+                <input asp-for="Product.Name" class="form-control" />
+                <span asp-validation-for="Product.Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Product.Description" class="form-label"></label>
+                <textarea asp-for="Product.Description" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Product.Description" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Product.Price" class="form-label"></label>
+                    <input asp-for="Product.Price" class="form-control" />
+                    <span asp-validation-for="Product.Price" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Product.StockQuantity" class="form-label"></label>
+                    <input asp-for="Product.StockQuantity" class="form-control" />
+                    <span asp-validation-for="Product.StockQuantity" class="text-danger"></span>
+                </div>
+            </div>
+
+            <hr />
+            <h5 class="mt-3">Thông Số Lọc</h5>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Product.CategoryId" class="form-label"></label>
+                    <select asp-for="Product.CategoryId" class="form-select" asp-items="@Model.CategoryList">
+                        <option value="">-- Chọn Danh mục --</option>
+                    </select>
+                    <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Product.BrandId" class="form-label"></label>
+                    <select asp-for="Product.BrandId" class="form-select" asp-items="@Model.BrandList">
+                        <option value="">-- Chọn Thương hiệu --</option>
+                    </select>
+                    <span asp-validation-for="Product.BrandId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Product.Color" class="form-label"></label>
+                    <input asp-for="Product.Color" class="form-control" placeholder="Ví dụ: Trắng, Đen, Xanh" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Product.Size" class="form-label"></label>
+                    <input asp-for="Product.Size" class="form-control" placeholder="Ví dụ: M, L, XL, 15 inch" />
+                </div>
+            </div>
+
+            <hr />
+
+            <h5 class="mt-3">Thông Số Kỹ Thuật</h5>
+            <div id="specifications-container">
+                </div>
+            <button type="button" id="add-spec-btn" class="btn btn-outline-secondary btn-sm mt-2">
+                + Thêm thông số
+            </button>
+            <hr class="mt-4" />
+
+            <div class="mb-3">
+                <label asp-for="UploadedImage" class="form-label">Ảnh Sản Phẩm</label>
+                <input asp-for="UploadedImage" class="form-control" />
+                <span asp-validation-for="UploadedImage" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg px-5">Tạo Sản Phẩm</button>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById("add-spec-btn").addEventListener("click", function () {
+            // Lấy container
+            var container = document.getElementById("specifications-container");
+
+            // Tạo div.row mới
+            var specRow = document.createElement("div");
+            specRow.className = "row mb-2 align-items-center";
+
+            // Tạo cột Key
+            var keyCol = document.createElement("div");
+            keyCol.className = "col-md-5";
+            var keyInput = document.createElement("input");
+            keyInput.name = "SpecKeys"; // Tên này phải khớp với Model
+            keyInput.className = "form-control";
+            keyInput.placeholder = "Thuộc tính (ví dụ: CPU)";
+            keyCol.appendChild(keyInput);
+
+            // Tạo cột Value
+            var valueCol = document.createElement("div");
+            valueCol.className = "col-md-5";
+            var valueInput = document.createElement("input");
+            valueInput.name = "SpecValues"; // Tên này phải khớp với Model
+            valueInput.className = "form-control";
+            valueInput.placeholder = "Giá trị (ví dụ: Intel Core i9)";
+            valueCol.appendChild(valueInput);
+            
+            // Tạo nút Xóa
+            var removeCol = document.createElement("div");
+            removeCol.className = "col-md-2";
+            var removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "btn btn-danger btn-sm";
+            removeBtn.innerText = "Xóa";
+            removeBtn.onclick = function() {
+                container.removeChild(specRow); // Xóa dòng (div.row)
+            };
+            removeCol.appendChild(removeBtn);
+
+            // Gắn các cột vào div.row
+            specRow.appendChild(keyCol);
+            specRow.appendChild(valueCol);
+            specRow.appendChild(removeCol);
+
+            // Gắn div.row vào container
+            container.appendChild(specRow);
+        });
+    </script>
+    }

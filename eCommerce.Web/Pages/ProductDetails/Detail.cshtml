@@ -1,0 +1,48 @@
+@page "/Product/{id:int}" 
+@model eCommerce.Web.Pages.ProductDetails.DetailModel 
+@{
+    ViewData["Title"] = Model.Product?.Name ?? "Chi tiết Sản phẩm"; // Lấy tên sản phẩm làm tiêu đề
+}
+
+@if (Model.Product != null)
+{
+    @* Bỏ H1 mặc định, sử dụng cấu trúc chi tiết hơn *@
+    <nav aria-label="breadcrumb" style="margin-bottom: 20px;">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-page="/Index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-page="/Products">Sản phẩm</a></li>
+            @if(Model.Product.Category != null) {
+                 <li class="breadcrumb-item"><a asp-page="/Products" asp-route-categoryId="@Model.Product.CategoryId">@Model.Product.Category.Name</a></li>
+            }
+            <li class="breadcrumb-item active" aria-current="page">@Model.Product.Name</li>
+        </ol>
+    </nav>
+
+    <div class="product-detail-layout">
+        <div class="product-detail-image">
+             <img src="@Model.Product.ImageUrl" alt="@Model.Product.Name" onerror="this.onerror=null;this.src='https://placehold.co/600x400/E2E8F0/4A5568?text=Image+Not+Found';" />
+        </div>
+        <div class="product-detail-info">
+            <h1>@Model.Product.Name</h1>
+            <p class="product-detail-price">@Model.Product.Price.ToString("N0") ₫</p>
+            <p class="product-detail-description">@Model.Product.Description</p>
+             <div class="product-actions">
+                 <button class="btn btn-primary btn-lg">Thêm vào giỏ hàng</button>
+                 @* Có thể thêm nút Mua ngay *@
+            </div>
+             <hr />
+            <h4>Thông số kỹ thuật</h4>
+            <ul class="product-specifications">
+                @foreach (var spec in Model.Product.Specifications)
+                {
+                    <li><strong>@spec.Key:</strong> @spec.Value</li>
+                }
+             </ul>
+        </div>
+    </div>
+}
+else
+{
+    <h1>Sản phẩm không tồn tại</h1>
+    <p>Không tìm thấy sản phẩm bạn yêu cầu.</p>
+}
