@@ -37,6 +37,10 @@
                     {
                         <li><a href="/Orders">Đơn hàng của tôi</a></li>
                     }
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li><a href="/Admin/Index">Quản Lý Admin</a></li>
+                    }
                 </ul>
             </div>
 
@@ -46,6 +50,7 @@
                     <button type="submit" class="search-button">
                         <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </button>
+                    <div id="search-suggestions" class="search-suggestions-list"></div>
                 </form>
             </div>
 
@@ -136,6 +141,92 @@
                     slides.style.transform = `translateX(${offset / slideCount}%)`;
                 }, 3000);
             }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const suggestionsList = document.getElementById('search-suggestions');
+            let debounceTimer;
+
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.trim();
+
+                // Xóa timer cũ nếu có
+                clearTimeout(debounceTimer);
+
+                if (searchTerm.length >= 2) {
+                    // Đặt timer mới, chỉ gọi API sau 300ms không gõ phím
+                    debounceTimer = setTimeout(() => {
+                        fetch(`/api/Products/Suggestions?term=${encodeURIComponent(searchTerm)}`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(suggestions => {
+                                displaySuggestions(suggestions);
+                            })
+                            .catch(error => {
+                                console.error('Error fetching suggestions:', error);
+                                suggestionsList.innerHTML = ''; // Xóa gợi ý cũ nếu lỗi
+                                suggestionsList.style.display = 'none';
+                            });
+                    }, 300);
+                } else {
+                    suggestionsList.innerHTML = ''; // Xóa gợi ý nếu input ngắn
+                    suggestionsList.style.display = 'none';
+                }
+            });
+
+            // Hàm hiển thị gợi ý
+            function displaySuggestions(suggestions) {
+                if (suggestions && suggestions.length > 0) {
+                    suggestionsList.innerHTML = ''; // Xóa gợi ý cũ
+                    suggestions.forEach(suggestion => {
+                        const li = document.createElement('li');
+                        // Tạo link để khi bấm vào sẽ submit form tìm kiếm
+                        const link = document.createElement('a');
+                        link.href = `/Search?query=${encodeURIComponent(suggestion)}`;
+                        link.textContent = suggestion;
+                        link.addEventListener('click', function(e) {
+                             // Có thể submit form thay vì chuyển link trực tiếp
+                             // e.preventDefault();
+                             // searchInput.value = suggestion;
+                             // searchInput.closest('form').submit();
+                        });
+                        li.appendChild(link);
+                        suggestionsList.appendChild(li);
+                    });
+                    suggestionsList.style.display = 'block';
+                } else {
+                    suggestionsList.innerHTML = '';
+                    suggestionsList.style.display = 'none';
+                }
+            }
+
+            // Ẩn gợi ý khi bấm ra ngoài
+            document.addEventListener('click', function (event) {
+                if (!searchInput.contains(event.target) && !suggestionsList.contains(event.target)) {
+                    suggestionsList.style.display = 'none';
+                }
+            });
+
+             // Ẩn gợi ý khi focus mất khỏi input
+             searchInput.addEventListener('blur', function() {
+                 // Dùng setTimeout để link gợi ý vẫn bấm được
+                 setTimeout(() => {
+                     suggestionsList.style.display = 'none';
+                 }, 150);
+             });
+              // Hiển thị lại khi focus vào input (nếu có nội dung)
+             searchInput.addEventListener('focus', function() {
+                 if (this.value.trim().length >= 2 && suggestionsList.children.length > 0) {
+                     suggestionsList.style.display = 'block';
+                 }
+             });
+
         });
     </script>
 

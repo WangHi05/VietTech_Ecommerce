@@ -1,5 +1,5 @@
 using eCommerce.Core.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore; // Thêm using này
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -16,11 +16,13 @@ namespace eCommerce.Infrastructure.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<eCommerce.Core.Entities.Order> Orders { get; set; }
         public DbSet<eCommerce.Core.Entities.OrderItem> OrderItems { get; set; }
-        // Không cần khai báo DbSet<ApplicationUser>, IdentityDbContext đã làm điều đó
-
+        
+       
+        public DbSet<Brand> Brands { get; set; }
+       
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); // Dòng này rất quan trọng khi dùng Identity
+            base.OnModelCreating(modelBuilder); // Rất quan trọng khi dùng Identity
 
             modelBuilder.Entity<Product>()
                 .Property(p => p.Specifications)
@@ -35,6 +37,16 @@ namespace eCommerce.Infrastructure.Data
                 .WithOne()
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // === CẤU HÌNH QUAN HỆ MỚI ===
+            // Cấu hình quan hệ Product và Brand (Một-Nhiều)
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Brand)
+                .WithMany(b => b.Products)
+                .HasForeignKey(p => p.BrandId);
+            
+           
+            
         }
     }
 }

@@ -1,10 +1,9 @@
 using eCommerce.Application.Services;
-using eCommerce.Core.Entities;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using eCommerce.Core.Entities;
 
 namespace eCommerce.Web.Pages
 {
@@ -21,9 +20,8 @@ namespace eCommerce.Web.Pages
 
         public async Task OnGetAsync()
         {
-            // Lấy tất cả sản phẩm và hiển thị 4 sản phẩm đầu tiên làm sản phẩm nổi bật
             var allProducts = await _productService.GetAllProductsAsync();
-            Products = allProducts.Take(4); 
+            Products = allProducts.Take(20);
         }
     }
 }

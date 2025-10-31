@@ -16,12 +16,19 @@ namespace eCommerce.Infrastructure.Data
 
         public async Task<Product?> GetByIdAsync(int id)
         {
-            return await _context.Products.FindAsync(id);
+            return await _context.Products
+                .Include(p => p.Category) // Tải kèm để hiển thị
+                .Include(p => p.Brand)    // Tải kèm để hiển thị
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task AddAsync(Product product)
@@ -32,7 +39,7 @@ namespace eCommerce.Infrastructure.Data
 
         public async Task UpdateAsync(Product product)
         {
-            _context.Products.Update(product);
+            _context.Entry(product).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
