@@ -2,19 +2,28 @@
 @model eCommerce.Web.Pages.ProductsModel
 @{
     ViewData["Title"] = "Danh sách Sản phẩm";
-    var currentCategoryId = Request.Query["categoryId"];
 }
+
+
 
 <h1 class="page-title">@ViewData["Title"]</h1>
 
 <div class="product-page-layout">
+    
     <aside class="sidebar">
         <h4>Danh Mục Sản Phẩm</h4>
         <ul class="category-list">
             <li>
                 <a asp-page="/Products"
-                   class="@(string.IsNullOrEmpty(currentCategoryId) ? "active" : "")">
-                   Tất cả sản phẩm
+                   asp-route-categoryId=""
+                   asp-route-brandId="@Model.BrandId"
+                   asp-route-color="@Model.Color"
+                   asp-route-size="@Model.Size"
+                   asp-route-minPrice="@Model.MinPrice"
+                   asp-route-maxPrice="@Model.MaxPrice"
+                   asp-route-sortBy="@Model.SortBy"
+                   class="@(Model.CategoryId == null ? "active" : "")">
+                    Tất cả sản phẩm
                 </a>
             </li>
             @if (Model.Categories != null)
@@ -24,16 +33,94 @@
                     <li>
                         <a asp-page="/Products"
                            asp-route-categoryId="@category.Id"
-                           class="@(currentCategoryId == category.Id.ToString() ? "active" : "")">
-                           @category.Name
+                           asp-route-brandId="@Model.BrandId"
+                           asp-route-color="@Model.Color"
+                           asp-route-size="@Model.Size"
+                           asp-route-minPrice="@Model.MinPrice"
+                           asp-route-maxPrice="@Model.MaxPrice"
+                           asp-route-sortBy="@Model.SortBy"
+                           class="@(Model.CategoryId == category.Id ? "active" : "")">
+                            @category.Name
                         </a>
                     </li>
                 }
             }
         </ul>
+
+        <div class="filter-section">
+            <h4>Bộ Lọc Nâng Cao</h4>
+            <form method="get">
+                <input type="hidden" asp-for="CategoryId" />
+
+                <div class="filter-group">
+                    <label asp-for="BrandId">Thương hiệu</label>
+                    <select asp-for="BrandId" asp-items="Model.BrandList">
+                        <option value="">-- Tất cả thương hiệu --</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label asp-for="Color">Màu sắc</label>
+                    <select asp-for="Color">
+                        <option value="">-- Tất cả màu sắc --</option>
+                        @foreach (var color in Model.ColorList)
+                        {
+                            <option value="@color" selected="@(color == Model.Color)">@color</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label asp-for="Size">Kích thước</label>
+                    <select asp-for="Size">
+                        <option value="">-- Tất cả kích thước --</option>
+                        @foreach (var size in Model.SizeList)
+                        {
+                            <option value="@size" selected="@(size == Model.Size)">@size</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Khoảng giá</label>
+                    <div class="price-inputs">
+                        <input asp-for="MinPrice" type="number" placeholder="Từ 0" />
+                        <input asp-for="MaxPrice" type="number" placeholder="Đến" />
+                    </div>
+                </div>
+                
+                <input type="hidden" asp-for="SortBy" />
+
+                <div class="filter-buttons">
+                    <button type="submit" class="btn btn-primary">Lọc Sản Phẩm</button>
+                    <a asp-page="/Products" class="btn btn-secondary">Xóa Lọc</a>
+                </div>
+            </form>
+        </div>
     </aside>
 
     <section class="main-content">
+        
+        <div class="sort-bar">
+            <form method="get" id="sortForm">
+                <input type="hidden" asp-for="CategoryId" />
+                <input type="hidden" asp-for="BrandId" />
+                <input type="hidden" asp-for="Color" />
+                <input type="hidden" asp-for="Size" />
+                <input type="hidden" asp-for="MinPrice" />
+                <input type="hidden" asp-for="MaxPrice" />
+
+                <label asp-for="SortBy">Sắp xếp theo:</label>
+                <select asp-for="SortBy" onchange="this.form.submit()">
+                    <option value="" selected="@(string.IsNullOrEmpty(Model.SortBy))">Mặc định</option>
+                    <option value="popularity-desc" selected="@(Model.SortBy == "popularity-desc")">Phổ biến nhất</option>
+                    <option value="rating-desc" selected="@(Model.SortBy == "rating-desc")">Đánh giá cao</option>
+                    <option value="price-asc" selected="@(Model.SortBy == "price-asc")">Giá: Tăng dần</option>
+                    <option value="price-desc" selected="@(Model.SortBy == "price-desc")">Giá: Giảm dần</option>
+                </select>
+            </form>
+        </div>
+        
         @if (Model.Products != null && Model.Products.Any())
         {
             <div class="product-grid">
@@ -41,14 +128,12 @@
                 {
                     <div class="product-card">
                         <div class="product-image">
-                            @* === CẬP NHẬT: Trỏ đến trang Detail trong thư mục ProductDetails === *@
                             <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">
                                 <img src="@product.ImageUrl" alt="@product.Name" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Not+Found';">
                             </a>
                         </div>
                         <div class="product-info">
                             <h3>
-                                @* === CẬP NHẬT: Trỏ đến trang Detail trong thư mục ProductDetails === *@
                                 <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">@product.Name</a>
                             </h3>
                             <p class="product-price">@product.Price.ToString("N0") ₫</p>
@@ -64,3 +149,6 @@
         }
     </section>
 </div>
+
+@section Scripts {
+    }
