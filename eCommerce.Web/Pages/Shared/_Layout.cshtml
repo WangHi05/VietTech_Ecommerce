@@ -22,8 +22,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VietTech - Cửa hàng điện tử</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="@(Url.Content("~/css/site.css"))" asp-append-version="true" />
     <link rel="stylesheet" href="@(Url.Content("~/css/cart.css"))" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
     <header>
@@ -87,7 +89,13 @@
                 <a href="/Cart" class="header-action cart-button" data-test="header-cart">
                     <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                     <span>Giỏ hàng</span>
-                    <span class="cart-item-count" data-test="header-cart-count">@_cartCount</span>
+                        @if (_cartCount > 0)
+                        {
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                                @_cartCount
+                                <span class="visually-hidden">sản phẩm</span>
+                            </span>
+                        }
                 </a>
             </div>
 
@@ -231,7 +239,8 @@
     </script>
 
     <script src="@(Url.Content("~/js/cart.js"))" asp-append-version="true"></script>
-
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
