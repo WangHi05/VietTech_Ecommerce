@@ -2,7 +2,7 @@ using eCommerce.Application.Services;
 using eCommerce.Core.Entities;
 using eCommerce.Core.Interfaces;
 using eCommerce.Infrastructure.Data;
-using Microsoft.AspNetCore.Identity; 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -70,15 +70,15 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<AppDbContext>();
-        
+
         // Lấy UserManager và RoleManager
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
         // Đảm bảo CSDL được tạo (Identity tables, etc.)
         // Chúng ta sẽ dùng migration để cập nhật, nhưng EnsureCreated() an toàn cho lần chạy đầu
-       
-        
+
+
         // Truyền các dịch vụ vào DbInitializer
         await DbInitializer.Initialize(context, userManager, roleManager);
     }
