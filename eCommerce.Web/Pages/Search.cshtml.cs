@@ -1,10 +1,10 @@
 using eCommerce.Application.Services;
-using eCommerce.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using eCommerce.Core.Entities;
 
 namespace eCommerce.Web.Pages
 {
@@ -28,7 +28,7 @@ namespace eCommerce.Web.Pages
             {
                 var allProducts = await _productService.GetAllProductsAsync();
                 SearchResults = allProducts
-                    .Where(p => p.Name.Contains(Query, System.StringComparison.OrdinalIgnoreCase) || 
+                    .Where(p => p.Name.Contains(Query, System.StringComparison.OrdinalIgnoreCase) ||
                                 p.Description.Contains(Query, System.StringComparison.OrdinalIgnoreCase));
             }
         }

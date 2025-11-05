@@ -1,0 +1,31 @@
+@page
+@model eCommerce.Web.Pages.Admin.DeleteProductModel
+@{
+    ViewData["Title"] = "Xác Nhận Xóa";
+}
+
+<h2 class="text-danger">@ViewData["Title"]</h2>
+<h3>Bạn có chắc chắn muốn xóa sản phẩm này?</h3>
+
+<div class="card my-4" style="max-width: 600px;">
+    <div class="card-body">
+        <h4 class="card-title">@Model.Product.Name</h4>
+        <dl class="row">
+            <dt class="col-sm-3">Thương hiệu</dt>
+            <dd class="col-sm-9">@Model.Product.Brand?.Name</dd>
+
+            <dt class="col-sm-3">Danh mục</dt>
+            <dd class="col-sm-9">@Model.Product.Category?.Name</dd>
+            
+            <dt class="col-sm-3">Giá</dt>
+            <dd class="col-sm-9">@Model.Product.Price.ToString("N0") đ</dd>
+        </dl>
+    </div>
+</div>
+
+<form method="post">
+    <input type="hidden" asp-for="Product.Id" /> 
+    
+    <button type="submit" class="btn btn-danger btn-lg px-5">Xác Nhận Xóa</button>
+    <a asp-page="./Index" class="btn btn-secondary btn-lg">Hủy</a>
+</form>

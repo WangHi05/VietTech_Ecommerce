@@ -1,0 +1,50 @@
+@page "/Payment/Result"
+@model eCommerce.Web.Pages.Payment.PaymentResultModel
+@{
+    ViewData["Title"] = Model.Success ? "Thanh toán thành công" : "Thanh toán thất bại";
+    var isCod = string.Equals(Model.Method, "cod", System.StringComparison.OrdinalIgnoreCase);
+    var isPaid = string.Equals(Model.PaymentStatus, "Paid", System.StringComparison.OrdinalIgnoreCase);
+}
+
+@if (Model.Success)
+{
+    if (isCod)
+    {
+        <h2>Đặt hàng thành công!</h2>
+        <p>Đơn hàng <strong>@Model.OrderId</strong> đã được ghi nhận. Vui lòng thanh toán tiền mặt cho nhân viên giao hàng khi nhận.
+        </p>
+        <p>Trạng thái thanh toán hiện tại: <strong>@(Model.PaymentStatus ?? "AwaitingPayment")</strong>.</p>
+    }
+    else if (isPaid)
+    {
+        <h2>Cảm ơn bạn đã thanh toán thành công.</h2>
+        <p>Đơn hàng <strong>@Model.OrderId</strong> đã chuyển sang trạng thái thanh toán <strong>Paid</strong>.</p>
+    }
+    else
+    {
+        <h2>Đơn hàng của bạn đã được ghi nhận.</h2>
+        <p>Trạng thái thanh toán hiện tại: <strong>@(Model.PaymentStatus ?? "Pending")</strong>.</p>
+    }
+}
+else
+{
+    <h2>Thanh toán thất bại, vui lòng thử lại.</h2>
+    <p>Đơn hàng <strong>@Model.OrderId</strong> vẫn ở trạng thái chờ thanh toán.</p>
+}
+
+@if (!string.IsNullOrEmpty(Model.Reason))
+{
+    <p class="text-danger">@Model.Reason</p>
+}
+
+<div style="margin-top:16px;display:flex;gap:12px;">
+    <a asp-page="/Index" class="btn btn-primary">Quay lại cửa hàng</a>
+    @if (Model.Success && isCod)
+    {
+        <a asp-page="/Orders/Index" class="btn btn-outline-secondary">Xem đơn hàng</a>
+    }
+    else if (!Model.Success)
+    {
+        <a asp-page="/Checkout" class="btn btn-secondary">Thử lại thanh toán</a>
+    }
+</div>

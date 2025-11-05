@@ -1,6 +1,7 @@
 using eCommerce.Core.Entities;
 using eCommerce.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -34,6 +35,21 @@ namespace eCommerce.Infrastructure.Data
                 .Include(o => o.Items)
                 .Where(o => o.UserId == userId)
                 .ToListAsync();
+        }
+
+        public async Task UpdatePaymentStateAsync(int orderId, string status, string paymentStatus, DateTime? paidAt = null)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+            if (order == null)
+            {
+                return;
+            }
+
+            order.Status = status;
+            order.PaymentStatus = paymentStatus;
+            order.PaidAt = paidAt;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -9,6 +9,13 @@ namespace eCommerce.Core.Entities
         public string? UserId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public string PaymentMethod { get; set; } = "COD";
+        public string PaymentStatus { get; set; } = "Pending";
+        public string Status { get; set; } = "Pending";
+        public DateTime? PaidAt { get; set; }
+        public string? CardHolderName { get; set; }
+        public string? CardLast4 { get; set; }
+
         // Shipping info
         public string ShippingName { get; set; } = string.Empty;
         public string ShippingAddress { get; set; } = string.Empty;

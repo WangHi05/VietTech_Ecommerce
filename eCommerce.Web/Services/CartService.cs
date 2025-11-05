@@ -76,6 +76,23 @@ namespace eCommerce.Web.Services
                 try
                 {
                     var list = JsonSerializer.Deserialize<List<CartItem>>(data) ?? new List<CartItem>();
+
+                    // Refresh ImageUrl for items in session in case product images changed on disk/DB
+                    if (list.Any())
+                    {
+                        foreach (var ci in list)
+                        {
+                            try
+                            {
+                                var prod = _productService.GetProductByIdAsync(ci.ProductId).GetAwaiter().GetResult();
+                                if (prod != null && !string.IsNullOrEmpty(prod.ImageUrl)) ci.ImageUrl = prod.ImageUrl;
+                            }
+                            catch { }
+                        }
+                        // persist refreshed list back to session/cookie
+                        try { Session.SetString(SessionKey, JsonSerializer.Serialize(list)); } catch { }
+                    }
+
                     return Task.FromResult(list);
                 }
                 catch
@@ -103,6 +120,20 @@ namespace eCommerce.Web.Services
                                 if (ci != null) list.Add(ci);
                             }
                             catch { }
+                        }
+
+                        // Refresh ImageUrl for items loaded from cookie
+                        if (list.Any())
+                        {
+                            foreach (var ci in list)
+                            {
+                                try
+                                {
+                                    var prod = _productService.GetProductByIdAsync(ci.ProductId).GetAwaiter().GetResult();
+                                    if (prod != null && !string.IsNullOrEmpty(prod.ImageUrl)) ci.ImageUrl = prod.ImageUrl;
+                                }
+                                catch { }
+                            }
                         }
 
                         // restore voucher and shipping into session if present
