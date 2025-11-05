@@ -1,0 +1,29 @@
+@page
+@model eCommerce.Web.Pages.Payment.VnPayReturnModel
+
+<h2>VNPay Payment Result</h2>
+
+@if (Model.IsValidHash)
+{
+    <div class="alert alert-success">Thanh toán hoàn tất (mã phản hồi: @Model.ResponseCode)</div>
+}
+else
+{
+    <div class="alert alert-danger">Chữ ký không hợp lệ hoặc dữ liệu bị thay đổi. Vui lòng liên hệ quản trị viên.</div>
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Order ID</dt>
+    <dd class="col-sm-9">@Model.OrderId</dd>
+
+    <dt class="col-sm-3">VNPay Response Code</dt>
+    <dd class="col-sm-9">@Model.ResponseCode</dd>
+
+    <dt class="col-sm-3">Message</dt>
+    <dd class="col-sm-9">@Model.Message</dd>
+</dl>
+
+<p>
+    <!-- TODO: Update order payment status in DB based on response when integrating for real -->
+    <a class="btn btn-primary" href="/">Quay về trang chủ</a>
+</p>

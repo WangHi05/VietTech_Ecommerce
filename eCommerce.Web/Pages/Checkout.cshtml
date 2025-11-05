@@ -1,0 +1,137 @@
+    @page
+    @model eCommerce.Web.Pages.CheckoutModel
+    @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+    @{
+        ViewData["Title"] = "Thanh toán";
+    }
+
+    <h2>Thanh toán (One-step)</h2>
+
+    <div class="checkout-grid" style="display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start;">
+        <div class="checkout-form">
+            <form method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <h3>Thông tin giao hàng</h3>
+                <div class="form-group">
+                    <label asp-for="ShippingName">Tên người nhận</label>
+                    <input asp-for="ShippingName" class="form-control" />
+                    <span asp-validation-for="ShippingName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ShippingAddress">Địa chỉ</label>
+                    <input asp-for="ShippingAddress" class="form-control" />
+                    <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                    <!-- Map picker: Google Maps (Vietnam) -->
+                    <div style="margin-top:8px;font-size:0.95rem;color:#555;">Chọn vị trí trên bản đồ (tùy chọn) để tự động điền địa chỉ:</div>
+                    <div id="map" style="width:100%;height:300px;border:1px solid #ddd;margin-top:8px;border-radius:6px;"></div>
+                    <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+                        <input type="text" id="selectedAddress" class="form-control" placeholder="Địa chỉ được chọn sẽ hiển thị ở đây" readonly />
+                        <button type="button" id="btnUseMyLocation" class="btn btn-primary btn-sm">Dùng vị trí của tôi</button>
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex;gap:12px;">
+                    <div style="flex:1">
+                        <label asp-for="Country">Quốc gia</label>
+                        <input asp-for="Country" class="form-control" />
+                        <span asp-validation-for="Country" class="text-danger"></span>
+                    </div>
+                    <div style="width:140px">
+                        <label asp-for="Province">Tỉnh/TP</label>
+                        <input asp-for="Province" class="form-control" />
+                        <span asp-validation-for="Province" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <h3 style="margin-top:18px">Chi tiết đơn hàng</h3>
+                <div style="overflow:auto">
+                    <table class="table">
+                        <thead>
+                            <tr><th>Sản phẩm</th><th>SL</th><th>Giá</th><th>Thành tiền</th></tr>
+                        </thead>
+                        <tbody>
+                        @foreach(var it in Model.Items)
+                        {
+                            <tr>
+                                <td>@it.Name</td>
+                                <td>@it.Quantity</td>
+                                <td>@it.Price.ToString("N0") + " ₫"</td>
+                                <td>@(it.Price * it.Quantity).ToString("N0") + " ₫"</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Payment selector inserted inside the form so selection/fields can be posted -->
+                <div style="margin-top:18px;">
+                    <h4>Phương thức thanh toán</h4>
+                    <select asp-for="PaymentMethod" class="form-select" id="PaymentMethod" required>
+                        <option value="card">Thẻ (Credit / Debit)</option>
+                        <option value="vnpay">Ví điện tử (VNPay)</option>
+                        <option value="cod">Thanh toán khi nhận hàng (COD)</option>
+                    </select>
+                    <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+
+                    <div id="card-fields" style="margin-top:12px;border:1px solid #e6e6e6;padding:12px;border-radius:6px;display:@(Model.PaymentMethod == "card" ? "block" : "none")" data-payment-section="card">
+                        <div class="mb-2">
+                            <label>Chủ thẻ</label>
+                            <input asp-for="CardName" id="card-name" class="form-control" placeholder="Tên in trên thẻ" autocomplete="cc-name" />
+                            <span asp-validation-for="CardName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-2">
+                            <label>Số thẻ</label>
+                            <input asp-for="CardNumber" id="card-number" class="form-control" maxlength="19" placeholder="XXXX XXXX XXXX XXXX" autocomplete="cc-number" inputmode="numeric" />
+                            <span asp-validation-for="CardNumber" class="text-danger"></span>
+                        </div>
+                        <div style="display:flex;gap:12px;">
+                            <div style="flex:1">
+                                <label>Ngày hết hạn (MM/YY)</label>
+                                <input asp-for="CardExpiry" id="card-expiry" class="form-control" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp" />
+                                <span asp-validation-for="CardExpiry" class="text-danger"></span>
+                            </div>
+                            <div style="width:120px;">
+                                <label>CVC</label>
+                                <input asp-for="CardCvc" id="card-cvc" class="form-control" maxlength="4" placeholder="CVC" autocomplete="cc-csc" inputmode="numeric" />
+                                <span asp-validation-for="CardCvc" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="vnpay-area" data-payment-section="vnpay" style="display:@(Model.PaymentMethod == "vnpay" ? "block" : "none");margin-top:12px;">
+                        <p>Thanh toán qua VNPay — khi bấm "Thanh toán bằng VNPay" trang sẽ chuyển hướng tới quy trình thanh toán VNPay.</p>
+                        <button type="button" id="vnpayButton" class="btn btn-warning">Thanh toán bằng VNPay</button>
+                    </div>
+                    <div id="cod-area" data-payment-section="cod" style="display:@(Model.PaymentMethod == "cod" ? "block" : "none");margin-top:12px;">
+                        <p>Bạn sẽ thanh toán bằng tiền mặt khi nhận hàng. Nhân viên giao hàng sẽ liên hệ để xác nhận trước khi giao.</p>
+                    </div>
+                </div>
+
+
+                <div style="margin-top:12px;display:flex;gap:12px;align-items:center;">
+                    <button type="submit" class="btn btn-primary btn-lg">Thanh toán ngay</button>
+                    <a asp-page="/Cart" class="btn btn-secondary">Quay lại giỏ hàng</a>
+                </div>
+            </form>
+        </div>
+
+            
+
+        <aside class="checkout-summary">
+            <h4>Đơn hàng</h4>
+            <div class="summary-row"><span>Tạm tính</span><strong>@Model.SubTotal.ToString("N0") ₫</strong></div>
+            <div class="summary-row"><span>Giảm</span><strong>- @Model.Discount.ToString("N0") ₫</strong></div>
+            <div class="summary-row"><span>Phí vận chuyển</span><strong>@Model.ShippingFee.ToString("N0") ₫</strong></div>
+            <hr />
+            <div class="summary-row total"><span>Tổng</span><strong>@Model.Total.ToString("N0") ₫</strong></div>
+        </aside>
+    </div>
+
+
+    @section Scripts {
+        @* Thêm 2 link của thư viện Leaflet (miễn phí) *@
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        
+        @* Tải file checkout.js của bạn (CHÚNG TA SẼ SỬA NÓ Ở BƯỚC 2) *@
+        <script src="~/js/checkout.js" defer></script>
+    }

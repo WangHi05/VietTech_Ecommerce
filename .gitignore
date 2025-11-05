@@ -1,0 +1,59 @@
+# .gitignore for .NET Projects
+
+## VSC files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+
+## App Settings - KHÔNG đưa file cấu hình local lên
+appsettings.Development.json
+
+## Misc
+*.DotSettings
+*.scc
+*.pidb
+*.svclog
+*.vssscc
+*.vspscc
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.tmp
+*.psess
+*.vsp
+*.vspx
+*.log
+
+## JetBrains Rider
+.idea/
+*.sln.iml

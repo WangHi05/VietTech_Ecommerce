@@ -1,0 +1,109 @@
+@page
+@model eCommerce.Web.Pages.CartModel
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<h1>Giỏ Hàng Của Bạn</h1>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (Model.Items == null || !Model.Items.Any())
+{
+    <p>Giỏ hàng trống.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Tổng</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr data-product-id="@item.ProductId">
+                <td>
+                    <img src="@item.ImageUrl" alt="" style="width:60px;height:60px;object-fit:cover;margin-right:8px;" />
+                    @item.Name
+                </td>
+                <td>@item.Price.ToString("C")</td>
+                <td>
+                    <form method="post" asp-page-handler="Update" class="update-form">
+                        <input type="hidden" name="productId" value="@item.ProductId" />
+                        <input type="number" name="quantity" value="@item.Quantity" min="0" style="width:70px;" />
+                        <button class="btn btn-sm btn-primary" type="submit">Cập nhật</button>
+                    </form>
+                </td>
+                <td class="line-total" data-product-id="@item.ProductId">@item.LineTotal.ToString("C")</td>
+                <td>
+                    <form method="post" asp-page-handler="Remove">
+                        <input type="hidden" name="productId" value="@item.ProductId" />
+                        <button class="btn btn-sm btn-danger" type="submit">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <div class="cart-actions">
+        <h3>Áp dụng mã giảm giá</h3>
+        <div class="cart-controls">
+            <div class="controls-left">
+                <div class="voucher-box">
+                <label>Voucher</label>
+                <form method="post" asp-page-handler="ApplyVoucher" class="voucher-form">
+                    <select name="VoucherCode">
+                        <option value="">-- Chọn voucher --</option>
+                        @foreach (var kv in Model.AvailableVouchers)
+                        {
+                            <option value="@kv.Key" selected="@(Model.VoucherCode==kv.Key ? "selected" : null)">@kv.Value</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-primary">Áp dụng</button>
+                </form>
+                </div>
+
+                <div class="shipping-box">
+                <label>Phí vận chuyển</label>
+                <form method="post" asp-page-handler="CalculateShipping" class="shipping-form">
+                    <input type="hidden" name="Country" value="Vietnam" />
+                    <select id="provinceSelect" name="Province">
+                        @foreach (var p in Model.PresetProvinces)
+                        {
+                            <option value="@p">@p</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-secondary">Tính phí</button>
+                </form>
+            </div>
+
+            </div>
+
+            <div class="controls-right">
+                <div class="cart-summary" data-test="cart-summary">
+                <div class="summary-row" data-test="subtotal"><span>Tạm tính:</span><span class="value">@Model.SubTotal.ToString("N0") ₫</span></div>
+                <div class="summary-row" data-test="discount"><span>Giảm giá:</span><span class="value">- @Model.Discount.ToString("N0") ₫</span></div>
+                <div class="summary-row" data-test="shipping"><span>Phí vận chuyển:</span><span class="value">@Model.ShippingFee.ToString("N0") ₫</span></div>
+                <div class="summary-row total" data-test="total"><span>Tổng cộng:</span><span class="value">@Model.Total.ToString("N0") ₫</span></div>
+                </div>
+                <div class="checkout-actions" style="margin-top:12px;">
+                    <a class="btn btn-success btn-lg" asp-page="/Checkout">Thanh toán</a>
+                    <a class="btn btn-secondary" asp-page="/Index" style="margin-left:8px;">Tiếp tục mua sắm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,28 @@
+@page "/Payment/CardOtp"
+@model eCommerce.Web.Pages.Payment.CardOtpModel
+@{
+    ViewData["Title"] = "Xác thực OTP";
+}
+
+<h2>Xác thực thanh toán</h2>
+<p>Vui lòng nhập mã OTP giả lập <strong>123456</strong> để hoàn tất thanh toán thẻ.</p>
+@if (!string.IsNullOrEmpty(Model.CardDisplay))
+{
+    <p>Thẻ: <strong>@Model.CardDisplay</strong></p>
+}
+@if (!string.IsNullOrEmpty(Model.CardHolder))
+{
+    <p>Chủ thẻ: <strong>@Model.CardHolder</strong></p>
+}
+
+<form method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="OrderId" />
+    <div class="mb-3">
+        <label asp-for="OtpCode">Mã OTP</label>
+        <input asp-for="OtpCode" class="form-control" placeholder="Ví dụ: 123456" autocomplete="one-time-code" />
+        <span asp-validation-for="OtpCode" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Xác nhận</button>
+    <a asp-page="/Checkout" class="btn btn-secondary">Hủy</a>
+</form>

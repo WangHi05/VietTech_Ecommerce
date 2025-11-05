@@ -1,0 +1,85 @@
+@page
+@model eCommerce.Web.Pages.IndexModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="slider-container">
+    <div class="slides">
+        <div class="slide">
+            <img src="/images/banners/banner1.png" alt="Banner quảng cáo 1">
+        </div>
+        <div class="slide">
+            <img src="/images/banners/banner2.png" alt="Banner quảng cáo 2">
+        </div>
+        <div class="slide">
+            <img src="/images/banners/banner3.jpg" alt="Banner quảng cáo 3">
+        </div>
+    </div>
+</div>
+
+
+<h2>Sản Phẩm Nổi Bật</h2>
+
+<div class="product-grid">
+    @if (Model.Products != null && Model.Products.Any())
+    {
+        @foreach (var product in Model.Products)
+        {
+            <div class="product-card">
+                <div class="product-image">
+                   
+                    <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">
+                        <img src="@product.ImageUrl" alt="@product.Name" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Not+Found';">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <h3>
+                        <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">@product.Name</a>
+                    </h3>
+                    <p class="product-price">@product.Price.ToString("N0") ₫</p>
+                    <form method="post" asp-page="/Cart" asp-route-handler="Add" class="inline-form">
+                        <input type="hidden" name="productId" value="@product.Id" />
+                        <input type="hidden" name="qty" value="1" />
+                        <button type="submit" class="btn-primary"><i class="bi bi-cart-plus" style="margin-right: 12px;" aria-hidden="true"></i>Thêm vào giỏ</button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>Chưa có sản phẩm nào để hiển thị.</p>
+    }
+</div>
+
+<script>
+    // Intercept inline add-to-cart forms and submit via fetch so the page doesn't redirect.
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.inline-form').forEach(function (form) {
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                try {
+                    const url = form.getAttribute('action') || '/Cart?handler=Add';
+                    const formData = new FormData(form);
+                    const resp = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        body: formData,
+                        credentials: 'same-origin'
+                    });
+                    if (resp.ok) {
+                        // try parse JSON; server returns JSON for AJAX
+                        const json = await resp.json().catch(() => null);
+                        if (json && json.count !== undefined) {
+                            const el = document.querySelector('.cart-item-count[data-test="header-cart-count"]') || document.querySelector('.cart-item-count');
+                            if (el) el.textContent = json.count;
+                        }
+                    }
+                } catch (err) {
+                    console.error('Add to cart failed', err);
+                }
+            });
+        });
+    });
+</script>

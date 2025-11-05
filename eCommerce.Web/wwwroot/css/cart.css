@@ -1,0 +1,235 @@
+/* Polished cart styling - modern, card-like layout */
+:root {
+    --primary: #1e6fff;
+    --muted: #6b7280;
+    --border: #e6e8eb;
+    --bg: #ffffff;
+    --accent: #0b5fff;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 18px
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06)
+}
+
+.table thead {
+    background: #fafafa
+}
+
+.table th,
+.table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle
+}
+
+.table img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 6px
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff
+}
+
+.btn-secondary {
+    background: #4b5563;
+    color: #fff
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: #fff
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 14px
+}
+
+.cart-actions {
+    display: flex;
+    gap: 18px;
+    margin-top: 18px;
+    align-items: flex-start
+}
+
+.cart-controls {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    margin-top: 8px
+}
+
+.controls-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+}
+
+.controls-right {
+    width: 340px
+}
+
+.voucher-box,
+.shipping-box {
+    background: #fff;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px
+}
+
+.voucher-form,
+.shipping-form {
+    display: flex;
+    gap: 8px;
+    align-items: center
+}
+
+.voucher-form select,
+.shipping-form select {
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px
+}
+
+/* Make select expand so the button sits at the right edge of the control box */
+.voucher-form select,
+.shipping-form select {
+    flex: 1;
+    min-width: 0
+}
+
+.voucher-form button,
+.shipping-form button {
+    margin-left: 8px;
+    flex: 0
+}
+
+.cart-summary {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border)
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    color: var(--muted)
+}
+
+.summary-row.total {
+    font-weight: 700;
+    font-size: 18px;
+    color: #111
+}
+
+/* Checkout actions (buttons) */
+.checkout-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.checkout-actions .btn {
+    min-width: 160px;
+}
+
+/* Checkout page form styling */
+.checkout-form {
+    background: #fff;
+    padding: 18px;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    border: 1px solid var(--border);
+}
+
+.checkout-form .form-group {
+    margin-bottom: 12px;
+}
+
+.checkout-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.checkout-form input[type="text"],
+.checkout-form input[type="number"],
+.checkout-form input[type="email"],
+.checkout-form select,
+.checkout-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    font-size: 0.95rem;
+}
+
+.checkout-summary {
+    background: linear-gradient(180deg,#fff,#fbfdff);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.checkout-summary .summary-row {
+    font-size: 0.95rem;
+}
+
+/* Mobile adjustments */
+@media (max-width:900px) {
+    .checkout-actions {
+        justify-content: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .controls-right {
+        width: 100%;
+    }
+}
+
+/* responsive */
+@media (max-width:900px) {
+    .cart-actions {
+        flex-direction: column
+    }
+
+    .cart-summary {
+        min-width: 100%
+    }
+}
+
+/* Toast for small notifications (e.g., "Đã thêm vào giỏ") */
+/* toast removed — animation uses fly-to-cart and header pulse instead */

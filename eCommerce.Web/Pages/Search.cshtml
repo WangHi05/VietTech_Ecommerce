@@ -1,0 +1,44 @@
+@page
+@model eCommerce.Web.Pages.SearchModel
+@{
+    ViewData["Title"] = "Kết quả tìm kiếm";
+}
+
+<div class="search-header">
+    @if (!string.IsNullOrEmpty(Model.Query))
+    {
+        <h1>Kết quả tìm kiếm cho: "@Model.Query"</h1>
+    }
+    else
+    {
+        <h1>Tìm kiếm sản phẩm</h1>
+    }
+</div>
+
+
+@if (Model.SearchResults != null && Model.SearchResults.Any())
+{
+    <div class="product-grid">
+        @foreach (var product in Model.SearchResults)
+        {
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="@product.ImageUrl" alt="@product.Name" onerror="this.onerror=null;this.src='[https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Not+Found](https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Not+Found)';">
+                </div>
+                <div class="product-info">
+                    <h3>@product.Name</h3>
+                    <p class="product-price">@product.Price.ToString("N0") ₫</p>
+                    <form method="post" asp-page="/Cart" asp-route-handler="Add" class="inline-form">
+                        <input type="hidden" name="productId" value="@product.Id" />
+                        <input type="hidden" name="qty" value="1" />
+                        <button type="submit" class="btn-primary"><i class="bi bi-cart-plus" style="margin-right: 12px;" aria-hidden="true"></i>Thêm vào giỏ</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p class="text-center">Không tìm thấy sản phẩm nào phù hợp.</p>
+}

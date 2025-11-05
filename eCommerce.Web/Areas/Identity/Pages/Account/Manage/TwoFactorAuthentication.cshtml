@@ -1,0 +1,75 @@
+﻿@page
+@model TwoFactorAuthenticationModel
+@{
+    ViewData["Title"] = "Bảo mật hai yếu tố (2FA)";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h3>@ViewData["Title"]</h3>
+
+<div class="card manage-card mb-4">
+    <div class="card-header">
+        <h4 class="mb-0">Trạng thái hiện tại</h4>
+    </div>
+    <div class="card-body">
+        @if (Model.Is2faEnabled)
+        {
+            if (Model.RecoveryCodesLeft == 0)
+            {
+                <div class="alert alert-danger">
+                    <strong>You have no recovery codes left.</strong>
+                    <p>You must <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a> before you can log in with a recovery code.</p>
+                </div>
+            }
+            else if (Model.RecoveryCodesLeft == 1)
+            {
+                <div class="alert alert-danger">
+                    <strong>You have 1 recovery code left.</strong>
+                    <p>You can <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+                </div>
+            }
+            else if (Model.RecoveryCodesLeft <= 3)
+            {
+                <div class="alert alert-warning">
+                    <strong>You have @Model.RecoveryCodesLeft recovery codes left.</strong>
+                    <p>You should <a asp-page="./GenerateRecoveryCodes">generate a new set of recovery codes</a>.</p>
+                </div>
+            }
+
+            if (Model.IsMachineRemembered)
+            {
+                <form method="post" style="display: inline-block">
+                    <button type="submit" class="btn btn-secondary">Forget this browser</button>
+                </form>
+            }
+            <a asp-page="./Disable2fa" class="btn btn-danger">Tắt 2FA</a>
+            <a asp-page="./GenerateRecoveryCodes" class="btn btn-outline-primary">Xem mã khôi phục</a>
+        } else {
+             <p>Xác thực hai yếu tố (2FA) chưa được kích hoạt.</p>
+        }
+    </div>
+</div>
+
+
+<div class="card manage-card">
+    <div class="card-header">
+         <h4 class="mb-0">Ứng dụng xác thực</h4>
+    </div>
+    <div class="card-body">
+        @if (!Model.HasAuthenticator)
+        {
+            <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">Thêm ứng dụng xác thực</a>
+        }
+        else
+        {
+            <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-outline-primary">Thiết lập ứng dụng</a>
+            <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-outline-warning">Đặt lại ứng dụng</a>
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
