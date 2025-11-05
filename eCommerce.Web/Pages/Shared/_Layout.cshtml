@@ -30,7 +30,7 @@
 </head>
 <body>
     <header>
-        <nav class="container">
+        <nav class="container-custom">
             <div class="nav-left">
                 <a class="logo" href="/">VietTech</a>
                 <ul class="main-menu">
@@ -63,7 +63,6 @@
             <div class="nav-right">
                 @if (SignInManager.IsSignedIn(User))
                 {
-                    <!-- === CẬP NHẬT: Hiển thị ảnh đại diện hoặc icon === -->
                     <a class="header-action user-avatar-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Quản lý tài khoản">
                         @if (!string.IsNullOrEmpty(profilePictureUrl))
                         {
@@ -112,12 +111,12 @@
         </nav>
     </header>
 
-    <main role="main" class="container">
+    <main role="main" class="container-custom">
         @RenderBody()
     </main>
 
     <footer class="site-footer">
-        <div class="container">
+        <div class="container-custom">
             <div class="footer-grid">
                 <div class="footer-column">
                     <h4>Về VietTech</h4>
@@ -254,7 +253,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="@(Url.Content("~/js/cart.js"))" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-
-    
+    <script src="~/js/product-interactions.js" asp-append-version="true"></script>
 </body>
 </html>
+

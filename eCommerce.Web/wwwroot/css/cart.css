@@ -15,7 +15,8 @@
 
 h1 {
     font-size: 28px;
-    margin-bottom: 18px
+    margin-bottom: 18px;
+    display: none
 }
 
 .table {

@@ -45,6 +45,14 @@ namespace eCommerce.Core.Entities
         [MaxLength(50)]
         public string Size { get; set; } = string.Empty;
 
+        public bool IsNew { get; set; }
+        public bool IsOnSale { get; set; }
+        public decimal? OldPrice { get; set; }
+        public int DiscountPercent { get; set; }
+        public double AverageRating { get; set; }
+        public int ReviewCount { get; set; }
+        
+
         // === HẾT CÁC TRƯỜNG MỚI ===
 
         // Thuộc tính để lưu các thông số kỹ thuật dưới dạng JSON
