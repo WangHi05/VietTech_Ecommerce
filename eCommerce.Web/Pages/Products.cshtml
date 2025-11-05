@@ -134,10 +134,14 @@
                         </div>
                         <div class="product-info">
                             <h3>
-                                <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">@product.Name</a>
-                            </h3>
-                            <p class="product-price">@product.Price.ToString("N0") ₫</p>
-                            <a href="#" class="btn btn-primary">Thêm vào giỏ</a>
+                        <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">@product.Name</a>
+                    </h3>
+                    <p class="product-price">@product.Price.ToString("N0") ₫</p>
+                    <form method="post" asp-page="/Cart" asp-route-handler="Add" class="inline-form">
+                        <input type="hidden" name="productId" value="@product.Id" />
+                        <input type="hidden" name="qty" value="1" />
+                        <button type="submit" class="btn-primary"><i class="bi bi-cart-plus" style="margin-right: 12px;" aria-hidden="true"></i>Thêm vào giỏ</button>
+                    </form>
                         </div>
                     </div>
                 }

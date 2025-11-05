@@ -1,5 +1,6 @@
 using eCommerce.Core.Entities;
 using eCommerce.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +11,7 @@ namespace eCommerce.Application.Services
         Task<int> PlaceOrderAsync(Order order);
         Task<Order?> GetOrderByIdAsync(int id);
         Task<List<Order>> GetOrdersByUserAsync(string userId);
+        Task UpdatePaymentStateAsync(int orderId, string status, string paymentStatus, DateTime? paidAt = null);
     }
 
     public class OrderService : IOrderService
@@ -35,6 +37,11 @@ namespace eCommerce.Application.Services
         public async Task<List<Order>> GetOrdersByUserAsync(string userId)
         {
             return await _orderRepository.GetByUserAsync(userId);
+        }
+
+        public async Task UpdatePaymentStateAsync(int orderId, string status, string paymentStatus, DateTime? paidAt = null)
+        {
+            await _orderRepository.UpdatePaymentStateAsync(orderId, status, paymentStatus, paidAt);
         }
     }
 }

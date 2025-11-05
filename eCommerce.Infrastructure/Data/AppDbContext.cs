@@ -38,6 +38,29 @@ namespace eCommerce.Infrastructure.Data
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<eCommerce.Core.Entities.Order>()
+                .Property(o => o.PaymentMethod)
+                .HasMaxLength(32)
+                .HasDefaultValue("COD");
+
+            modelBuilder.Entity<eCommerce.Core.Entities.Order>()
+                .Property(o => o.PaymentStatus)
+                .HasMaxLength(32)
+                .HasDefaultValue("Pending");
+
+            modelBuilder.Entity<eCommerce.Core.Entities.Order>()
+                .Property(o => o.Status)
+                .HasMaxLength(32)
+                .HasDefaultValue("Pending");
+
+            modelBuilder.Entity<eCommerce.Core.Entities.Order>()
+                .Property(o => o.CardLast4)
+                .HasMaxLength(8);
+
+            modelBuilder.Entity<eCommerce.Core.Entities.Order>()
+                .Property(o => o.CardHolderName)
+                .HasMaxLength(128);
+
             // === CẤU HÌNH QUAN HỆ MỚI ===
             // Cấu hình quan hệ Product và Brand (Một-Nhiều)
             modelBuilder.Entity<Product>()

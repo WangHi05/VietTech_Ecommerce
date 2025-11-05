@@ -44,12 +44,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function animateImageToCart(form) {
         try {
-            // find the product image within the same product-card
-            let productCard = form.closest('.product-card');
-            if (!productCard) productCard = form.parentElement;
-            const img = productCard ? productCard.querySelector('img') : null;
+            // --- SỬA LỖI TẠI ĐÂY ---
+            let img = null;
+
+            // 1. Thử tìm ảnh theo cấu trúc trang Products (.product-card)
+            const productCard = form.closest('.product-card');
+            if (productCard) {
+                img = productCard.querySelector('img');
+            }
+
+            // 2. Nếu không thấy (đang ở trang Detail), thử tìm theo cấu trúc trang ProductDetail
+            if (!img) {
+                const detailLayout = form.closest('.product-detail-layout');
+                if (detailLayout) {
+                    // Tìm ảnh trong class .product-detail-image
+                    img = detailLayout.querySelector('.product-detail-image img'); 
+                }
+            }
+            // --- KẾT THÚC SỬA LỖI ---
+
             const cartButton = document.querySelector('.cart-button');
-            if (!img || !cartButton) return false;
+
+            // Nếu cả 2 cách đều không tìm thấy ảnh, hoặc không thấy nút giỏ hàng -> thoát
+            if (!img || !cartButton) {
+                console.log('Không tìm thấy ảnh hoặc nút giỏ hàng để tạo hiệu ứng.');
+                return false; // Thoát và chỉ pulse giỏ hàng
+            }
 
             const imgRect = img.getBoundingClientRect();
             const cartRect = cartButton.getBoundingClientRect();

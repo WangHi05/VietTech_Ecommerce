@@ -3,6 +3,7 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 @using System.Linq
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @inject eCommerce.Web.Services.ICartService CartService
 
 @{
@@ -48,7 +49,10 @@
 
             <div class="nav-center">
                 <form class="search-form" action="/Search" method="get">
-                    <input type="text" name="query" class="search-input" placeholder="Nhập tên điện thoại, laptop, phụ kiện... cần tìm">
+                    <input type="text" 
+                    name="query" 
+                    class="search-input" 
+                    id="searchInput"  placeholder="Nhập tên điện thoại, laptop, phụ kiện... cần tìm">
                     <button type="submit" class="search-button">
                         <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </button>
@@ -86,17 +90,23 @@
                 }
 
                 @{ var _cartCount = 0; var _cartItems = await CartService.GetCartAsync(); if (_cartItems != null) { _cartCount = _cartItems.Sum(i => i.Quantity); } }
-                <a href="/Cart" class="header-action cart-button" data-test="header-cart">
-                    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                    <span>Giỏ hàng</span>
-                        @if (_cartCount > 0)
-                        {
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-                                @_cartCount
-                                <span class="visually-hidden">sản phẩm</span>
-                            </span>
-                        }
+                <a href="/Cart" class="header-action cart-button position-relative" data-test="header-cart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span class="ms-1">Giỏ hàng</span>
+
+                    <!-- ✅ Phần này thêm class để cart.js cập nhật -->
+                    <span class="cart-item-count badge bg-danger position-absolute top-0 start-100 translate-middle"
+                        data-test="header-cart-count"
+                        style="font-size: 0.7rem;">
+                        @_cartCount
+                    </span>
                 </a>
+
             </div>
 
         </nav>
@@ -238,10 +248,13 @@
         });
     </script>
 
-    <script src="@(Url.Content("~/js/cart.js"))" asp-append-version="true"></script>
+    
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="@(Url.Content("~/js/cart.js"))" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
+    
 </body>
 </html>
