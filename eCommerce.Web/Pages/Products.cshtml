@@ -11,42 +11,6 @@
 <div class="product-page-layout">
     
     <aside class="sidebar">
-        <h4>Danh Mục Sản Phẩm</h4>
-        <ul class="category-list">
-            <li>
-                <a asp-page="/Products"
-                   asp-route-categoryId=""
-                   asp-route-brandId="@Model.BrandId"
-                   asp-route-color="@Model.Color"
-                   asp-route-size="@Model.Size"
-                   asp-route-minPrice="@Model.MinPrice"
-                   asp-route-maxPrice="@Model.MaxPrice"
-                   asp-route-sortBy="@Model.SortBy"
-                   class="@(Model.CategoryId == null ? "active" : "")">
-                    Tất cả sản phẩm
-                </a>
-            </li>
-            @if (Model.Categories != null)
-            {
-                @foreach (var category in Model.Categories)
-                {
-                    <li>
-                        <a asp-page="/Products"
-                           asp-route-categoryId="@category.Id"
-                           asp-route-brandId="@Model.BrandId"
-                           asp-route-color="@Model.Color"
-                           asp-route-size="@Model.Size"
-                           asp-route-minPrice="@Model.MinPrice"
-                           asp-route-maxPrice="@Model.MaxPrice"
-                           asp-route-sortBy="@Model.SortBy"
-                           class="@(Model.CategoryId == category.Id ? "active" : "")">
-                            @category.Name
-                        </a>
-                    </li>
-                }
-            }
-        </ul>
-
         <div class="filter-section">
             <h4>Bộ Lọc Nâng Cao</h4>
             <form method="get">

@@ -4,127 +4,306 @@
     ViewData["Title"] = "Trang chủ";
 }
 
+<!-- Hero Slider with Overlay Content -->
 <div class="slider-container">
+    <div class="hero-content">
+         <span class="hero-badge">Sản phẩm điện tử chính hãng</span>
+        <h1 class="hero-title">Nâng cấp trải nghiệm của bạn với sản phẩm độc đáo</h1>
+        <p class="hero-subtitle">Giảm giá đến 30% cho sản phẩm chính hãng</p>
+        <a href="/Products" class="hero-cta">
+            Mua ngay
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+        </a>
+    </div>
     <div class="slides">
         <div class="slide">
-            <img src="/images/banners/banner1.png" alt="Banner quảng cáo 1">
+            <img src="/images/banners/banner4.jpg" alt="Banner quảng cáo">
         </div>
-        <div class="slide">
-            <img src="/images/banners/banner2.png" alt="Banner quảng cáo 2">
-        </div>
-        <div class="slide">
-            <img src="/images/banners/banner3.jpg" alt="Banner quảng cáo 3">
-        </div>
+       
     </div>
 </div>
 
+<!-- Category Section -->
+<section class="category-section">
+    <div class="section-header">
+        <h3 class="section-title">Danh mục sản phẩm</h2>
+    </div>
+    <div class="category-grid">
+        <a href="/Products?categoryId=1" class="category-card">
+            <span class="category-badge hot">Hot</span>
+            <div class="category-icon">
+                <img src="/images/products/lap1.jpg" alt="Laptop" onerror="this.src='https://placehold.co/200x200/E2E8F0/4A5568?text=Phone'">
+            </div>
+            <span class="category-name">Laptop</span>
+        </a>
+        
+        <a href="/Products?categoryId=2" class="category-card">
+            <span class="category-badge new">New</span>
+            <div class="category-icon">
+                <img src="/images/products/chuot1.jpg" alt="Chuột" onerror="this.src='https://placehold.co/200x200/E2E8F0/4A5568?text=Laptop'">
+            </div>
+            <span class="category-name">Chuột</span>
+        </a>
+        
+        <a href="/Products?categoryId=3" class="category-card">
+            <div class="category-icon">
+                <img src="/images/products/banphim1.jpg" alt="Bàn phím" onerror="this.src='https://placehold.co/200x200/E2E8F0/4A5568?text=Tablet'">
+            </div>
+            <span class="category-name">Bàn phím</span>
+        </a>
+        
+        <a href="/Products?categoryId=4" class="category-card">
+            <span class="category-badge sale">Sale</span>
+            <div class="category-icon">
+                <img src="/images/products/tainghe1.jpg" alt="Tai nghe" onerror="this.src='https://placehold.co/200x200/E2E8F0/4A5568?text=Accessory'">
+            </div>
+            <span class="category-name">Tai nghe</span>
+        </a>
+    </div>
+</section>
 
-<h2>Sản Phẩm Nổi Bật</h2>
+<!-- Flash Sale Section -->
+<section class="flash-sale-section">
+    <div class="flash-sale-container">
+        <div class="flash-sale-content">
+            <div class="flash-sale-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+                FLASH SALE
+            </div>
+            <h2 class="flash-sale-title">Giảm giá lên đến 50%</h2>
+            <p class="flash-sale-timer">Hôm nay chỉ - Kết thúc lúc: 23:59</p>
+            <a href="/Products?sortBy=price-asc" class="flash-sale-cta">
+                Xem ngay
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </a>
+        </div>
+    </div>
+</section>
 
-<div class="product-grid">
+<!-- Products Section - Divided by Categories -->
+<section class="products-section">
     @if (Model.Products != null && Model.Products.Any())
     {
-        @foreach (var product in Model.Products)
+        @* Nhóm sản phẩm theo Category *@
+        var productsByCategory = Model.Products.GroupBy(p => p.CategoryId).Take(3);
+        
+        @foreach (var categoryGroup in productsByCategory)
         {
-            <div class="product-card">
-              
-                <div class="product-image">
-                   
-                    <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">
-                        <img src="@product.ImageUrl" alt="@product.Name" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Not+Found';">
+            var firstProduct = categoryGroup.First();
+            var categoryName = firstProduct.Category?.Name ?? "Sản phẩm khác";
+            
+            <div class="category-products-section">
+                <div class="category-products-header">
+                    <h2 class="category-products-title">@categoryName</h2>
+                    <a href="/Products?categoryId=@categoryGroup.Key" class="category-products-link">
+                        Xem thêm
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
                     </a>
                 </div>
-                
-               
-                <div class="product-info">
-                   
-                    <div class="product-category">@product.Brand?.Name</div>
-                    
-                   
-                    <h3>
-                        <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">
-                            @product.Name
-                        </a>
-                    </h3>
-                    
-            
-                    <div class="product-rating">
-                        <div class="product-stars">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+
+                <div class="product-grid">
+                    @foreach (var product in categoryGroup.Take(5))
+                    {
+                        <div class="product-card">
+                            <div class="product-image">
+                                <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">
+                                    <img class="product-thumb" src="@product.ImageUrl" alt="@product.Name" onerror="this.onerror=null;this.src='https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Not+Found';">
+                                </a>
+                            </div>
+                            
+                            <div class="product-info">
+                                <div class="product-category">@product.Brand?.Name</div>
+                                
+                                <h3>
+                                    <a asp-page="/ProductDetails/Detail" asp-route-id="@product.Id">
+                                        @product.Name
+                                    </a>
+                                </h3>
+                                
+                                <div class="product-rating">
+                                    <div class="product-stars">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    </div>
+                                    <span class="product-rating-count">(128)</span>
+                                </div>
+                                
+                                <div class="product-price-section">
+                                    <p class="product-price">@product.Price.ToString("N0") ₫</p>
+                                    <span class="product-old-price">@((product.Price * 1.25m).ToString("N0")) ₫</span>
+                                    <span class="product-discount">-20%</span>
+                                </div>
+
+                                <ul class="product-features">
+                                    <li>Bảo hành 12 tháng</li>
+                                    <li>Miễn phí vận chuyển</li>
+                                    <li>Trả góp 0%</li>
+                                </ul>
+                                
+                                <div class="product-stock in-stock">
+                                    Còn hàng
+                                </div>
+                                
+                                <form method="post" asp-page="/Cart" asp-route-handler="Add" class="inline-form" data-product-id="@product.Id">
+                                    <input type="hidden" name="productId" value="@product.Id" />
+                                    <input type="hidden" name="qty" value="1" />
+                                    <button type="submit" class="btn btn-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="9" cy="21" r="1"></circle>
+                                            <circle cx="20" cy="21" r="1"></circle>
+                                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                        </svg>
+                                        Thêm vào giỏ
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <span class="product-rating-count">(128)</span>
-                    </div>
-                    
-            
-                    <div class="product-price-section">
-                        <p class="product-price">@product.Price.ToString("N0") ₫</p>
-                    
-                        <span class="product-old-price">25.990.000 ₫</span>
-                        <span class="product-discount">-20%</span>
-                    </div>
-                    
-
-                    <ul class="product-features">
-                        <li>Bảo hành 12 tháng</li>
-                        <li>Miễn phí vận chuyển</li>
-                        <li>Trả góp 0%</li>
-                    </ul>
-                    
-                
-                    <div class="product-stock in-stock">
-                        Còn hàng
-                    </div>
-                
-                    
-
-                    <a href="#" class="btn btn-primary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="9" cy="21" r="1"></circle>
-                            <circle cx="20" cy="21" r="1"></circle>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                        </svg>
-                        Thêm vào giỏ
-                    </a>
+                    }
                 </div>
             </div>
         }
     }
     else
     {
-        <p>Chưa có sản phẩm nào để hiển thị.</p>
+        <div style="text-align: center; padding: 60px 20px;">
+            <p style="font-size: 1.2rem; color: #64748b;">Chưa có sản phẩm nào để hiển thị.</p>
+        </div>
     }
-</div>
+</section>
+<section class="usp-section">
+    <div class="container-custom">
+        <div class="usp-grid">
+            <div class="usp-item">
+                <div class="usp-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18H3c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v7c0 1.1-.9 2-2 2h-5"></path><path d="M14 9V5a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v4"></path><path d="M10 22V18"></path><path d="M8 22h4"></path><circle cx="18" cy="18" r="2"></circle></svg>
+                </div>
+                <h4>Giao hàng nhanh</h4>
+                <p>Giao hàng hỏa tốc 24h tại TP.HCM, giao hàng toàn quốc 1-3 ngày.</p>
+            </div>
+            
+            <div class="usp-item">
+                <div class="usp-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="7.5 11 12 13.5 16.5 11"></polyline><polyline points="21 8 12 13.5 3 8"></polyline><line x1="12" y1="2.25" x2="12" y2="13.5"></line></svg>
+                </div>
+                <h4>Đổi trả dễ dàng</h4>
+                <p>Đổi trả trong 30 ngày không cần lý do, thủ tục đơn giản.</p>
+            </div>
+            
+            <div class="usp-item">
+                <div class="usp-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                </div>
+                <h4>Hàng chính hãng</h4>
+                <p>100% hàng chính hãng từ các thương hiệu hàng đầu thế giới.</p>
+            </div>
+            
+            <div class="usp-item">
+                <div class="usp-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"></path><path d="M12 18h.01"></path><path d="M10 6h4"></path><path d="M10 10h4"></path><path d="M10 14h4"></path></svg>
+                </div>
+                <h4>Hỗ trợ 24/7</h4>
+                <p>Đội ngũ chuyên viên sẵn sàng giúp đỡ bạn mọi lúc mọi nơi.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.inline-form').forEach(function (form) {
-            form.addEventListener('submit', async function (e) {
-                e.preventDefault();
-                try {
-                    const url = form.getAttribute('action') || '/Cart?handler=Add';
-                    const formData = new FormData(form);
-                    const resp = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                        body: formData,
-                        credentials: 'same-origin'
-                    });
-                    if (resp.ok) {
-                        // try parse JSON; server returns JSON for AJAX
-                        const json = await resp.json().catch(() => null);
-                        if (json && json.count !== undefined) {
-                            const el = document.querySelector('.cart-item-count[data-test="header-cart-count"]') || document.querySelector('.cart-item-count');
-                            if (el) el.textContent = json.count;
-                        }
-                    }
-                } catch (err) {
-                    console.error('Add to cart failed', err);
-                }
-            });
-        });
-    });
-</script>
+<section class="testimonial-section">
+    <div class="container-custom">
+        <div class="testimonial-header">
+            <h2 class="section-title">Đánh giá từ khách hàng</h2>
+            <p>Cảm nhận thực tế từ những khách hàng đã tin tưởng VietTech</p>
+        </div>
+        
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="rating-stars">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                </div>
+                <blockquote>"Sản phẩm chất lượng tuyệt vời, dịch vụ nhanh chóng. Sẽ tiếp tục ủng hộ!"</blockquote>
+                <div class="customer-info">
+                    <img src="https://placehold.co/40x40/E2E8F0/4A5568?text=A" alt="Avatar" class="customer-avatar">
+                    <div class="customer-details">
+                        <strong>Nguyễn Minh Đức</strong>
+                        <span>Khách hàng thân thiết</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="rating-stars">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                </div>
+                <blockquote>"Laptop rất tốt, cấu hình mạnh. Cảm thấy thoải mái khi sử dụng. Giá cả phải chăng!"</blockquote>
+                <div class="customer-info">
+                    <img src="https://placehold.co/40x40/E2E8F0/4A5568?text=B" alt="Avatar" class="customer-avatar">
+                    <div class="customer-details">
+                        <strong>Trần Hưng Giang</strong>
+                        <span>Lập trình viên</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="rating-stars">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                </div>
+                <blockquote>"Lần đầu mua ở đây, vô cùng hài lòng với mọi thứ. Sẽ giới thiệu bạn bè!"</blockquote>
+                <div class="customer-info">
+                    <img src="https://placehold.co/40x40/E2E8F0/4A5568?text=C" alt="Avatar" class="customer-avatar">
+                    <div class="customer-details">
+                        <strong>Lê Quốc Huy</strong>
+                        <span>Designer</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="rating-stars">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
+                </div>
+                <blockquote>"Hàng chính hãng, chất lượng tốt. Hỗ trợ khách hàng rất tận tình!"</blockquote>
+                <div class="customer-info">
+                    <img src="https://placehold.co/40x40/E2E8F0/4A5568?text=D" alt="Avatar" class="customer-avatar">
+                    <div class="customer-details">
+                        <strong>Phạm Thanh Hương</strong>
+                        <span>Sinh viên</span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+@section Scripts {
+}

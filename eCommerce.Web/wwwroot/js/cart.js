@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
             clone.style.top = imgRect.top + 'px';
             clone.style.width = imgRect.width + 'px';
             clone.style.height = imgRect.height + 'px';
-            clone.style.transition = 'transform 700ms cubic-bezier(.2,.9,.2,1), opacity 700ms ease';
+            clone.style.transition = 'transform 1000ms cubic-bezier(.2,.9,.2,1), opacity 1000ms ease';
             clone.style.zIndex = 9999;
             clone.style.pointerEvents = 'none';
             document.body.appendChild(clone);
