@@ -4,25 +4,134 @@
     ViewData["Title"] = "Xác thực OTP";
 }
 
-<h2>Xác thực thanh toán</h2>
-<p>Vui lòng nhập mã OTP giả lập <strong>123456</strong> để hoàn tất thanh toán thẻ.</p>
-@if (!string.IsNullOrEmpty(Model.CardDisplay))
-{
-    <p>Thẻ: <strong>@Model.CardDisplay</strong></p>
-}
-@if (!string.IsNullOrEmpty(Model.CardHolder))
-{
-    <p>Chủ thẻ: <strong>@Model.CardHolder</strong></p>
-}
+<style>
+    body {
+        background: #f5f7fa;
+        font-family: 'Roboto', sans-serif;
+    }
 
-<form method="post">
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <input type="hidden" asp-for="OrderId" />
-    <div class="mb-3">
-        <label asp-for="OtpCode">Mã OTP</label>
-        <input asp-for="OtpCode" class="form-control" placeholder="Ví dụ: 123456" autocomplete="one-time-code" />
-        <span asp-validation-for="OtpCode" class="text-danger"></span>
+    .otp-container {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .otp-box {
+        background: #fff;
+        padding: 30px 35px;
+        max-width: 420px;
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    h2 {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .otp-input-group {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin: 20px 0;
+    }
+
+    .otp-input-group input {
+        width: 55px;
+        height: 65px;
+        font-size: 26px;
+        text-align: center;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .otp-input-group input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 6px rgba(13, 110, 253, 0.3);
+    }
+
+    button {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .btn-secondary {
+        width: 100%;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="otp-container">
+    <div class="otp-box">
+
+        <h2>Xác thực thanh toán</h2>
+        <p>Vui lòng nhập mã OTP</p>
+
+        @if (!string.IsNullOrEmpty(Model.CardDisplay))
+        {
+            <p>Thẻ: <strong>@Model.CardDisplay</strong></p>
+        }
+        @if (!string.IsNullOrEmpty(Model.CardHolder))
+        {
+            <p>Chủ thẻ: <strong>@Model.CardHolder</strong></p>
+        }
+
+        <form method="post" id="otpForm">
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <input type="hidden" asp-for="OrderId" />
+            <input type="hidden" id="OtpCode" name="OtpCode" />
+
+            <div class="otp-input-group">
+                <input maxlength="1" class="otp-field" />
+                <input maxlength="1" class="otp-field" />
+                <input maxlength="1" class="otp-field" />
+                <input maxlength="1" class="otp-field" />
+                <input maxlength="1" class="otp-field" />
+                <input maxlength="1" class="otp-field" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Xác nhận</button>
+            <a asp-page="/Checkout" class="btn btn-secondary">Hủy</a>
+
+        </form>
+
     </div>
-    <button type="submit" class="btn btn-primary">Xác nhận</button>
-    <a asp-page="/Checkout" class="btn btn-secondary">Hủy</a>
-</form>
+</div>
+
+<script>
+    const inputs = document.querySelectorAll(".otp-field");
+    const hiddenInput = document.getElementById("OtpCode");
+
+    inputs.forEach((input, index) => {
+
+        input.addEventListener("input", (e) => {
+            if (input.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+            collectOtp();
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Backspace" && !input.value && index > 0) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+
+    function collectOtp() {
+        let code = "";
+        inputs.forEach(i => code += i.value);
+        hiddenInput.value = code;
+    }
+
+    // Auto focus vào ô đầu tiên
+    inputs[0].focus();
+</script>

@@ -26,7 +26,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         Console.WriteLine("--> Using MySQL DB");
     }
 });
-
+// Thêm vào phần đăng ký services
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 // CẬP NHẬT: Thêm .AddRoles<IdentityRole>()
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>() // Thêm dòng này

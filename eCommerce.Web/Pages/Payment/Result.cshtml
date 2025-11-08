@@ -1,50 +1,241 @@
-@page "/Payment/Result"
-@model eCommerce.Web.Pages.Payment.PaymentResultModel
+@page
+@model eCommerce.Web.Pages.Payment.ResultModel
 @{
-    ViewData["Title"] = Model.Success ? "Thanh toán thành công" : "Thanh toán thất bại";
-    var isCod = string.Equals(Model.Method, "cod", System.StringComparison.OrdinalIgnoreCase);
-    var isPaid = string.Equals(Model.PaymentStatus, "Paid", System.StringComparison.OrdinalIgnoreCase);
+    ViewData["Title"] = "Kết quả thanh toán";
 }
 
-@if (Model.Success)
-{
-    if (isCod)
-    {
-        <h2>Đặt hàng thành công!</h2>
-        <p>Đơn hàng <strong>@Model.OrderId</strong> đã được ghi nhận. Vui lòng thanh toán tiền mặt cho nhân viên giao hàng khi nhận.
-        </p>
-        <p>Trạng thái thanh toán hiện tại: <strong>@(Model.PaymentStatus ?? "AwaitingPayment")</strong>.</p>
+<style>
+    /* Tổng thể */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f2f5; /* Nền nhẹ nhàng */
     }
-    else if (isPaid)
-    {
-        <h2>Cảm ơn bạn đã thanh toán thành công.</h2>
-        <p>Đơn hàng <strong>@Model.OrderId</strong> đã chuyển sang trạng thái thanh toán <strong>Paid</strong>.</p>
-    }
-    else
-    {
-        <h2>Đơn hàng của bạn đã được ghi nhận.</h2>
-        <p>Trạng thái thanh toán hiện tại: <strong>@(Model.PaymentStatus ?? "Pending")</strong>.</p>
-    }
-}
-else
-{
-    <h2>Thanh toán thất bại, vui lòng thử lại.</h2>
-    <p>Đơn hàng <strong>@Model.OrderId</strong> vẫn ở trạng thái chờ thanh toán.</p>
-}
 
-@if (!string.IsNullOrEmpty(Model.Reason))
-{
-    <p class="text-danger">@Model.Reason</p>
-}
+    /* Container */
+    .payment-container {
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+        padding: 0 15px; /* Thêm padding cho di động */
+    }
 
-<div style="margin-top:16px;display:flex;gap:12px;">
-    <a asp-page="/Index" class="btn btn-primary">Quay lại cửa hàng</a>
-    @if (Model.Success && isCod)
-    {
-        <a asp-page="/Orders/Index" class="btn btn-outline-secondary">Xem đơn hàng</a>
+    /* Card */
+    .payment-card {
+        width: 100%;
+        max-width: 700px; /* Chiều rộng tối đa nhỏ hơn một chút */
+        border-radius: 18px; /* Bo tròn hơn */
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08); /* Đổ bóng mềm mại hơn */
+        overflow: hidden;
+        background-color: #ffffff;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    else if (!Model.Success)
-    {
-        <a asp-page="/Checkout" class="btn btn-secondary">Thử lại thanh toán</a>
+
+    .payment-card:hover {
+        transform: translateY(-7px);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
     }
+
+    /* Header */
+    .payment-header {
+        padding: 30px 25px; /* Padding lớn hơn */
+        font-size: 1.8rem; /* Kích thước chữ lớn hơn */
+        font-weight: 700; /* Đậm hơn */
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: white;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+        background: linear-gradient(135deg, #6dd5ed, #2193b0); /* Màu xanh nhạt và hiện đại */
+        border-bottom: none; /* Bỏ border mặc định */
+        border-radius: 18px 18px 0 0; /* Giữ bo tròn ở trên */
+    }
+
+    .payment-header.failed {
+        background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Màu cam đỏ cho thất bại */
+    }
+
+    .payment-header i {
+        font-size: 2.5rem; /* Icon lớn hơn */
+        margin-right: 5px;
+    }
+
+    /* Alert */
+    .payment-alert {
+        border-radius: 12px; /* Bo tròn tương tự */
+        padding: 20px 25px; /* Padding lớn hơn */
+        margin: 25px; /* Khoảng cách với viền */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Đổ bóng nhẹ */
+        background-color: #e6ffee; /* Nền xanh nhạt hơn cho thành công */
+        border: 1px solid #a3e8b8; /* Border mỏng */
+        color: #1e7145; /* Màu chữ xanh đậm */
+        display: flex; /* Dùng flexbox để căn chỉnh icon và chữ */
+        align-items: center;
+        gap: 12px;
+    }
+
+    .payment-alert.alert-danger {
+        background-color: #ffe6e6; /* Nền đỏ nhạt cho thất bại */
+        border: 1px solid #e8a3a3;
+        color: #711e1e;
+    }
+
+    .payment-alert h4 {
+        margin-bottom: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    /* Table */
+    .payment-info-table {
+        border-collapse: separate;
+        border-spacing: 0 15px; /* Khoảng cách lớn hơn giữa các hàng */
+        width: 100%;
+        padding: 0 25px; /* Padding hai bên */
+    }
+
+    .payment-info-table th,
+    .payment-info-table td {
+        padding: 15px 20px; /* Padding lớn hơn */
+        border-radius: 12px; /* Bo tròn ô */
+        vertical-align: middle;
+    }
+
+    .payment-info-table th {
+        background-color: #f7f9fc; /* Nền nhạt hơn cho tiêu đề */
+        font-weight: 600;
+        width: 35%; /* Tiêu đề hẹp hơn một chút */
+        color: #495057;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .payment-info-table td {
+        background-color: #fefefe; /* Nền trắng hơn cho nội dung */
+        color: #343a40;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    /* Buttons */
+    .payment-buttons {
+        padding: 25px; /* Padding cho khu vực nút */
+        border-top: 1px solid #e9ecef; /* Đường phân cách nhẹ */
+        background-color: #fcfcfc; /* Nền nhẹ nhàng cho khu vực nút */
+        border-radius: 0 0 18px 18px; /* Giữ bo tròn ở dưới */
+    }
+
+    .payment-buttons a {
+        border-radius: 30px; /* Nút bo tròn hơn */
+        padding: 12px 30px; /* Kích thước nút lớn hơn */
+        font-weight: 600; /* Chữ đậm hơn */
+        transition: all 0.3s ease;
+        margin: 8px; /* Khoảng cách giữa các nút */
+        text-decoration: none; /* Bỏ gạch chân mặc định */
+        display: inline-flex; /* Để căn giữa icon và chữ */
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Đổ bóng nhẹ cho nút */
+    }
+
+    .payment-buttons a i {
+        font-size: 1.1rem;
+    }
+
+    .payment-buttons a.btn-primary {
+        background-color: #007bff; /* Màu xanh mặc định */
+        border-color: #007bff;
+        color: white;
+    }
+
+    .payment-buttons a.btn-primary:hover {
+        background-color: #0056b3; /* Xanh đậm hơn khi hover */
+        border-color: #004085;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    .payment-buttons a.btn-secondary {
+        background-color: #6c757d; /* Màu xám mặc định */
+        border-color: #6c757d;
+        color: white;
+    }
+
+    .payment-buttons a.btn-secondary:hover {
+        background-color: #545b62; /* Xám đậm hơn khi hover */
+        border-color: #3f4549;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    .payment-buttons a.btn-warning {
+        background-color: #ffc107; /* Màu vàng mặc định */
+        border-color: #ffc107;
+        color: #212529; /* Chữ đen để dễ đọc */
+    }
+
+    .payment-buttons a.btn-warning:hover {
+        background-color: #e0a800; /* Vàng đậm hơn khi hover */
+        border-color: #c69500;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Thêm các icon cho nút nếu cần, ví dụ: */
+    /* .btn-primary::before { content: "\f022"; font-family: "Font Awesome 5 Free"; font-weight: 900; margin-right: 8px; } */
+    /* .btn-secondary::before { content: "\f015"; font-family: "Font Awesome 5 Free"; font-weight: 900; margin-right: 8px; } */
+</style>
+
+<div class="payment-container">
+    <div class="card payment-card">
+        <div class="card-header payment-header @(Model.PaymentSuccess ? "" : "failed")">
+            <i class="fas @(Model.PaymentSuccess ? "fa-check-circle" : "fa-times-circle")"></i>
+            @(Model.PaymentSuccess ? "Thanh toán thành công" : "Thanh toán thất bại")
+        </div>
+        <div class="card-body">
+            <div class="payment-alert alert @(Model.PaymentSuccess ? "alert-success" : "alert-danger")">
+                <i class="fas @(Model.PaymentSuccess ? "fa-check-circle" : "fa-times-circle")"></i>
+                <h4>@Model.PaymentMessage</h4>
+            </div>
+
+            @if (Model.PaymentSuccess)
+            {
+                <table class="table payment-info-table">
+                    <tr>
+                        <th>Mã đơn hàng:</th>
+                        <td>@Model.OrderId</td>
+                    </tr>
+                    <tr>
+                        <th>Mã giao dịch:</th>
+                        <td>@Model.TransactionId</td>
+                    </tr>
+                    <tr>
+                        <th>Phương thức thanh toán:</th>
+                        <td>@Model.PaymentMethod</td>
+                    </tr>
+                    <tr>
+                        <th>Mô tả:</th>
+                        <td>@Model.OrderDescription</td>
+                    </tr>
+                </table>
+
+                <div class="text-center mt-4 payment-buttons">
+                    <a href="/Orders" class="btn btn-primary">
+                        <i class="fas fa-list"></i> Xem đơn hàng
+                    </a>
+                    <a href="/" class="btn btn-secondary">
+                        <i class="fas fa-home"></i> Về trang chủ
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="text-center mt-4 payment-buttons">
+                    <a href="/Cart" class="btn btn-warning">
+                        <i class="fas fa-shopping-cart"></i> Quay lại giỏ hàng
+                    </a>
+                    <a href="/" class="btn btn-secondary">
+                        <i class="fas fa-home"></i> Về trang chủ
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
 </div>

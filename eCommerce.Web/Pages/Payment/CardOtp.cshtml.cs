@@ -46,12 +46,22 @@ namespace eCommerce.Web.Pages.Payment
             if (!string.Equals(order.PaymentMethod, "Card", StringComparison.OrdinalIgnoreCase))
             {
                 TempData["Warning"] = "Đơn hàng không yêu cầu xác thực OTP.";
-                return RedirectToPage("/Payment/Result", new { orderId, success = string.Equals(order.PaymentStatus, "Succeeded", StringComparison.OrdinalIgnoreCase) });
+                return RedirectToPage("/Payment/Result", new 
+                { 
+                    orderId, 
+                    success = string.Equals(order.PaymentStatus, "Succeeded", StringComparison.OrdinalIgnoreCase),
+                    method = "card" 
+                });
             }
 
             if (!string.Equals(order.PaymentStatus, "Pending", StringComparison.OrdinalIgnoreCase))
             {
-                return RedirectToPage("/Payment/Result", new { orderId, success = string.Equals(order.PaymentStatus, "Succeeded", StringComparison.OrdinalIgnoreCase) });
+                return RedirectToPage("/Payment/Result", new 
+                { 
+                    orderId, 
+                    success = string.Equals(order.PaymentStatus, "Succeeded", StringComparison.OrdinalIgnoreCase),
+                    method = "card" 
+                });
             }
 
             return Page();
@@ -76,24 +86,45 @@ namespace eCommerce.Web.Pages.Payment
             if (!string.Equals(order.PaymentMethod, "Card", StringComparison.OrdinalIgnoreCase))
             {
                 TempData["Warning"] = "Đơn hàng không yêu cầu xác thực OTP.";
-                return RedirectToPage("/Payment/Result", new { orderId = OrderId, success = string.Equals(order.PaymentStatus, "Succeeded", StringComparison.OrdinalIgnoreCase) });
+                return RedirectToPage("/Payment/Result", new 
+                { 
+                    orderId = OrderId, 
+                    success = string.Equals(order.PaymentStatus, "Succeeded", StringComparison.OrdinalIgnoreCase),
+                    method = "card" 
+                });
             }
 
             if (!string.Equals(order.PaymentStatus, "Pending", StringComparison.OrdinalIgnoreCase))
             {
-                return RedirectToPage("/Payment/Result", new { orderId = OrderId, success = string.Equals(order.PaymentStatus, "Succeeded", StringComparison.OrdinalIgnoreCase) });
+                return RedirectToPage("/Payment/Result", new 
+                { 
+                    orderId = OrderId, 
+                    success = string.Equals(order.PaymentStatus, "Succeeded", StringComparison.OrdinalIgnoreCase),
+                    method = "card" 
+                });
             }
 
             if (!string.Equals(OtpCode?.Trim(), PaymentConstants.SimulatedCardOtp, StringComparison.Ordinal))
             {
                 await _orderService.UpdatePaymentStateAsync(OrderId, "Failed", "Failed");
-                return RedirectToPage("/Payment/Result", new { orderId = OrderId, success = false, reason = "OTP không chính xác." });
+                return RedirectToPage("/Payment/Result", new 
+                { 
+                    orderId = OrderId, 
+                    success = false, 
+                    reason = "OTP không chính xác.",
+                    method = "card"
+                });
             }
 
             await _orderService.UpdatePaymentStateAsync(OrderId, "Paid", "Succeeded", DateTime.UtcNow);
             await _cartService.ClearCartAsync();
 
-            return RedirectToPage("/Payment/Result", new { orderId = OrderId, success = true });
+            return RedirectToPage("/Payment/Result", new 
+            { 
+                orderId = OrderId, 
+                success = true,
+                method = "card"
+            });
         }
 
         private void PopulateCardInfo(Order order)
