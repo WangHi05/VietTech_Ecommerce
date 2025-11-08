@@ -93,7 +93,7 @@
     @if (Model.Products != null && Model.Products.Any())
     {
         @* Nhóm sản phẩm theo Category *@
-        var productsByCategory = Model.Products.GroupBy(p => p.CategoryId).Take(3);
+        var productsByCategory = Model.Products.GroupBy(p => p.CategoryId).Take(4);
         
         @foreach (var categoryGroup in productsByCategory)
         {

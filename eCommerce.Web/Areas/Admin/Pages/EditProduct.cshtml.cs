@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq; // <-- Phải có using này
 using System.Threading.Tasks;
 
-namespace eCommerce.Web.Pages.Admin
+namespace eCommerce.Web.Areas.Admin.Pages
 {
     public class EditProductModel : PageModel
     {

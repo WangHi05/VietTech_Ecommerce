@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace eCommerce.Web.Pages.Admin
+namespace eCommerce.Web.Areas.Admin.Pages
 {
     public class IndexModel : PageModel
     {

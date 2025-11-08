@@ -1,0 +1,42 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Quản Lý Khách Hàng";
+}
+
+<h2 class="page-title">@ViewData["Title"]</h2>
+
+@if (TempData["error"] != null)
+{
+    <div class="alert alert-danger">@TempData["error"]</div>
+}
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-striped table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Họ Tên</th>
+                    <th>Email</th>
+                    <th>Số Điện Thoại</th>
+                    <th style="width: 120px;">Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var customer in Model.Customers)
+                {
+                    <tr>
+                        <td>@customer.FullName</td>
+                        <td>@customer.Email</td>
+                        <td>@customer.PhoneNumber</td>
+                        <td>
+                            <a asp-page="./Details" asp-route-id="@customer.Id" class="btn btn-sm btn-info">
+                                <i class="bi bi-eye-fill"></i> Chi Tiết
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
