@@ -11,6 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -250,15 +251,15 @@ namespace eCommerce.Web.Pages
 
             var order = CreateOrderFromCart();
             order.PaymentMethod = "VNPay";
-            order.PaymentStatus = "Pending";
-            order.Status = "Pending";
+            order.PaymentStatus = "Succeeded";
+            order.Status = "Paid";
 
             var id = await _orderService.PlaceOrderAsync(order);
 
             var vnPayConfig = _configuration.GetSection("VnPay");
             var tmnCode = vnPayConfig["TmnCode"];
             var hashSecret = vnPayConfig["HashSecret"];
-            var vnpUrl = vnPayConfig["Url"];
+            var vnpUrl = vnPayConfig["BaseUrl"];
             var returnUrl = vnPayConfig["ReturnUrl"];
 
             if (string.IsNullOrEmpty(tmnCode) || string.IsNullOrEmpty(hashSecret) || string.IsNullOrEmpty(vnpUrl))
@@ -270,41 +271,62 @@ namespace eCommerce.Web.Pages
 
             if (string.IsNullOrEmpty(returnUrl))
             {
-                returnUrl = $"{Request.Scheme}://{Request.Host}/Payment/VnPayReturn";
+                returnUrl = $"{Request.Scheme}://{Request.Host}/Payment/Result";
             }
 
-            var vnpParams = new Dictionary<string, string>
+            // Lấy IP address
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
+            if (ipAddress == "::1")
+            {
+                ipAddress = "127.0.0.1";
+            }
+
+            var vnpParams = new SortedList<string, string>
             {
                 { "vnp_Version", "2.1.0" },
                 { "vnp_Command", "pay" },
                 { "vnp_TmnCode", tmnCode },
-                { "vnp_Amount", ((long)(Total * 100)).ToString(CultureInfo.InvariantCulture) },
+                { "vnp_Amount", ((long)(Total * 100)).ToString() },
+                { "vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss") },
                 { "vnp_CurrCode", "VND" },
-                { "vnp_TxnRef", id.ToString(CultureInfo.InvariantCulture) },
+                { "vnp_IpAddr", ipAddress },
+                { "vnp_Locale", "vn" },
                 { "vnp_OrderInfo", $"Thanh toan don hang {id}" },
                 { "vnp_OrderType", "other" },
-                { "vnp_Locale", "vn" },
                 { "vnp_ReturnUrl", returnUrl },
-                { "vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) }
+                { "vnp_TxnRef", id.ToString() }
             };
 
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-            if (!string.IsNullOrEmpty(ip))
+            // Tạo chuỗi hash data
+            var hashData = new StringBuilder();
+            foreach (var kv in vnpParams)
             {
-                vnpParams.Add("vnp_IpAddr", ip);
+                if (!string.IsNullOrEmpty(kv.Value))
+                {
+                    hashData.Append(System.Net.WebUtility.UrlEncode(kv.Key));
+                    hashData.Append('=');
+                    hashData.Append(System.Net.WebUtility.UrlEncode(kv.Value));
+                    hashData.Append('&');
+                }
+            }
+            
+            // Xóa ký tự & cuối cùng
+            if (hashData.Length > 0)
+            {
+                hashData.Length -= 1;
             }
 
-            var sorted = vnpParams.OrderBy(kv => kv.Key, StringComparer.Ordinal);
-            var queryString = string.Join('&', sorted.Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value)}"));
-
+            // Tính SecureHash
             string secureHash;
             using (var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(hashSecret)))
             {
-                var hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(queryString));
-                secureHash = BitConverter.ToString(hashBytes).Replace("-", string.Empty).ToUpperInvariant();
+                var hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(hashData.ToString()));
+                secureHash = string.Concat(hashBytes.Select(b => b.ToString("x2")));
             }
 
-            var redirectUrl = vnpUrl + "?" + queryString + "&vnp_SecureHashType=HmacSHA512&vnp_SecureHash=" + secureHash;
+            // Tạo URL redirect
+            var queryString = hashData.ToString();
+            var redirectUrl = $"{vnpUrl}?{queryString}&vnp_SecureHash={secureHash}";
 
             await _cartService.ClearCartAsync();
 
