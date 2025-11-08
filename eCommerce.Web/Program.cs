@@ -37,6 +37,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Đăng ký dịch vụ EmailSender
 builder.Services.AddSingleton<IEmailSender>(new EmailSender(smtpServer, port, fromEmail, appPassword));
 
+// Thêm vào phần đăng ký services
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 // CẬP NHẬT: Thêm .AddRoles<IdentityRole>()
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>() // Thêm dòng này
