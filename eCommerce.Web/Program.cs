@@ -13,6 +13,13 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("VietTechConnection");
 var dbProvider = builder.Configuration["DatabaseProvider"];
 
+// === CẤU HÌNH IEmailSender ===
+// Lấy thông tin cấu hình (nên đặt trong appsettings.json)
+var smtpServer = builder.Configuration["EmailSettings:SmtpServer"];
+var port = int.Parse(builder.Configuration["EmailSettings:Port"]);
+var fromEmail = builder.Configuration["EmailSettings:FromEmail"];
+var appPassword = builder.Configuration["EmailSettings:AppPassword"]; // Lấy Mật khẩu ứng dụng
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     if (dbProvider == "SQLServer")
@@ -26,6 +33,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         Console.WriteLine("--> Using MySQL DB");
     }
 });
+
+// Đăng ký dịch vụ EmailSender
+builder.Services.AddSingleton<IEmailSender>(new EmailSender(smtpServer, port, fromEmail, appPassword));
+
 // Thêm vào phần đăng ký services
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 // CẬP NHẬT: Thêm .AddRoles<IdentityRole>()

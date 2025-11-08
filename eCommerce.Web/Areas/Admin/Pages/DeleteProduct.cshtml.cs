@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
 
-namespace eCommerce.Web.Pages.Admin
+namespace eCommerce.Web.Areas.Admin.Pages
 {
     public class DeleteProductModel : PageModel
     {

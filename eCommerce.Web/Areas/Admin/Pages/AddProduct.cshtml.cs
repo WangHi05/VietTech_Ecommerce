@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace eCommerce.Web.Pages.Admin
+namespace eCommerce.Web.Areas.Admin.Pages
 {
     public class AddProductModel : PageModel
     {
@@ -100,7 +100,7 @@ namespace eCommerce.Web.Pages.Admin
             await _productRepo.AddAsync(Product);
 
             TempData["success"] = "Đã thêm sản phẩm thành công!";
-            return RedirectToPage("/Index");
+            return RedirectToPage("./Index");
         }
 
         private async Task LoadDropdownLists()

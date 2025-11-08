@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace eCommerce.Core.Entities
 {
@@ -7,6 +8,9 @@ namespace eCommerce.Core.Entities
     {
         public int Id { get; set; }
         public string? UserId { get; set; }
+        [ForeignKey("UserId")]
+        public ApplicationUser? Customer { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public string PaymentMethod { get; set; } = "COD";

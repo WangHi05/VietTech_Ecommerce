@@ -1,0 +1,253 @@
+/* 1. LẤY BIẾN MÀU TỪ site.css */
+:root {
+    --primary-color: #ea580c; /* Bright Orange */
+    --secondary-color: #ef4444; /* Bright Red */
+    --accent-color: #f59e0b; /* Warm Amber */
+    --dark-color: #0f172a; /* Deep Navy */
+    --light-color: #f8fafc; /* Off-white */
+    --border-color: #e2e8f0; /* Light Gray */
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 2. THIẾT LẬP LAYOUT CHÍNH */
+body {
+    font-family: var(--font-family);
+    background-color: #f1f5f9; /* Giống 100% body của site.css */
+    color: var(--dark-color);
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px; /* Rộng hơn một chút cho chuyên nghiệp */
+    background-color: var(--dark-color); /* DÙNG MÀU NAVY ĐẬM */
+    color: #cbd5e1; /* Màu chữ nhạt từ footer của site.css */
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+}
+
+.main-content {
+    margin-left: 260px; /* Bằng chiều rộng sidebar */
+    flex-grow: 1;
+    padding: 2.5rem; /* Tăng padding cho thoáng */
+    background-color: #f1f5f9; /* Nền xám nhạt */
+}
+
+/* 3. STYLES CHO SIDEBAR (HEADER, NAV) */
+.sidebar-header {
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid #1e293b; /* Màu tối hơn 1 chút */
+}
+
+.sidebar-logo {
+    font-size: 2rem;
+    font-weight: 800;
+    /* Dùng style logo của site.css */
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+    letter-spacing: -1px;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+    flex-grow: 1; /* Đẩy phần footer xuống dưới */
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* 12px */
+    padding: 0.85rem 1.5rem; /* 14px 24px */
+    color: #cbd5e1; /* Màu chữ nhạt */
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.05); /* Sáng nhẹ */
+}
+
+/* Style cho link đang active (quan trọng) */
+/* Chúng ta sẽ dùng JavaScript để thêm class 'active' này */
+.nav-link.active {
+    color: var(--primary-color); /* CHUYỂN SANG MÀU CAM */
+    background-color: rgba(234, 88, 12, 0.1); /* Nền cam mờ */
+    border-left-color: var(--primary-color); /* Viền cam */
+    font-weight: 700;
+}
+
+.nav-link .bi {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.sidebar-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #1e293b;
+}
+
+.sidebar-footer .nav-link {
+    color: var(--warning-color); /* Màu vàng */
+}
+.sidebar-footer .nav-link:hover {
+    color: var(--accent-color);
+    background-color: rgba(245, 158, 11, 0.1);
+}
+
+/* 4. STYLES CHO NỘI DUNG CHÍNH (CARDS, TABLES, BUTTONS) */
+
+/* Tiêu đề trang */
+.page-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--dark-color);
+    margin-bottom: 1.5rem;
+    /* Giống style .category-products-title */
+    border-left: 5px solid var(--primary-color);
+    padding-left: 15px;
+    line-height: 1.2;
+}
+
+/* Wrapper chung cho nội dung (tables, forms) */
+.card {
+    background-color: #ffffff;
+    border-radius: 12px; /* Giống .filter-section */
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* Giống .product-card */
+    margin-bottom: 2rem;
+    overflow: hidden; /* Giúp table bo góc đẹp */
+}
+
+.card-header {
+    background-color: var(--light-color);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--dark-color);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Căn lề cho bảng Bootstrap trong card */
+.card .table {
+    margin-bottom: 0; /* Xóa margin của table */
+}
+.card .table thead {
+    background-color: var(--light-color);
+}
+.card .table th {
+    color: var(--dark-color);
+    font-weight: 600;
+}
+
+/* Buttons (Lấy từ site.css) */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(234, 88, 12, 0.4);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--danger-color), #dc2626);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    color: white;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    color: white;
+}
+
+/* 5. STYLES CHO TRANG BÁO CÁO (DASHBOARD) */
+.stat-card-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card-info .stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+.stat-card-info .stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--dark-color);
+}
+
+.stat-card-icon {
+    font-size: 2.5rem; /* 40px */
+    opacity: 0.3;
+}
+
+/* Màu cho icon */
+.stat-card-icon.text-primary { color: var(--primary-color) !important; }
+.stat-card-icon.text-success { color: var(--success-color) !important; }
+.stat-card-icon.text-info { color: #3b82f6 !important; }
+.stat-card-icon.text-warning { color: var(--accent-color) !important; }
