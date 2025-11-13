@@ -77,5 +77,17 @@ namespace eCommerce.Infrastructure.Data
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateStatusAsync(int orderId, string status)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+            if (order == null)
+            {
+                return;
+            }
+
+            order.Status = status;
+            await _context.SaveChangesAsync();
+        }
     }
 }

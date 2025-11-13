@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using eCommerce.Web.Services;
+using eCommerce.Web.Services.Notifications;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,15 @@ var dbProvider = builder.Configuration["DatabaseProvider"];
 // === CẤU HÌNH IEmailSender ===
 // Lấy thông tin cấu hình (nên đặt trong appsettings.json)
 var smtpServer = builder.Configuration["EmailSettings:SmtpServer"];
-var port = int.Parse(builder.Configuration["EmailSettings:Port"]);
+// Port có thể không được cấu hình trong appsettings => sử dụng TryParse an toàn
+var portStr = builder.Configuration["EmailSettings:Port"];
+int port;
+if (string.IsNullOrWhiteSpace(portStr) || !int.TryParse(portStr, out port))
+{
+    // Mặc định dùng 25 nếu không cấu hình hoặc cấu hình không hợp lệ
+    port = 25;
+    Console.WriteLine("Warning: EmailSettings:Port not configured or invalid. Falling back to default port 25.");
+}
 var fromEmail = builder.Configuration["EmailSettings:FromEmail"];
 var appPassword = builder.Configuration["EmailSettings:AppPassword"]; // Lấy Mật khẩu ứng dụng
 
@@ -57,6 +66,13 @@ builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<eCommerce.Application.Services.IOrderService, eCommerce.Application.Services.OrderService>();
+
+// Push service (Web Push)
+builder.Services.AddScoped<eCommerce.Web.Services.IPushService, eCommerce.Web.Services.WebPushService>();
+
+// Notification queue + background worker
+builder.Services.AddSingleton<INotificationQueue, NotificationQueue>();
+builder.Services.AddHostedService<NotificationBackgroundService>();
 
 // Add cart, voucher and session support
 builder.Services.AddHttpContextAccessor();

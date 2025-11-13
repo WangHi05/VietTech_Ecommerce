@@ -12,6 +12,7 @@ namespace eCommerce.Application.Services
         Task<Order?> GetOrderByIdAsync(int id);
         Task<List<Order>> GetOrdersByUserAsync(string userId);
         Task UpdatePaymentStateAsync(int orderId, string status, string paymentStatus, DateTime? paidAt = null);
+    Task UpdateStatusAsync(int orderId, string status);
     }
 
     public class OrderService : IOrderService
@@ -42,6 +43,11 @@ namespace eCommerce.Application.Services
         public async Task UpdatePaymentStateAsync(int orderId, string status, string paymentStatus, DateTime? paidAt = null)
         {
             await _orderRepository.UpdatePaymentStateAsync(orderId, status, paymentStatus, paidAt);
+        }
+
+        public async Task UpdateStatusAsync(int orderId, string status)
+        {
+            await _orderRepository.UpdateStatusAsync(orderId, status);
         }
     }
 }

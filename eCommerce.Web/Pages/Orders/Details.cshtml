@@ -16,6 +16,19 @@ else
         <div class="card-body">
             <h5>Đơn hàng #@Model.Order.Id</h5>
             <p>Ngày: @Model.Order.CreatedAt.ToLocalTime().ToString("g")</p>
+            <p>Trạng thái: 
+                @{ 
+                    var statusText = Model.Order.Status switch
+                    {
+                        "Pending" => "Chờ xác nhận",
+                        "Đang Giao" => "Đang giao",
+                        "Không được xác nhận" => "Không được xác nhận",
+                        "Completed" => "Hoàn tất",
+                        var s => s ?? ""
+                    };
+                }
+                <strong>@statusText</strong>
+            </p>
             <p>Địa chỉ: @Model.Order.ShippingName - @Model.Order.ShippingAddress</p>
             <p>Tổng: @String.Format("{0:N0}", Model.Order.Total)</p>
 

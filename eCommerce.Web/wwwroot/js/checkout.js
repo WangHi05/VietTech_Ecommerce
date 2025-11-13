@@ -127,14 +127,64 @@
         }
     }
 
+    // Update shipping fee and total on the client when user changes shipping method
+    function setupShippingMethodRealtimeUpdate() {
+        const radios = Array.from(document.querySelectorAll('input[name="ShippingMethod"]'));
+        if (!radios.length) return;
+
+        // Helper to parse numbers like "1,234,567" or "- 1,234" into decimal
+        function parseMoney(text) {
+            if (!text) return 0;
+            // remove non-digit, non-minus characters
+            const cleaned = text.replace(/[^0-9\-]/g, '');
+            if (!cleaned) return 0;
+            return parseInt(cleaned, 10) || 0;
+        }
+
+        function formatMoney(n) {
+            return n.toLocaleString('vi-VN');
+        }
+
+        const subTotalEl = Array.from(document.querySelectorAll('.summary-row')).find(r => r.textContent && r.textContent.includes('Tạm tính'))?.querySelector('strong');
+        const discountEl = Array.from(document.querySelectorAll('.summary-row')).find(r => r.textContent && r.textContent.includes('Giảm'))?.querySelector('strong');
+        const shippingEl = Array.from(document.querySelectorAll('.summary-row')).find(r => r.textContent && r.textContent.includes('Phí vận chuyển'))?.querySelector('strong');
+        const totalEl = document.querySelector('.summary-row.total strong');
+
+        function recalc(e) {
+            const sub = parseMoney(subTotalEl ? subTotalEl.textContent : '0');
+            // Discount is rendered like "- 10,000 ₫" so allow minus
+            const disc = parseMoney(discountEl ? discountEl.textContent : '0');
+
+            const checked = radios.find(r => r.checked);
+            let ship = 0;
+            if (checked) {
+                const v = (checked.value || '').toLowerCase();
+                if (v === 'express') ship = 50000;
+                else if (v === 'pickup') ship = 0;
+                else ship = 0; // standard fallback: 0 here because server may have a different shipping calc
+            }
+
+            if (shippingEl) shippingEl.textContent = formatMoney(ship) + ' ₫';
+
+            const total = sub - disc + ship;
+            if (totalEl) totalEl.textContent = formatMoney(total) + ' ₫';
+        }
+
+        radios.forEach(r => r.addEventListener('change', recalc));
+        // run initially in case default selected isn't standard
+        recalc();
+    }
+
     // DOM Ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function () {
             setupPaymentToggle();
             initLeafletMap();
+            setupShippingMethodRealtimeUpdate();
         });
     } else {
         setupPaymentToggle();
         initLeafletMap();
+        setupShippingMethodRealtimeUpdate();
     }
 })();

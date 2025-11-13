@@ -24,6 +24,8 @@ namespace eCommerce.Web.Pages
         private readonly IConfiguration _configuration;
 
         [BindProperty]
+    public string ShippingMethod { get; set; } = "standard";
+    [BindProperty]
         public string ShippingName { get; set; } = string.Empty;
         [BindProperty]
         public string ShippingAddress { get; set; } = string.Empty;
@@ -145,7 +147,20 @@ namespace eCommerce.Web.Pages
                 Discount = await voucherSvc.GetDiscountAmountAsync(applied, SubTotal);
             }
 
-            ShippingFee = await _cartService.GetShippingAsync() ?? 0m;
+            // Simple shipping fee logic: if user selected an explicit method, use mapped fees;
+            // otherwise fall back to cart service or 0.
+            if (!string.IsNullOrWhiteSpace(ShippingMethod) && ShippingMethod.Equals("express", StringComparison.OrdinalIgnoreCase))
+            {
+                ShippingFee = 50000m; // express flat fee
+            }
+            else if (!string.IsNullOrWhiteSpace(ShippingMethod) && ShippingMethod.Equals("pickup", StringComparison.OrdinalIgnoreCase))
+            {
+                ShippingFee = 0m; // pickup free
+            }
+            else
+            {
+                ShippingFee = await _cartService.GetShippingAsync() ?? 0m;
+            }
             Total = SubTotal - Discount + ShippingFee;
 
             return true;
@@ -201,9 +216,9 @@ namespace eCommerce.Web.Pages
             }
             else
             {
-                var parts = CardExpiry.Split('/');
-                if (int.TryParse(parts.ElementAtOrDefault(0), out var month)
-                    && int.TryParse(parts.ElementAtOrDefault(1), out var yearPart))
+                var parts = (CardExpiry ?? string.Empty).Split('/');
+                if (int.TryParse(parts.ElementAtOrDefault(0) ?? string.Empty, out var month)
+                    && int.TryParse(parts.ElementAtOrDefault(1) ?? string.Empty, out var yearPart))
                 {
                     var year = 2000 + yearPart;
                     var daysInMonth = DateTime.DaysInMonth(year, month);
