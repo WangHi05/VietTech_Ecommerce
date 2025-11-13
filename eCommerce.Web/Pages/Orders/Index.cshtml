@@ -15,21 +15,22 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Mã đơn</th>
-                <th>Ngày</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái</th>
-                <th></th>
+                <th class="text-start">Mã đơn</th>
+                <th class="text-start">Ngày</th>
+                <th class="text-end">Tổng tiền</th>
+                <th class="text-center">Trạng thái</th>
+                <th class="text-center">Đã đánh giá</th>
+                <th class="text-end" style="width:150px;"></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var o in Model.Orders)
             {
                 <tr>
-                    <td>@o.Id</td>
-                    <td>@o.CreatedAt.ToLocalTime().ToString("g")</td>
-                    <td>@String.Format("{0:N0}", o.Total)</td>
-                    <td>
+                    <td class="text-start">@o.Id</td>
+                    <td class="text-start">@o.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td class="text-end">@String.Format("{0:N0}", o.Total)</td>
+                    <td class="text-center">
                         @{ 
                             var statusText = o.Status switch
                             {
@@ -42,7 +43,17 @@ else
                         }
                         <span>@statusText</span>
                     </td>
-                    <td>
+                    <td class="text-center">
+                        @if (Model.ReviewedOrderIds != null && Model.ReviewedOrderIds.Contains(o.Id))
+                        {
+                            <span class="badge bg-success">Đã đánh giá</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Chưa đánh giá</span>
+                        }
+                    </td>
+                    <td class="text-end text-nowrap">
                         <a class="btn btn-sm btn-outline-primary" asp-page="/Orders/Details" asp-route-id="@o.Id">Xem</a>
                         <form method="post" asp-page="/Orders/Details" asp-route-id="@o.Id" style="display:inline">
                             <button type="submit" name="reorder" value="1" class="btn btn-sm btn-success">Mua lại</button>

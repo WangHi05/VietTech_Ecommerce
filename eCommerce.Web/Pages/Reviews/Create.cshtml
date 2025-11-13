@@ -1,0 +1,122 @@
+@page
+@model eCommerce.Web.Pages.Reviews.CreateModel
+@{
+    ViewData["Title"] = "Đánh giá sản phẩm";
+}
+
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h3 class="card-title mb-1">Đánh giá sản phẩm</h3>
+    @if (!string.IsNullOrEmpty(Model.ProductName))
+    {
+        <h6 class="card-subtitle text-muted mb-3">@Model.ProductName</h6>
+    }
+    <p class="small text-muted">Hãy cho biết cảm nhận của bạn về sản phẩm bằng cách chọn số sao và viết bình luận. Đánh giá sẽ được duyệt bởi quản trị viên trước khi hiển thị.</p>
+
+    <form method="post" novalidate id="reviewForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-2" id="validationSummary"></div>
+        <div class="mb-3">
+            <label class="form-label d-block">Đánh giá</label>
+            <div class="rating" role="radiogroup" aria-label="Rating">
+                @for (int i = 5; i >= 1; i--)
+                {
+                    <input type="radio" id="star-@i" name="Review.Rating" value="@i" @(Model.Review.Rating==i?"checked":"") />
+                    <label for="star-@i" title="@i sao">★</label>
+                }
+            </div>
+            <div class="mt-2"><small class="text-muted">Chọn từ 1 đến 5 sao</small></div>
+            <span asp-validation-for="Review.Rating" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Review.Comment" class="form-label">Bình luận</label>
+            <textarea asp-for="Review.Comment" class="form-control" rows="5" placeholder="Viết cảm nhận của bạn về sản phẩm..."></textarea>
+            <span asp-validation-for="Review.Comment" class="text-danger"></span>
+        </div>
+
+        <input type="hidden" asp-for="Review.ProductId" />
+        <input type="hidden" asp-for="Review.OrderId" />
+
+        <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+    </form>
+  </div>
+</div>
+
+<partial name="_ValidationScriptsPartial" />
+
+<style>
+    /* star rating styles - direction rtl lets us use sibling selectors to color all previous stars */
+    .rating { direction: rtl; unicode-bidi: bidi-override; display: inline-block; }
+    .rating input { display: none; }
+    .rating label { font-size: 2rem; color: #ddd; cursor: pointer; padding: 0 .1rem; }
+
+    /* hover and checked states */
+    .rating label:hover,
+    .rating label:hover ~ label,
+    .rating input:checked ~ label {
+        color: gold;
+    }
+
+    /* make required validation message more visible */
+    .text-danger { font-weight: 600; }
+
+    /* emphasize card */
+    .card { border-radius: 0.6rem; }
+</style>
+
+    <script>
+    // small script: ensure clicking label focuses the associated radio (for older browsers)
+    document.addEventListener('click', function (e) {
+        if (e.target.tagName === 'LABEL' && e.target.getAttribute('for') && e.target.closest('.rating')) {
+            var id = e.target.getAttribute('for');
+            var input = document.getElementById(id);
+            if (input) input.checked = true;
+        }
+    });
+
+    // client-side prohibited words check (instant feedback)
+    (function(){
+        var prohibited = [];
+        try {
+            prohibited = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProhibitedWords ?? new string[0]));
+        } catch(e) { prohibited = []; }
+
+        var textarea = document.querySelector('textarea[name="Review.Comment"]');
+        var submit = document.querySelector('#reviewForm button[type="submit"]');
+        var summary = document.getElementById('validationSummary');
+
+        function checkContent() {
+            if (!textarea) return true;
+            var text = (textarea.value || '').toLowerCase();
+            for (var i=0;i<prohibited.length;i++){
+                var bad = (prohibited[i]||'').toLowerCase();
+                if (!bad) continue;
+                var pattern = new RegExp('\\b'+bad.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i');
+                if (pattern.test(text)) {
+                    summary.innerText = 'Bình luận chứa nội dung không hợp lệ: "' + prohibited[i] + '"';
+                    if(submit) submit.disabled = true;
+                    return false;
+                }
+            }
+            summary.innerText = '';
+            if(submit) submit.disabled = false;
+            return true;
+        }
+
+        if (textarea){
+            textarea.addEventListener('input', checkContent);
+            // run once on load
+            checkContent();
+        }
+
+        // prevent submit if invalid (extra safety)
+        var form = document.getElementById('reviewForm');
+        if (form){
+            form.addEventListener('submit', function(e){
+                if (!checkContent()){
+                    e.preventDefault();
+                }
+            });
+        }
+    })();
+    </script>

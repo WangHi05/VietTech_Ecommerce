@@ -1,0 +1,221 @@
+@page
+@model eCommerce.Web.Pages.Help.WarrantyModel
+@{
+    ViewData["Title"] = "Chính sách bảo hành";
+}
+
+<div class="back-button-container">
+    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-back">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+
+<div class="help-page">
+    <h1 class="mb-4">Chính sách bảo hành</h1>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-shield-check"></i> Cam kết bảo hành chính hãng</h5>
+        </div>
+        <div class="card-body">
+            <p>VietTech cam kết cung cấp dịch vụ bảo hành chính hãng cho tất cả sản phẩm với các điều khoản rõ ràng và minh bạch.</p>
+        </div>
+    </div>
+
+    <section class="mb-5">
+        <h3 class="text-primary">1. Thời gian bảo hành</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th>Loại sản phẩm</th>
+                        <th>Thời gian bảo hành</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Điện thoại di động</strong></td>
+                        <td>12 tháng</td>
+                        <td>Bảo hành lỗi nhà sản xuất</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Laptop, Macbook</strong></td>
+                        <td>12-24 tháng</td>
+                        <td>Tùy theo từng hãng</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tai nghe, Loa</strong></td>
+                        <td>6-12 tháng</td>
+                        <td>Theo chính sách hãng</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Phụ kiện (sạc, cáp)</strong></td>
+                        <td>6 tháng</td>
+                        <td>Bảo hành 1 đổi 1 trong 7 ngày</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Màn hình, PC</strong></td>
+                        <td>24-36 tháng</td>
+                        <td>Bảo hành tại trung tâm hãng</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Linh kiện máy tính</strong></td>
+                        <td>12-36 tháng</td>
+                        <td>CPU, RAM, SSD, VGA...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">2. Điều kiện bảo hành</h3>
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <strong>✓ Được bảo hành khi:</strong>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>Sản phẩm còn trong thời hạn bảo hành</li>
+                    <li>Có phiếu bảo hành, hóa đơn mua hàng hợp lệ</li>
+                    <li>Tem bảo hành, serial number còn nguyên vẹn</li>
+                    <li>Lỗi do nhà sản xuất (lỗi phần cứng, lỗi kỹ thuật)</li>
+                    <li>Sản phẩm không có dấu hiệu tác động vật lý từ bên ngoài</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card border-danger mt-3">
+            <div class="card-header bg-danger text-white">
+                <strong>✗ Không được bảo hành khi:</strong>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>Sản phẩm hết hạn bảo hành</li>
+                    <li>Không có hóa đơn hoặc phiếu bảo hành</li>
+                    <li>Tem bảo hành bị rách, mờ, tẩy xóa hoặc không còn nguyên vẹn</li>
+                    <li>Sản phẩm bị vỡ, nứt, móp méo, cong vênh do va đập</li>
+                    <li>Sản phẩm bị vào nước, cháy nổ, hỏng do thiên tai</li>
+                    <li>Sản phẩm đã qua sửa chữa tại nơi không được ủy quyền</li>
+                    <li>Lỗi do người dùng sử dụng sai cách</li>
+                    <li>Phụ kiện đi kèm (sạc, cáp, tai nghe tặng kèm...)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">3. Quy trình bảo hành</h3>
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="display-4 text-primary mb-3">1</div>
+                        <h5>Liên hệ</h5>
+                        <p class="small">Gọi hotline hoặc mang sản phẩm đến cửa hàng</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="display-4 text-primary mb-3">2</div>
+                        <h5>Kiểm tra</h5>
+                        <p class="small">Nhân viên kiểm tra tình trạng và xác định lỗi</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="display-4 text-primary mb-3">3</div>
+                        <h5>Sửa chữa</h5>
+                        <p class="small">Gửi bảo hành hoặc xử lý ngay tại chỗ</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <div class="display-4 text-primary mb-3">4</div>
+                        <h5>Trả máy</h5>
+                        <p class="small">Nhận lại sản phẩm đã sửa chữa</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">4. Thời gian xử lý bảo hành</h3>
+        <ul>
+            <li><strong>Bảo hành nhanh:</strong> 3-7 ngày làm việc (lỗi thông thường)</li>
+            <li><strong>Bảo hành chậm:</strong> 14-21 ngày làm việc (cần đổi linh kiện hoặc gửi hãng)</li>
+            <li><strong>Đổi mới:</strong> Ngay trong ngày hoặc 1-3 ngày (nếu có hàng thay thế)</li>
+        </ul>
+        <p class="text-muted"><em>* Thời gian có thể thay đổi tùy theo tình trạng sản phẩm và chính sách của từng hãng.</em></p>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">5. Chính sách đổi mới (1 đổi 1)</h3>
+        <div class="alert alert-warning">
+            <h5><i class="bi bi-arrow-repeat"></i> Điều kiện đổi mới:</h5>
+            <ul>
+                <li>Trong vòng <strong>7 ngày</strong> kể từ ngày mua (với hóa đơn)</li>
+                <li>Sản phẩm bị lỗi kỹ thuật do nhà sản xuất</li>
+                <li>Đổi sang sản phẩm cùng loại, cùng model (nếu có hàng)</li>
+                <li>Sản phẩm còn nguyên vẹn, đầy đủ phụ kiện</li>
+            </ul>
+            <p class="mb-0"><strong>Lưu ý:</strong> Không hỗ trợ đổi trả với lý do không thích, đổi ý...</p>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="text-primary">6. Liên hệ bảo hành</h3>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card border-primary">
+                    <div class="card-body">
+                        <h5><i class="bi bi-telephone"></i> Hotline bảo hành</h5>
+                        <p class="mb-1"><strong>0987 654 321</strong></p>
+                        <p class="text-muted small mb-0">Phục vụ: 8:00 - 21:00 (Cả T7, CN)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card border-primary">
+                    <div class="card-body">
+                        <h5><i class="bi bi-envelope"></i> Email hỗ trợ</h5>
+                        <p class="mb-1"><strong>warranty@viettech.vn</strong></p>
+                        <p class="text-muted small mb-0">Phản hồi trong 24h</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .back-button-container {
+        max-width: 1540px;
+        margin: 1rem auto 0;
+        padding: 0 20px;
+    }
+    .btn-back {
+        margin-bottom: 1rem;
+    }
+    .help-page {
+        max-width: 1000px;
+        margin: 0 auto 2rem;
+        padding: 0 1rem;
+    }
+    .help-page h3 {
+        margin-top: 2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #0d6efd;
+    }
+    .help-page section {
+        line-height: 1.8;
+    }
+</style>

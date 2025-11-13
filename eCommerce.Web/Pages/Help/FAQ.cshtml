@@ -1,0 +1,173 @@
+@page
+@model eCommerce.Web.Pages.Help.FAQModel
+@{
+    ViewData["Title"] = "Câu hỏi thường gặp (FAQ)";
+}
+
+<div class="back-button-container">
+    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-back">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+
+<div class="help-page">
+    <h1 class="mb-4">Câu hỏi thường gặp (FAQ)</h1>
+
+    <div class="accordion" id="faqAccordion">
+        <!-- Câu hỏi 1 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <strong>1. Làm thế nào để đặt hàng trên VietTech?</strong>
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>Để đặt hàng trên VietTech, bạn có thể làm theo các bước sau:</p>
+                    <ol>
+                        <li>Tìm kiếm sản phẩm bạn muốn mua</li>
+                        <li>Nhấn "Thêm vào giỏ hàng"</li>
+                        <li>Vào "Giỏ hàng" để xem lại đơn hàng</li>
+                        <li>Nhấn "Thanh toán" và điền thông tin giao hàng</li>
+                        <li>Chọn phương thức thanh toán và xác nhận đơn hàng</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Câu hỏi 2 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    <strong>2. Các phương thức thanh toán nào được chấp nhận?</strong>
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>VietTech chấp nhận các phương thức thanh toán sau:</p>
+                    <ul>
+                        <li><strong>COD (Thanh toán khi nhận hàng):</strong> Thanh toán bằng tiền mặt khi nhận hàng</li>
+                        <li><strong>Thẻ tín dụng/Ghi nợ:</strong> Visa, Mastercard, JCB</li>
+                        <li><strong>Chuyển khoản ngân hàng:</strong> Chuyển khoản trước khi giao hàng</li>
+                        <li><strong>Ví điện tử:</strong> MoMo, ZaloPay, VNPay</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Câu hỏi 3 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    <strong>3. Thời gian giao hàng là bao lâu?</strong>
+                </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>Thời gian giao hàng phụ thuộc vào địa chỉ nhận hàng:</p>
+                    <ul>
+                        <li><strong>Nội thành TP.HCM:</strong> 1-2 ngày làm việc</li>
+                        <li><strong>Các tỉnh thành khác:</strong> 3-5 ngày làm việc</li>
+                        <li><strong>Vùng xa, hải đảo:</strong> 5-7 ngày làm việc</li>
+                    </ul>
+                    <p><em>Lưu ý: Thời gian giao hàng có thể thay đổi trong các dịp lễ, Tết hoặc điều kiện thời tiết xấu.</em></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Câu hỏi 4 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFour">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                    <strong>4. Tôi có thể hủy hoặc thay đổi đơn hàng không?</strong>
+                </button>
+            </h2>
+            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>Bạn có thể hủy hoặc thay đổi đơn hàng trong các trường hợp sau:</p>
+                    <ul>
+                        <li><strong>Trước khi xác nhận:</strong> Liên hệ ngay với chúng tôi qua hotline hoặc email</li>
+                        <li><strong>Sau khi xác nhận:</strong> Có thể hủy nhưng phụ thuộc vào tình trạng đơn hàng</li>
+                        <li><strong>Đang giao hàng:</strong> Liên hệ bộ phận CSKH để được hỗ trợ</li>
+                    </ul>
+                    <p><em>Lưu ý: Đơn hàng đã giao không thể hủy, nhưng bạn có thể yêu cầu đổi trả theo chính sách.</em></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Câu hỏi 5 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFive">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                    <strong>5. Làm thế nào để kiểm tra tình trạng đơn hàng?</strong>
+                </button>
+            </h2>
+            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>Bạn có thể kiểm tra tình trạng đơn hàng bằng các cách sau:</p>
+                    <ul>
+                        <li><strong>Đăng nhập tài khoản:</strong> Vào mục "Đơn hàng của tôi" để xem chi tiết</li>
+                        <li><strong>Email thông báo:</strong> Chúng tôi sẽ gửi email cập nhật trạng thái đơn hàng</li>
+                        <li><strong>SMS:</strong> Nhận tin nhắn thông báo khi đơn hàng được xử lý</li>
+                        <li><strong>Hotline:</strong> Gọi 0987 654 321 và cung cấp mã đơn hàng</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Câu hỏi 6 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingSix">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                    <strong>6. Sản phẩm có được bảo hành không?</strong>
+                </button>
+            </h2>
+            <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                    <p>Tất cả sản phẩm tại VietTech đều được bảo hành chính hãng:</p>
+                    <ul>
+                        <li><strong>Điện thoại, Laptop:</strong> Bảo hành 12-24 tháng</li>
+                        <li><strong>Phụ kiện:</strong> Bảo hành 6-12 tháng</li>
+                        <li><strong>Linh kiện máy tính:</strong> Bảo hành 12-36 tháng</li>
+                    </ul>
+                    <p>Xem chi tiết tại: <a href="/Help/Warranty">Chính sách bảo hành</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <div class="alert alert-info">
+            <h5><i class="bi bi-info-circle"></i> Không tìm thấy câu trả lời?</h5>
+            <p class="mb-0">Vui lòng liên hệ với chúng tôi qua:</p>
+            <ul class="mb-0">
+                <li><strong>Hotline:</strong> 0987 654 321</li>
+                <li><strong>Email:</strong> support@viettech.vn</li>
+                <li><strong>Live Chat:</strong> Góc phải màn hình</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .back-button-container {
+        max-width: 1540px;
+        margin: 1rem auto 0;
+        padding: 0 20px;
+    }
+    .btn-back {
+        margin-bottom: 1rem;
+    }
+    .help-page {
+        max-width: 900px;
+        margin: 0 auto 2rem;
+        padding: 0 1rem;
+    }
+    .accordion-button:not(.collapsed) {
+        background-color: #e7f3ff;
+        color: #0d6efd;
+    }
+    .accordion-body {
+        line-height: 1.8;
+    }
+</style>

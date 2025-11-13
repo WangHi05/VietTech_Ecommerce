@@ -349,6 +349,136 @@
     width: 20px;
     height: 20px;
   }
+
+/* Tiny utility helpers (Bootstrap-like) used by Razor pages */
+.text-start { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-end { text-align: right !important; }
+.text-nowrap { white-space: nowrap !important; }
+
+/* Orders: constrain right-side metadata (price, badge, actions) so it stays close to item */
+.order-item-meta {
+  flex: 0 0 160px; /* fixed-ish column */
+  max-width: 220px;
+  min-width: 120px;
+}
+
+/* Small helpers for layout when Bootstrap utilities aren't present */
+.flex-fill { flex: 1 1 auto !important; }
+.me-3 { margin-right: 1rem !important; }
+.mt-2 { margin-top: 0.5rem !important; }
+
+/* Orders Details — professional card & items */
+.order-card {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+  background: linear-gradient(180deg, #ffffff, #fbfbfd);
+}
+.order-card .card-body {
+  padding: 28px;
+}
+.order-card h5 {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.order-items {
+  padding-left: 0;
+}
+.order-item {
+  background: transparent;
+  border: none;
+  padding: 18px 12px;
+  align-items: start;
+  border-bottom: 1px solid rgba(15,23,42,0.04);
+}
+.order-item:last-child { border-bottom: 0; }
+.order-left {
+  flex: 1 1 auto;
+  padding-right: 12px;
+}
+.order-right {
+  /* Narrow the meta column so price/badge sit closer to the product.
+     Only horizontal changes here (width + left margin). Do NOT change
+     vertical alignment so the items won't move up/down. */
+  flex: 0 0 120px; /* smaller fixed column */
+  max-width: 140px;
+  margin-left: 8px; /* push the whole meta block slightly left toward the item */
+  text-align: right;
+}
+.order-item-name {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark-color);
+}
+.order-item-qty {
+  color: #6b7280; /* muted */
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+.order-price {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 1rem;
+}
+.order-card .badge {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+}
+.order-card .btn-link {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+.order-card .btn-link:hover { text-decoration: underline; }
+
+/* Mobile / Desktop meta helpers (don't rely on Bootstrap utilities) */
+.order-meta-mobile { display: none; }
+.order-meta-desktop { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+
+/* When desktop meta is placed inside .order-left we want the price/badge stacked
+  directly under the quantity and left aligned. Ensure price text aligns left. */
+.order-meta-desktop .order-price { display: block; text-align: left; }
+
+/* Compact action button used in order details */
+.btn-compact {
+  display: inline-block;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--primary-color);
+  border: 1px solid rgba(15,23,42,0.06);
+  text-decoration: none;
+}
+.btn-compact:hover { background: rgba(234,88,12,0.06); }
+
+/* Badge fallbacks when Bootstrap is missing */
+.badge { display: inline-block; padding: 0.35rem 0.5rem; font-size: 0.75rem; border-radius: 6px; }
+.badge-success { background: linear-gradient(90deg, var(--success-color), #059669); color: white; }
+.badge-danger { background: linear-gradient(90deg, var(--danger-color), #dc2626); color: white; }
+.ms-2 { margin-left: 0.5rem !important; }
+
+/* Slight left-offset badge used in order details so 'Đã đánh giá' sits closer to SL */
+.badge-inline { margin-left: 0; }
+
+/* Responsive: on small screens, place meta under the item name */
+@media (max-width: 767.98px) {
+  .order-right { display: none !important; }
+  .order-meta-mobile { display: block; }
+  .order-meta-desktop { display: none; }
+  .order-item { padding: 12px 10px; }
+  .order-item-qty { margin-top: 6px; }
+}
+
+@media (min-width: 768px) {
+  .order-item { align-items: center; }
+  .order-item { display: flex; }
+  .order-meta-mobile { display: none; }
+  .order-meta-desktop { display: flex; }
+}
   
   /* ============================================================================
      HERO SECTION & SLIDER IMPROVEMENTS
@@ -835,6 +965,75 @@
   }
   
   /* Badge Styles */
+  /* Ensure .badge utility is available even if Bootstrap isn't served from /lib */
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.4rem;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    color: #fff;
+  }
+
+  .badge.bg-success { background: linear-gradient(135deg, #10b981, #059669); }
+  .badge.bg-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  .badge.bg-secondary { background: linear-gradient(135deg, #6b7280, #4b5563); }
+
+  /* Make table rows vertically centered and keep badges/buttons compact
+     so they don't increase row height. Targets tables that use the .table
+     class (cart/orders). This keeps layout responsive. */
+  .table th,
+  .table td {
+    vertical-align: middle; /* center content in cells */
+  }
+
+  /* Ensure table headers align with their cells (left-aligned by default)
+     so columns look consistent. This prevents header text centering that
+     can make columns appear shifted. */
+  .table thead th {
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  /* Keep badges compact inside table cells */
+  .table .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.75rem;
+    line-height: 1;
+    height: auto;
+    white-space: nowrap;
+    border-radius: 0.25rem;
+  }
+
+  /* Make small buttons inside tables compact and center their content */
+  .table .btn,
+  .table .btn-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+    line-height: 1;
+    height: auto;
+    white-space: nowrap;
+  }
+
+  /* If there are icons inside the button, make them take minimal space */
+  .table .btn svg,
+  .table .btn i,
+  .table .badge svg,
+  .table .badge i {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
   .product-badge {
     position: absolute;
     top: 12px;
@@ -2143,4 +2342,28 @@
 /* Nếu bạn có một container bao quanh ảnh, bạn có thể muốn căn giữa container đó */
 .profile-picture-container {
   text-align: center;
+}
+/* ============================================================================
+   STICKY FOOTER LAYOUT
+   - Ensures footer stays at bottom of viewport when content is short
+   - Footer moves below content when page is long (no overlap)
+   ============================================================================ */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto; /* Chi?m to�n b? kh�ng gian c�n l?i, d?y footer xu?ng */
+}
+
+.site-footer {
+  flex-shrink: 0; /* Footer kh�ng b? co l?i */
+  margin-top: auto; /* �?m b?o footer lu�n ? du?i c�ng */
 }

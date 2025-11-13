@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace eCommerce.Web.Pages.Orders
@@ -16,13 +17,18 @@ namespace eCommerce.Web.Pages.Orders
     {
         private readonly IOrderService _orderService;
         private readonly ICartService _cartService;
+        private readonly eCommerce.Infrastructure.Data.AppDbContext _context;
 
         public Order? Order { get; set; }
 
-        public DetailsModel(IOrderService orderService, ICartService cartService)
+        // productIds in this order that already have a review by the current user
+        public System.Collections.Generic.HashSet<int> ReviewedProductIds { get; set; } = new();
+
+        public DetailsModel(IOrderService orderService, ICartService cartService, eCommerce.Infrastructure.Data.AppDbContext context)
         {
             _orderService = orderService;
             _cartService = cartService;
+            _context = context;
         }
 
         public async System.Threading.Tasks.Task<IActionResult> OnGetAsync(int id)
@@ -31,6 +37,22 @@ namespace eCommerce.Web.Pages.Orders
             if (Order == null) return NotFound();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (Order.UserId != userId) return Forbid();
+
+            // load reviews for this order by the current user (any status)
+            try
+            {
+                var reviewed = await _context.Reviews
+                    .AsNoTracking()
+                    .Where(r => r.OrderId == id && r.UserId == userId)
+                    .Select(r => r.ProductId)
+                    .ToListAsync();
+
+                ReviewedProductIds = reviewed != null ? new System.Collections.Generic.HashSet<int>(reviewed) : new System.Collections.Generic.HashSet<int>();
+            }
+            catch
+            {
+                // ignore DB errors here; page will still function without review flags
+            }
             return Page();
         }
 

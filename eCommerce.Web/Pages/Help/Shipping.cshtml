@@ -1,0 +1,281 @@
+@page
+@model eCommerce.Web.Pages.Help.ShippingModel
+@{
+    ViewData["Title"] = "Vận chuyển & Giao hàng";
+}
+
+<div class="back-button-container">
+    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-back">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+<div class="help-page">
+    <h1 class="mb-4">Chính sách vận chuyển & Giao hàng</h1>
+
+    <div class="alert alert-success">
+        <h5><i class="bi bi-truck"></i> Miễn phí vận chuyển</h5>
+        <p class="mb-0">Đơn hàng từ <strong>500.000đ</strong> trở lên được miễn phí giao hàng toàn quốc!</p>
+    </div>
+
+    <section class="mb-5">
+        <h3 class="text-primary">1. Thời gian giao hàng</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Khu vực</th>
+                        <th>Thời gian giao hàng</th>
+                        <th>Phí vận chuyển</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nội thành TP.HCM</strong></td>
+                        <td>1-2 ngày làm việc</td>
+                        <td>30.000đ (Miễn phí từ 500k)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nội thành Hà Nội, Đà Nẵng</strong></td>
+                        <td>2-3 ngày làm việc</td>
+                        <td>35.000đ (Miễn phí từ 500k)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tỉnh thành khác (khu vực trung tâm)</strong></td>
+                        <td>3-5 ngày làm việc</td>
+                        <td>40.000đ (Miễn phí từ 500k)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vùng xa, vùng sâu</strong></td>
+                        <td>5-7 ngày làm việc</td>
+                        <td>50.000đ - 80.000đ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hải đảo (Phú Quốc, Côn Đảo...)</strong></td>
+                        <td>7-10 ngày làm việc</td>
+                        <td>Liên hệ để báo giá</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-muted"><em>* Thời gian giao hàng có thể thay đổi trong các dịp lễ, Tết hoặc do điều kiện thời tiết.</em></p>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">2. Đơn vị vận chuyển</h3>
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-truck display-4 text-primary mb-3"></i>
+                        <h5>Giao hàng nhanh</h5>
+                        <p class="small text-muted">Nội thành TP.HCM</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-box-seam display-4 text-success mb-3"></i>
+                        <h5>Viettel Post</h5>
+                        <p class="small text-muted">Toàn quốc</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-bicycle display-4 text-warning mb-3"></i>
+                        <h5>GrabExpress</h5>
+                        <p class="small text-muted">Giao nhanh 2h</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-lightning-charge display-4 text-danger mb-3"></i>
+                        <h5>J&T Express</h5>
+                        <p class="small text-muted">Toàn quốc</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">3. Quy trình giao hàng</h3>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5><i class="bi bi-1-circle-fill text-primary"></i> Xác nhận đơn hàng</h5>
+                        <p>Sau khi đặt hàng thành công, bạn sẽ nhận được:</p>
+                        <ul>
+                            <li>Email xác nhận đơn hàng</li>
+                            <li>SMS thông báo</li>
+                            <li>Mã đơn hàng để theo dõi</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5><i class="bi bi-2-circle-fill text-primary"></i> Xử lý đơn hàng</h5>
+                        <p>Chúng tôi sẽ:</p>
+                        <ul>
+                            <li>Kiểm tra sản phẩm còn hàng</li>
+                            <li>Đóng gói cẩn thận</li>
+                            <li>Gửi thông báo khi bắt đầu giao</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5><i class="bi bi-3-circle-fill text-primary"></i> Vận chuyển</h5>
+                        <p>Trong quá trình giao hàng:</p>
+                        <ul>
+                            <li>Theo dõi đơn hàng real-time</li>
+                            <li>Shipper sẽ gọi trước khi giao</li>
+                            <li>Hỗ trợ thay đổi địa chỉ (nếu cần)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5><i class="bi bi-4-circle-fill text-success"></i> Nhận hàng</h5>
+                        <p>Khi nhận hàng:</p>
+                        <ul>
+                            <li>Kiểm tra tình trạng bên ngoài</li>
+                            <li>Xác nhận đơn hàng với shipper</li>
+                            <li>Thanh toán (nếu chọn COD)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">4. Chính sách kiểm hàng</h3>
+        <div class="card border-warning">
+            <div class="card-body">
+                <h5><i class="bi bi-shield-check"></i> Quyền lợi của bạn khi nhận hàng:</h5>
+                <ul class="mb-0">
+                    <li><strong>Được mở kiện hàng:</strong> Kiểm tra tình trạng bên ngoài (hộp có bị móp, ướt...)</li>
+                    <li><strong>Được kiểm tra sản phẩm:</strong> Xem model, màu sắc, số lượng có đúng không</li>
+                    <li><strong>Được khởi động thử:</strong> Kiểm tra máy có bật được không (laptop, điện thoại)</li>
+                    <li><strong>Từ chối nhận hàng:</strong> Nếu phát hiện sản phẩm không đúng hoặc bị hư hỏng</li>
+                </ul>
+                <div class="alert alert-info mt-3 mb-0">
+                    <strong>Lưu ý:</strong> Hãy quay video khi mở hộp để làm bằng chứng trong trường hợp cần thiết.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">5. Giao hàng trong ngày (Express)</h3>
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5><i class="bi bi-lightning-charge-fill text-danger"></i> Dịch vụ giao nhanh 2-4 giờ</h5>
+                <p><strong>Điều kiện:</strong></p>
+                <ul>
+                    <li>Áp dụng cho nội thành TP.HCM</li>
+                    <li>Đặt hàng trước 14:00 (giao trong ngày)</li>
+                    <li>Sản phẩm có sẵn tại kho</li>
+                    <li>Phí dịch vụ: <strong>50.000đ</strong> (Miễn phí từ 1.000.000đ)</li>
+                </ul>
+                <p class="mb-0"><em>Liên hệ: <strong>0987 654 321</strong> để đặt giao hàng nhanh</em></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">6. Lưu ý quan trọng</h3>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="alert alert-warning">
+                    <h6><i class="bi bi-exclamation-triangle"></i> Trường hợp không giao được:</h6>
+                    <ul class="mb-0 small">
+                        <li>Không liên lạc được với người nhận (sau 3 lần gọi)</li>
+                        <li>Địa chỉ không chính xác, không tìm thấy</li>
+                        <li>Người nhận từ chối nhận hàng</li>
+                        <li>Người nhận yêu cầu hoãn giao (tối đa 2 lần)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="alert alert-info">
+                    <h6><i class="bi bi-info-circle"></i> Đơn hàng sẽ được trả về kho nếu:</h6>
+                    <ul class="mb-0 small">
+                        <li>Không giao được sau 3 lần thử</li>
+                        <li>Người nhận không nhận hàng</li>
+                        <li>Sau 7 ngày không liên lạc được</li>
+                    </ul>
+                    <p class="mb-0 mt-2"><strong>Phí hoàn hàng:</strong> 30.000đ - 50.000đ (khách chịu)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="text-primary">7. Theo dõi đơn hàng</h3>
+        <div class="card">
+            <div class="card-body">
+                <h5><i class="bi bi-geo-alt-fill"></i> Cách theo dõi đơn hàng của bạn:</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <i class="bi bi-person-circle display-1 text-primary"></i>
+                            <h6 class="mt-2">Tài khoản</h6>
+                            <p class="small">Vào mục "Đơn hàng của tôi"</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <i class="bi bi-envelope-fill display-1 text-success"></i>
+                            <h6 class="mt-2">Email</h6>
+                            <p class="small">Nhận thông báo qua email</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <i class="bi bi-telephone-fill display-1 text-warning"></i>
+                            <h6 class="mt-2">Hotline</h6>
+                            <p class="small">Gọi 0987 654 321</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .back-button-container {
+        max-width: 1540px;
+        margin: 1rem auto 0;
+        padding: 0 20px;
+    }
+    .btn-back {
+        margin-bottom: 1rem;
+    }
+    .help-page {
+        max-width: 1000px;
+        margin: 0 auto 2rem;
+        padding: 0 1rem;
+    }
+    .help-page h3 {
+        margin-top: 2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #0d6efd;
+    }
+    .help-page section {
+        line-height: 1.8;
+    }
+</style>
