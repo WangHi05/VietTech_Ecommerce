@@ -13,6 +13,7 @@ namespace eCommerce.Infrastructure.Data
         }
 
         public DbSet<Product> Products { get; set; }
+    public DbSet<eCommerce.Core.Entities.Review> Reviews { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<eCommerce.Core.Entities.Order> Orders { get; set; }
         public DbSet<eCommerce.Core.Entities.OrderItem> OrderItems { get; set; }
@@ -35,7 +36,7 @@ namespace eCommerce.Infrastructure.Data
             // Order -> OrderItems relationship
             modelBuilder.Entity<eCommerce.Core.Entities.Order>()
                 .HasMany(o => o.Items)
-                .WithOne()
+                .WithOne(oi => oi.Order)
                 .HasForeignKey(oi => oi.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 

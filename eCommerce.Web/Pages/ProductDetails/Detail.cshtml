@@ -38,6 +38,38 @@
                     <li><strong>@spec.Key:</strong> @spec.Value</li>
                 }
              </ul>
+
+            <div class="product-reviews mt-4">
+                <h4>Đánh giá</h4>
+                <div class="mb-2">
+                    <strong>Điểm trung bình:</strong> @Model.AverageRating.ToString("0.0") / 5
+                    <span class="ms-3">(@Model.ReviewCount đánh giá)</span>
+                </div>
+
+                @if (Model.Reviews != null && Model.Reviews.Any())
+                {
+                    <div class="reviews-list">
+                        @foreach (var r in Model.Reviews)
+                        {
+                            <div class="review-item mb-3">
+                                <div><strong>@(r.UserName ?? "Khách")</strong> <small class="text-muted">@r.CreatedDate.ToLocalTime().ToString("g")</small></div>
+                                    <div>
+                                        <span class="review-rating">@for (int s = 0; s < r.Rating; s++) { <span>⭐</span> }</span>
+                                        @if (!string.Equals(r.Status, "Approved", System.StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <span class="badge bg-warning text-dark ms-2">@r.Status</span>
+                                        }
+                                    </div>
+                                <div class="review-comment">@r.Comment</div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p>Chưa có đánh giá nào.</p>
+                }
+            </div>
         </div>
     </div>
 }

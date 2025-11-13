@@ -1,0 +1,322 @@
+@page
+@model eCommerce.Web.Pages.Help.ReturnModel
+@{
+    ViewData["Title"] = "Chính sách đổi trả";
+}
+
+<div class="back-button-container">
+    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-back">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+<div class="help-page">
+    <h1 class="mb-4">Chính sách đổi trả</h1>
+
+    <div class="alert alert-info">
+        <h5><i class="bi bi-info-circle"></i> Thông tin quan trọng</h5>
+        <p class="mb-0">VietTech cam kết bảo vệ quyền lợi khách hàng với chính sách đổi trả linh hoạt và minh bạch.</p>
+    </div>
+
+    <section class="mb-5">
+        <h3 class="text-primary">1. Thời gian đổi trả</h3>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card border-success h-100">
+                    <div class="card-header bg-success text-white text-center return-card-header">
+                        <h4 class="mb-0">7 NGÀY</h4>
+                    </div>
+                    <div class="card-body d-flex flex-column return-card-body">
+                        <div class="return-title">Đổi trả miễn phí</div>
+                        <div class="return-desc">Áp dụng cho sản phẩm lỗi do nhà sản xuất</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card border-warning h-100">
+                    <div class="card-header bg-warning text-white text-center return-card-header">
+                        <h4 class="mb-0">15 NGÀY</h4>
+                    </div>
+                    <div class="card-body d-flex flex-column return-card-body">
+                        <div class="return-title">Đổi sản phẩm khác</div>
+                        <div class="return-desc">Đổi sang model khác (bù/hoàn tiền chênh lệch)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card border-danger h-100">
+                    <div class="card-header bg-danger text-white text-center return-card-header">
+                        <h4 class="mb-0">30 NGÀY</h4>
+                    </div>
+                    <div class="card-body d-flex flex-column return-card-body">
+                        <div class="return-title">Hoàn tiền</div>
+                        <div class="return-desc">Chỉ với sản phẩm lỗi nghiêm trọng, không sửa được</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">2. Điều kiện đổi trả</h3>
+        
+        <h5 class="mt-4">✅ Trường hợp ĐƯỢC đổi trả:</h5>
+        <ul>
+            <li><strong>Sản phẩm lỗi kỹ thuật do nhà sản xuất</strong>
+                <ul>
+                    <li>Không khởi động được</li>
+                    <li>Lỗi màn hình (chết điểm, sọc màn hình...)</li>
+                    <li>Lỗi phần cứng (camera, loa, mic...)</li>
+                    <li>Pin chai, sụt pin nhanh bất thường</li>
+                </ul>
+            </li>
+            <li><strong>Sản phẩm giao sai model, màu sắc, cấu hình</strong></li>
+            <li><strong>Sản phẩm bị hư hỏng trong quá trình vận chuyển</strong></li>
+            <li><strong>Thiếu phụ kiện so với cam kết</strong></li>
+            <li><strong>Sản phẩm không giống hình ảnh mô tả</strong></li>
+        </ul>
+
+        <h5 class="mt-4">❌ Trường hợp KHÔNG được đổi trả:</h5>
+        <ul>
+            <li>Sản phẩm đã qua sử dụng, có dấu hiệu trầy xước do người dùng</li>
+            <li>Hộp, tem, phụ kiện không còn nguyên vẹn</li>
+            <li>Sản phẩm bị vào nước, rơi vỡ, cong vênh</li>
+            <li>Không có hóa đơn hoặc phiếu bảo hành hợp lệ</li>
+            <li>Serial number không khớp với hóa đơn</li>
+            <li>Đổi ý, không thích (nếu không có lỗi kỹ thuật)</li>
+            <li>Sản phẩm khuyến mãi, giảm giá đặc biệt (có ghi chú riêng)</li>
+        </ul>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">3. Quy trình đổi trả</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-badge" style="background-color: #28a745;">1</div>
+                <div class="timeline-content">
+                    <h5>Liên hệ yêu cầu đổi trả</h5>
+                    <p>Gọi hotline <strong>0987 654 321</strong> hoặc email đến <strong>support@viettech.vn</strong></p>
+                    <p class="text-muted small">Cung cấp: Mã đơn hàng, lý do đổi trả, hình ảnh sản phẩm (nếu có)</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-badge" style="background-color: #28a745;">2</div>
+                <div class="timeline-content">
+                    <h5>Xác nhận và hướng dẫn</h5>
+                    <p>Nhân viên CSKH sẽ kiểm tra và xác nhận yêu cầu trong vòng <strong>2-4 giờ</strong></p>
+                    <p class="text-muted small">Nếu đủ điều kiện → Tạo mã đổi trả và hướng dẫn tiếp</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-badge" style="background-color: #28a745;">3</div>
+                <div class="timeline-content">
+                    <h5>Gửi sản phẩm về</h5>
+                    <p><strong>Cách 1:</strong> Mang trực tiếp đến cửa hàng</p>
+                    <p><strong>Cách 2:</strong> Gửi qua đơn vị vận chuyển (VietTech hỗ trợ phí ship nếu lỗi do nhà sản xuất)</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-badge" style="background-color: #28a745;">4</div>
+                <div class="timeline-content">
+                    <h5>Kiểm tra sản phẩm</h5>
+                    <p>Bộ phận kỹ thuật kiểm tra tình trạng sản phẩm trong vòng <strong>1-2 ngày</strong></p>
+                    <p class="text-muted small">Xác định lỗi và phương án xử lý (đổi mới/hoàn tiền/từ chối)</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-badge" style="background-color: #28a745;">5</div>
+                <div class="timeline-content">
+                    <h5>Hoàn tất</h5>
+                    <p><strong>Đổi mới:</strong> Giao sản phẩm mới trong 3-5 ngày</p>
+                    <p><strong>Hoàn tiền:</strong> Chuyển khoản trong 5-7 ngày làm việc</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">4. Chính sách hoàn tiền</h3>
+        <div class="card">
+            <div class="card-body">
+                <h5><i class="bi bi-cash-coin"></i> Phương thức hoàn tiền</h5>
+                <ul>
+                    <li><strong>Chuyển khoản ngân hàng:</strong> Hoàn về tài khoản trong 5-7 ngày làm việc</li>
+                    <li><strong>Hoàn lại thẻ:</strong> Nếu thanh toán bằng thẻ, hoàn về thẻ trong 7-14 ngày</li>
+                    <li><strong>Tiền mặt:</strong> Nhận trực tiếp tại cửa hàng (nếu mua tại cửa hàng)</li>
+                    <li><strong>Ví điện tử:</strong> Hoàn về ví trong 3-5 ngày làm việc</li>
+                </ul>
+                <div class="alert alert-warning mt-3 mb-0">
+                    <strong>Lưu ý:</strong> Phí vận chuyển (nếu có) sẽ không được hoàn trả, trừ trường hợp lỗi do VietTech hoặc nhà sản xuất.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">5. Chi phí đổi trả</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Trường hợp</th>
+                        <th>Phí vận chuyển</th>
+                        <th>Phí xử lý</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lỗi do nhà sản xuất/VietTech</td>
+                        <td class="text-success"><strong>Miễn phí</strong></td>
+                        <td class="text-success"><strong>Miễn phí</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Giao sai hàng</td>
+                        <td class="text-success"><strong>Miễn phí</strong></td>
+                        <td class="text-success"><strong>Miễn phí</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Đổi ý không thích (không lỗi)</td>
+                        <td class="text-danger">Khách hàng chịu</td>
+                        <td class="text-danger">10% giá trị sản phẩm</td>
+                    </tr>
+                    <tr>
+                        <td>Sản phẩm do khách làm hỏng</td>
+                        <td colspan="2" class="text-center text-danger">Không hỗ trợ đổi trả</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="text-primary">6. Liên hệ hỗ trợ</h3>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card text-center border-primary h-100">
+                    <div class="card-body">
+                        <i class="bi bi-telephone-fill display-4 text-primary"></i>
+                        <h5 class="mt-3">Hotline</h5>
+                        <p class="mb-0"><strong>0987 654 321</strong></p>
+                        <p class="small text-muted">8:00 - 21:00 hàng ngày</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center border-primary h-100">
+                    <div class="card-body">
+                        <i class="bi bi-envelope-fill display-4 text-primary"></i>
+                        <h5 class="mt-3">Email</h5>
+                        <p class="mb-0"><strong>support@viettech.vn</strong></p>
+                        <p class="small text-muted">Phản hồi trong 24h</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center border-primary h-100">
+                    <div class="card-body">
+                        <i class="bi bi-shop display-4 text-primary"></i>
+                        <h5 class="mt-3">Cửa hàng</h5>
+                        <p class="mb-0"><strong>123 Đường A, Q1</strong></p>
+                        <p class="small text-muted">8:00 - 20:00 hàng ngày</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .back-button-container {
+        max-width: 1540px;
+        margin: 1rem auto 0;
+        padding: 0 20px;
+    }
+    .btn-back {
+        margin-bottom: 1rem;
+    }
+    .help-page {
+        max-width: 1000px;
+        margin: 0 auto 2rem;
+        padding: 0 1rem;
+    }
+    .help-page h3 {
+        margin-top: 2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #0d6efd;
+    }
+    .help-page section {
+        line-height: 1.8;
+    }
+    
+    /* Return time cards alignment */
+    .return-card-header {
+        padding: 0.75rem;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .return-card-body {
+        padding: 0.5rem;
+    }
+    .return-title {
+        padding: 0.5rem;
+        border: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+    }
+    .return-desc {
+        padding: 0.5rem;
+        border: 1px solid #dee2e6;
+        background-color: #ffffff;
+        font-size: 0.875rem;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Timeline styling */
+    .timeline {
+        position: relative;
+        padding-left: 50px;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 30px;
+    }
+    .timeline-badge {
+        position: absolute;
+        left: -30px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    .timeline-content {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 3px solid #0d6efd;
+    }
+    .timeline-content h5 {
+        margin-bottom: 10px;
+        color: #0d6efd;
+    }
+</style>

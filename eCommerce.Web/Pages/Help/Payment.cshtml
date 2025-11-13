@@ -1,0 +1,327 @@
+@page
+@model eCommerce.Web.Pages.Help.PaymentModel
+@{
+    ViewData["Title"] = "Hướng dẫn thanh toán";
+}
+
+<div class="back-button-container">
+    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-back">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+<div class="help-page">
+    <h1 class="mb-4">Hướng dẫn thanh toán</h1>
+
+    <div class="alert alert-success">
+        <h5><i class="bi bi-credit-card"></i> Thanh toán an toàn & bảo mật</h5>
+        <p class="mb-0">VietTech sử dụng công nghệ mã hóa SSL 256-bit để bảo vệ thông tin thanh toán của bạn.</p>
+    </div>
+
+    <section class="mb-5">
+        <h3 class="text-primary">1. Các phương thức thanh toán</h3>
+        
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-cash-coin"></i> Thanh toán COD</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Thanh toán khi nhận hàng (Cash On Delivery)</strong></p>
+                        <ul>
+                            <li>Thanh toán tiền mặt cho shipper</li>
+                            <li>Được kiểm tra hàng trước khi thanh toán</li>
+                            <li>Phí COD: <strong>Miễn phí</strong></li>
+                            <li>Giới hạn: Tối đa <strong>20.000.000đ</strong>/đơn</li>
+                        </ul>
+                        <div class="alert alert-info mb-0">
+                            <small><strong>Phù hợp:</strong> Khách hàng muốn xem hàng trước khi thanh toán</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-credit-card-2-front"></i> Thẻ tín dụng/Ghi nợ</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Thanh toán online qua cổng thanh toán</strong></p>
+                        <ul>
+                            <li>Visa, Mastercard, JCB, AMEX</li>
+                            <li>Bảo mật 3D Secure</li>
+                            <li>Xác thực OTP qua SMS</li>
+                            <li>Hoàn tiền dễ dàng nếu hủy đơn</li>
+                        </ul>
+                        <div class="alert alert-info mb-0">
+                            <small><strong>Phù hợp:</strong> Thanh toán nhanh, giao hàng sớm hơn</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0"><i class="bi bi-bank"></i> Chuyển khoản ngân hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Chuyển khoản trước khi giao hàng</strong></p>
+                        <ul>
+                            <li>Miễn phí giao dịch</li>
+                            <li>Giảm <strong>2%</strong> cho đơn từ 5 triệu</li>
+                            <li>Xác nhận trong 1-2 giờ</li>
+                            <li>Hỗ trợ tất cả ngân hàng</li>
+                        </ul>
+                        <div class="alert alert-success mb-0">
+                            <small><strong>Ưu đãi:</strong> Giảm 2% cho đơn hàng lớn!</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-wallet2"></i> Ví điện tử</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Thanh toán qua ví điện tử</strong></p>
+                        <ul>
+                            <li>MoMo, ZaloPay, VNPay</li>
+                            <li>ShopeePay, Moca</li>
+                            <li>Nhanh chóng, tiện lợi</li>
+                            <li>Có ưu đãi hoàn tiền</li>
+                        </ul>
+                        <div class="alert alert-info mb-0">
+                            <small><strong>Phù hợp:</strong> Người dùng thường xuyên dùng ví</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">2. Hướng dẫn thanh toán qua Thẻ</h3>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Bước 1: Chọn phương thức</h5>
+                        <p>Tại trang thanh toán, chọn "Thẻ tín dụng/Ghi nợ"</p>
+                        
+                        <h5 class="mt-4">Bước 2: Nhập thông tin thẻ</h5>
+                        <ul>
+                            <li>Số thẻ (16 chữ số)</li>
+                            <li>Tên chủ thẻ</li>
+                            <li>Ngày hết hạn (MM/YY)</li>
+                            <li>Mã CVV (3 số sau thẻ)</li>
+                        </ul>
+
+                        <h5 class="mt-4">Bước 3: Xác thực OTP</h5>
+                        <p>Nhập mã OTP nhận được qua SMS</p>
+
+                        <h5 class="mt-4">Bước 4: Hoàn tất</h5>
+                        <p>Hệ thống sẽ xác nhận và gửi email thông báo</p>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-warning">
+                            <h6><i class="bi bi-shield-lock"></i> Lưu ý an toàn:</h6>
+                            <ul class="mb-0 small">
+                                <li>Không chia sẻ thông tin thẻ cho ai</li>
+                                <li>Kiểm tra URL có ổ khóa (https://)</li>
+                                <li>Không lưu thông tin thẻ trên máy công cộng</li>
+                                <li>Đảm bảo kết nối internet an toàn</li>
+                                <li>Tắt trình duyệt sau khi thanh toán</li>
+                            </ul>
+                        </div>
+                        <img src="https://via.placeholder.com/400x200/f8f9fa/6c757d?text=Thanh+toan+an+toan" class="img-fluid rounded" alt="Payment Security">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">3. Hướng dẫn chuyển khoản ngân hàng</h3>
+        <div class="card border-warning">
+            <div class="card-body">
+                <h5><i class="bi bi-bank2"></i> Thông tin tài khoản nhận tiền:</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Ngân hàng:</strong></td>
+                                <td>Vietcombank</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Chi nhánh:</strong></td>
+                                <td>Quận 1, TP.HCM</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Số tài khoản:</strong></td>
+                                <td><span class="text-danger"><strong>1234567890</strong></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Chủ tài khoản:</strong></td>
+                                <td>CONG TY VIETTECH</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="alert alert-info mb-0">
+                            <h6>Nội dung chuyển khoản:</h6>
+                            <p class="mb-2"><code>[Mã đơn hàng] [Tên khách hàng] [SĐT]</code></p>
+                            <p class="mb-0 small"><strong>Ví dụ:</strong> DH12345 Nguyen Van A 0987654321</p>
+                        </div>
+                        <div class="alert alert-warning mt-3 mb-0">
+                            <small><strong>Lưu ý:</strong> Vui lòng gửi ảnh chụp biên lai chuyển khoản qua email hoặc Zalo để được xử lý nhanh hơn.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">4. Thanh toán qua Ví điện tử</h3>
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card text-center border-danger h-100">
+                    <div class="card-body">
+                        <i class="bi bi-wallet2 display-1 text-danger"></i>
+                        <h5 class="mt-3">MoMo</h5>
+                        <p class="small">Quét QR hoặc nhập số điện thoại</p>
+                        <span class="badge bg-danger">Hoàn 10k cho đơn đầu</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center border-primary h-100">
+                    <div class="card-body">
+                        <i class="bi bi-credit-card display-1 text-primary"></i>
+                        <h5 class="mt-3">ZaloPay</h5>
+                        <p class="small">Thanh toán qua app ZaloPay</p>
+                        <span class="badge bg-primary">Giảm 5% tối đa 50k</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center border-success h-100">
+                    <div class="card-body">
+                        <i class="bi bi-cash-coin display-1 text-success"></i>
+                        <h5 class="mt-3">VNPay</h5>
+                        <p class="small">Liên kết ngân hàng nhanh</p>
+                        <span class="badge bg-success">Ưu đãi từ ngân hàng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <h3 class="text-primary">5. Câu hỏi thường gặp</h3>
+        <div class="accordion" id="paymentFAQ">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                        Thanh toán online có an toàn không?
+                    </button>
+                </h2>
+                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#paymentFAQ">
+                    <div class="accordion-body">
+                        <p>Hoàn toàn an toàn! VietTech sử dụng:</p>
+                        <ul>
+                            <li>Mã hóa SSL 256-bit</li>
+                            <li>Cổng thanh toán quốc tế PCI DSS</li>
+                            <li>Xác thực 3D Secure</li>
+                            <li>Không lưu trữ thông tin thẻ</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                        Tôi có thể hủy đơn sau khi thanh toán online không?
+                    </button>
+                </h2>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#paymentFAQ">
+                    <div class="accordion-body">
+                        <p>Có thể! Nếu đơn hàng chưa được giao:</p>
+                        <ul>
+                            <li>Liên hệ hotline ngay để hủy đơn</li>
+                            <li>Tiền sẽ được hoàn lại trong 5-7 ngày làm việc</li>
+                            <li>Hoàn về tài khoản/thẻ đã thanh toán</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                        Tôi đã chuyển khoản nhưng chưa được xác nhận?
+                    </button>
+                </h2>
+                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#paymentFAQ">
+                    <div class="accordion-body">
+                        <p>Vui lòng:</p>
+                        <ul>
+                            <li>Gửi ảnh biên lai qua email: <strong>support@viettech.vn</strong></li>
+                            <li>Hoặc Zalo: <strong>0987 654 321</strong></li>
+                            <li>Chúng tôi sẽ xác nhận trong 1-2 giờ</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="text-primary">6. Hỗ trợ thanh toán</h3>
+        <div class="alert alert-primary">
+            <h5><i class="bi bi-headset"></i> Cần hỗ trợ thanh toán?</h5>
+            <p>Liên hệ với chúng tôi:</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <strong><i class="bi bi-telephone"></i> Hotline:</strong><br>
+                    0987 654 321
+                </div>
+                <div class="col-md-4">
+                    <strong><i class="bi bi-envelope"></i> Email:</strong><br>
+                    payment@viettech.vn
+                </div>
+                <div class="col-md-4">
+                    <strong><i class="bi bi-chat-dots"></i> Live Chat:</strong><br>
+                    8:00 - 21:00 hàng ngày
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .back-button-container {
+        max-width: 1540px;
+        margin: 1rem auto 0;
+        padding: 0 20px;
+    }
+    .btn-back {
+        margin-bottom: 1rem;
+    }
+    .help-page {
+        max-width: 1000px;
+        margin: 0 auto 2rem;
+        padding: 0 1rem;
+    }
+    .help-page h3 {
+        margin-top: 2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #0d6efd;
+    }
+    .help-page section {
+        line-height: 1.8;
+    }
+</style>
