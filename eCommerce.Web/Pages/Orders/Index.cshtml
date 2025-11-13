@@ -29,7 +29,19 @@ else
                     <td>@o.Id</td>
                     <td>@o.CreatedAt.ToLocalTime().ToString("g")</td>
                     <td>@String.Format("{0:N0}", o.Total)</td>
-                    <td>Hoàn tất</td>
+                    <td>
+                        @{ 
+                            var statusText = o.Status switch
+                            {
+                                "Pending" => "Chờ xác nhận",
+                                "Đang Giao" => "Đang giao",
+                                "Không được xác nhận" => "Không được xác nhận",
+                                "Completed" => "Hoàn tất",
+                                var s => s ?? ""
+                            };
+                        }
+                        <span>@statusText</span>
+                    </td>
                     <td>
                         <a class="btn btn-sm btn-outline-primary" asp-page="/Orders/Details" asp-route-id="@o.Id">Xem</a>
                         <form method="post" asp-page="/Orders/Details" asp-route-id="@o.Id" style="display:inline">

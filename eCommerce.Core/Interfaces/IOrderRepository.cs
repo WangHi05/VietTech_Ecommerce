@@ -12,6 +12,9 @@ namespace eCommerce.Core.Interfaces
         Task<List<Order>> GetByUserAsync(string userId);
         Task UpdatePaymentStateAsync(int orderId, string status, string paymentStatus, DateTime? paidAt = null);
 
+    // Cập nhật trạng thái đơn hàng (chỉ trạng thái, không thay đổi trạng thái thanh toán)
+    Task UpdateStatusAsync(int orderId, string status);
+
         // 1. Lấy tất cả đơn hàng (kèm theo thông tin khách hàng)
         Task<List<Order>> GetAllForAdminAsync();
 

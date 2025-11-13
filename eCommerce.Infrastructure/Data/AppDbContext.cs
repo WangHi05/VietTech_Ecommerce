@@ -16,6 +16,7 @@ namespace eCommerce.Infrastructure.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<eCommerce.Core.Entities.Order> Orders { get; set; }
         public DbSet<eCommerce.Core.Entities.OrderItem> OrderItems { get; set; }
+    public DbSet<eCommerce.Core.Entities.PushSubscription> PushSubscriptions { get; set; }
         
        
         public DbSet<Brand> Brands { get; set; }

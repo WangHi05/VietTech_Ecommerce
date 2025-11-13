@@ -43,6 +43,21 @@
                 </div>
 
                 <h3 style="margin-top:18px">Chi tiết đơn hàng</h3>
+                <h4 style="margin-top:10px">Phương thức vận chuyển</h4>
+                <div class="mb-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="ShippingMethod" value="standard" id="shipStandard" checked="checked" />
+                        <label class="form-check-label" for="shipStandard">Giao tiêu chuẩn (tốc độ bình thường)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="ShippingMethod" value="express" id="shipExpress" />
+                        <label class="form-check-label" for="shipExpress">Giao nhanh (thêm phí)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="ShippingMethod" value="pickup" id="shipPickup" />
+                        <label class="form-check-label" for="shipPickup">Nhận tại cửa hàng (miễn phí)</label>
+                    </div>
+                </div>
                 <div style="overflow:auto">
                     <table class="table">
                         <thead>

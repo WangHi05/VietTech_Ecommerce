@@ -76,6 +76,7 @@
                             </span>
                         }
                     </a>
+                    <button id="btnEnablePush" class="btn btn-outline-primary ms-2" title="Nhận thông báo đơn hàng">Bật thông báo</button>
                     <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
                         <button type="submit" class="header-action logout-button">Đăng xuất</button>
                     </form>
@@ -146,6 +147,10 @@
         </div>
     </footer>
 
+    <script>
+        // Expose VAPID public key to client JS for push subscription
+        window.VAPID_PUBLIC_KEY = '@(Configuration["Vapid:PublicKey"] ?? "")';
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const slides = document.querySelector(".slides");
@@ -254,6 +259,7 @@
     <script src="@(Url.Content("~/js/cart.js"))" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
     <script src="~/js/product-interactions.js" asp-append-version="true"></script>
+    <script src="~/js/push-subscribe.js" asp-append-version="true"></script>
 </body>
 </html>
 

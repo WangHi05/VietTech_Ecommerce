@@ -50,6 +50,24 @@
 
                     <dt class="col-sm-4">Trạng Thái ĐH</dt>
                     <dd class="col-sm-8">@Model.Order.Status</dd>
+                    <dt class="col-sm-4">Quản lý</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Order != null && Model.Order.Status == "Pending")
+                        {
+                            <form method="post" asp-page-handler="Confirm" style="display:inline-block;margin-right:8px;">
+                                <input type="hidden" name="id" value="@Model.Order.Id" />
+                                <button type="submit" class="btn btn-success btn-sm">Xác nhận</button>
+                            </form>
+                            <form method="post" asp-page-handler="Cancel" style="display:inline-block;">
+                                <input type="hidden" name="id" value="@Model.Order.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">Huỷ</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Không có hành động</span>
+                        }
+                    </dd>
                     
                     <dt class="col-sm-4">Thanh Toán</dt>
                     <dd class="col-sm-8">@Model.Order.PaymentMethod</dd>
