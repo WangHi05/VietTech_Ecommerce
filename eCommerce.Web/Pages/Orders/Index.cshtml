@@ -1,66 +1,207 @@
 @page
 @model eCommerce.Web.Pages.Orders.IndexModel
 @{
-    ViewData["Title"] = "Đơn hàng của tôi";
+    ViewData["Title"] = "Lịch sử đơn hàng";
 }
 
-<h2>Đơn hàng của tôi</h2>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="mb-4">
+    <h5>Trạng thái đơn hàng</h5>
+    <div class="filter-pills">
+        @{
+            var statuses = new Dictionary<string, (string value, string colorClass)>
+            {
+                { "Đang chờ", ("Đang chờ", "primary") },
+                { "Đang xử lý", ("Đang xử lý", "warning") },
+                { "Đang giao hàng", ("Đang giao hàng", "info") },
+                { "Hoàn tất", ("Hoàn tất", "success") },
+                { "Đã huỷ", ("Đã huỷ", "danger") }
+            };
+        }
+        @foreach (var status in statuses)
+        {
+            <a asp-page="/Orders/Index"
+               asp-route-FilterStatus="@status.Value.value"
+               class="status-pill @status.Value.colorClass @(Model.FilterStatus == status.Value.value ? "active" : "")">
+                @status.Key
+            </a>
+        }
+    </div>
+</div>
+
 
 @if (Model.Orders == null || Model.Orders.Count == 0)
 {
-    <p>Bạn chưa có đơn hàng nào.</p>
+    <p>Bạn chưa có đơn hàng nào với trạng thái này.</p>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th class="text-start">Mã đơn</th>
-                <th class="text-start">Ngày</th>
-                <th class="text-end">Tổng tiền</th>
-                <th class="text-center">Trạng thái</th>
-                <th class="text-center">Đã đánh giá</th>
-                <th class="text-end" style="width:150px;"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var o in Model.Orders)
-            {
-                <tr>
-                    <td class="text-start">@o.Id</td>
-                    <td class="text-start">@o.CreatedAt.ToLocalTime().ToString("g")</td>
-                    <td class="text-end">@String.Format("{0:N0}", o.Total)</td>
-                    <td class="text-center">
-                        @{ 
-                            var statusText = o.Status switch
-                            {
-                                "Pending" => "Chờ xác nhận",
-                                "Đang Giao" => "Đang giao",
-                                "Không được xác nhận" => "Không được xác nhận",
-                                "Completed" => "Hoàn tất",
-                                var s => s ?? ""
-                            };
+    @foreach (var o in Model.Orders)
+    {
+        var statusInfo = o.Status switch
+        {
+            "Đang chờ" => ("Đang chờ", "primary"),
+            "Đang xử lý" => ("Đang xử lý", "warning"),
+            "Đang giao hàng" => ("Đang giao hàng", "info"),
+            "Hoàn tất" => ("Hoàn tất", "success"),
+            "Đã huỷ" => ("Đã huỷ", "danger"),
+            _ => (o.Status ?? "", "secondary")
+        };
+        
+        var paymentStatusInfo = (o.PaymentStatus ?? "Chưa thanh toán") switch
+        {
+                "Đã thanh toán" => ("Đã thanh toán", "success"),
+                _ => ("Chưa thanh toán", "warning")
+        };
+        var paymentStatusText = paymentStatusInfo.Item1;
+        var paymentStatusColor = paymentStatusInfo.Item2;
+        
+        var statusText = statusInfo.Item1;
+        var statusColor = statusInfo.Item2;
+        
+        <div class="card order-card mb-3">
+            <div class="card-body">
+                <div class="order-header-row">
+                    <div class="order-header-left">
+                        <h5 class="order-id">Đơn hàng #@o.Id</h5>
+                        <span class="order-date">@o.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                    <div class="order-header-right" style="display: flex; gap: 5px;">
+                        <span class="badge bg-@paymentStatusColor">@paymentStatusText</span>
+                        <span class="badge bg-@statusColor">@statusText</span>
+                    </div>
+                </div>
+
+                <div class="order-shipping-info">
+                    <div class="shipping-label">
+                        <i class="fa-solid fa-location-dot"></i> Giao đến:
+                    </div>
+                    <div class="shipping-details">
+                        <strong>@o.ShippingName</strong><br />
+                        @o.ShippingAddress
+                        @if (!string.IsNullOrEmpty(o.ShippingProvince) || !string.IsNullOrEmpty(o.ShippingCountry))
+                        {
+                            <span>, @o.ShippingProvince @o.ShippingCountry</span>
                         }
-                        <span>@statusText</span>
-                    </td>
-                    <td class="text-center">
+                    </div>
+                </div>
+
+                <div class="order-items-section">
+                    @if (o.Items != null && o.Items.Any())
+                    {
+                        @foreach (var item in o.Items)
+                        {
+                            <div class="order-item-row">
+                                <div class="item-info">
+                                    <div class="item-name">@item.Name</div>
+                                    <div class="item-qty">Số lượng: @item.Quantity</div>
+                                </div>
+                                <div class="item-price">@String.Format("{0:N0}", item.Price * item.Quantity)đ</div>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="order-total-row">
+                    <span class="total-label">Tổng cộng:</span>
+                    <span class="total-amount">@String.Format("{0:N0}", o.Total)đ</span>
+                </div>
+            </div>
+            
+            <div class="card-footer order-actions">
+                    @if (o.Status == "Đang chờ")
+                    {
+                        <a asp-page="/Orders/ChangeAddress" asp-route-id="@o.Id" class="btn btn-primary">
+                            <i class="fa-solid fa-location-dot"></i> Thay đổi địa chỉ
+                        </a>
+                        <form method="post" asp-page-handler="Cancel" asp-route-id="@o.Id" style="display:inline" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này?');">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa-solid fa-xmark"></i> Hủy đơn hàng
+                            </button>
+                        </form>
+                    }
+
+                    @if (o.Status == "Đang giao hàng")
+                    {
+                        <form method="post" asp-page-handler="Complete" asp-route-id="@o.Id" style="display:inline" onsubmit="return confirm('Bạn xác nhận đã nhận được đơn hàng này?');">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa-solid fa-check-square"></i> Đã nhận được hàng
+                            </button>
+                        </form>
+                    }
+
+                    @if (o.Status == "Hoàn tất")
+                    {
+                        <form method="post" asp-page="/Orders/Details" asp-route-id="@o.Id" style="display:inline">
+                            <button type="submit" name="reorder" value="1" class="btn btn-success">
+                                <i class="fa-solid fa-cart-shopping"></i> Mua lại
+                            </button>
+                        </form>
+
                         @if (Model.ReviewedOrderIds != null && Model.ReviewedOrderIds.Contains(o.Id))
                         {
-                            <span class="badge bg-success">Đã đánh giá</span>
+                            <span class="btn btn-secondary disabled" style="opacity: 0.7;">
+                                <i class="fa-solid fa-star"></i> Đã đánh giá
+                            </span>
                         }
                         else
                         {
-                            <span class="badge bg-danger">Chưa đánh giá</span>
+                            @if (o.Items != null && o.Items.Count == 1)
+                            {
+                                <a class="btn btn-warning" asp-page="/Reviews/Create" asp-route-productId="@o.Items.First().ProductId" asp-route-orderId="@o.Id">
+                                    <i class="fa-solid fa-star"></i> Đánh giá
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-warning" asp-page="/Orders/Details" asp-route-id="@o.Id">
+                                    <i class="fa-solid fa-star"></i> Đánh giá
+                                </a>
+                            }
                         }
-                    </td>
-                    <td class="text-end text-nowrap">
-                        <a class="btn btn-sm btn-outline-primary" asp-page="/Orders/Details" asp-route-id="@o.Id">Xem</a>
-                        <form method="post" asp-page="/Orders/Details" asp-route-id="@o.Id" style="display:inline">
-                            <button type="submit" name="reorder" value="1" class="btn btn-sm btn-success">Mua lại</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    }
+                    
+                    @if (o.Status != "Đã hủy")
+                    {
+                        <a class="btn btn-secondary" asp-page="/Orders/Details" asp-route-id="@o.Id">
+                            <i class="fa-solid fa-eye"></i> Xem chi tiết
+                        </a>
+                    }
+            </div>
+        </div>
+    }
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.PageIndex == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-page="/Orders/Index"
+                       asp-route-FilterStatus="@Model.FilterStatus"
+                       asp-route-PageIndex="@(Model.PageIndex - 1)">Trước</a>
+                </li>
+                @for (var i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                        <a class="page-link" asp-page="/Orders/Index"
+                           asp-route-FilterStatus="@Model.FilterStatus"
+                           asp-route-PageIndex="@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.PageIndex == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-page="/Orders/Index"
+                       asp-route-FilterStatus="@Model.FilterStatus"
+                       asp-route-PageIndex="@(Model.PageIndex + 1)">Sau</a>
+                </li>
+            </ul>
+        </nav>
+    }
 }

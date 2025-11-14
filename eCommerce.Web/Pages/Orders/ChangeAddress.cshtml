@@ -1,0 +1,55 @@
+@page "{id:int}"
+@model eCommerce.Web.Pages.Orders.ChangeAddressModel
+@{
+    ViewData["Title"] = "Thay đổi địa chỉ";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+}
+
+<h2>Thay đổi địa chỉ cho Đơn hàng #@Model.OrderId</h2>
+<hr />
+
+<form method="post">
+    <input type="hidden" asp-for="OrderId" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <h3>Thông tin giao hàng</h3>
+    <div class="form-group">
+        <label asp-for="ShippingName">Tên người nhận</label> 
+        <input asp-for="ShippingName" class="form-control" />
+        <span asp-validation-for="ShippingName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ShippingAddress">Địa chỉ</label> 
+        <input asp-for="ShippingAddress" class="form-control" />
+        <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+        <div style="margin-top:8px;font-size:0.95rem;color:#555;">Chọn vị trí trên bản đồ (tùy chọn) để tự động điền địa chỉ:</div> [cite: 18]
+        <div id="map" style="width:100%;height:300px;border:1px solid #ddd;margin-top:8px;border-radius:6px;"></div> [cite: 18]
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+            <input type="text" id="selectedAddress" class="form-control" placeholder="Địa chỉ được chọn sẽ hiển thị ở đây" readonly /> [cite: 19]
+            <button type="button" id="btnUseMyLocation" class="btn btn-primary btn-sm">Dùng vị trí của tôi</button> [cite: 19]
+        </div>
+    </div>
+    <div class="form-group" style="display:flex;gap:12px;">
+        <div style="flex:1">
+            <label asp-for="Country">Quốc gia</label> 
+            <input asp-for="Country" class="form-control" />
+            <span asp-validation-for="Country" class="text-danger"></span> 
+        </div>
+        <div style="width:140px">
+            <label asp-for="Province">Tỉnh/TP</label> 
+            <input asp-for="Province" class="form-control" />
+            <span asp-validation-for="Province" class="text-danger"></span> 
+        </div>
+    </div>
+    <hr />
+    <button type="submit" class="btn btn-primary">Cập nhật địa chỉ</button>
+    <a asp-page="/Orders/Index" class="btn btn-secondary">Quay lại</a>
+</form>
+
+@section Scripts {
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+   <script src="~/js/address-map.js" defer></script>
+}
