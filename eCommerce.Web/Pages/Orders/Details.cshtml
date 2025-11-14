@@ -23,12 +23,15 @@ else
             <p>Ngày: @Model.Order.CreatedAt.ToLocalTime().ToString("g")</p>
             <p>Trạng thái: 
                 @{ 
+                    // Cập nhật logic switch để nhất quán với trang Index
                     var statusText = Model.Order.Status switch
                     {
-                        "Pending" => "Chờ xác nhận",
-                        "Đang Giao" => "Đang giao",
+                        "Đang chờ" => "Đang chờ",
+                        "Đang xử lý" => "Đang xử lý",
+                        "Đang giao hàng" => "Đang giao hàng",
+                        "Hoàn tất" => "Hoàn tất",
+                        "Đã hủy" => "Đã hủy",
                         "Không được xác nhận" => "Không được xác nhận",
-                        "Completed" => "Hoàn tất",
                         var s => s ?? ""
                     };
                 }
@@ -39,26 +42,28 @@ else
 
             <h6>Items</h6>
             <ul class="order-items mb-3">
+                
                 @foreach (var it in Model.Order.Items)
                 {
                     <li class="order-item">
                         <div class="order-left">
-                            <strong class="order-item-name">@it.Name</strong>
+                            <strong class="order-item-name">@it.Name</strong> 
                             <div class="order-item-qty">SL: @it.Quantity</div>
-                            <!-- Desktop meta moved here so price & badge appear directly under the quantity -->
                             <div class="order-meta-desktop mt-2">
-                                <div class="order-price">@String.Format("{0:N0}", it.Price)</div>
-                                @if (Model.ReviewedProductIds != null && Model.ReviewedProductIds.Contains(it.ProductId))
+                                <div class="order-price">@String.Format("{0:N0}", it.Price)</div> 
+                                @if (Model.Order.Status == "Hoàn tất")
                                 {
-                                    <span class="badge badge-success badge-inline">Đã đánh giá</span>
+                                    @if (Model.ReviewedProductIds != null && Model.ReviewedProductIds.Contains(it.ProductId))
+                                    {
+                                        <span class="badge badge-success badge-inline">Đã đánh giá</span> 
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-compact ms-2" asp-page="/Reviews/Create" asp-route-productId="@it.ProductId" asp-route-orderId="@Model.Order.Id">Đánh giá</a> 
+                                    }
                                 }
-                                else
-                                {
-                                    <a class="btn btn-compact ms-2" asp-page="/Reviews/Create" asp-route-productId="@it.ProductId" asp-route-orderId="@Model.Order.Id">Đánh giá</a>
-                                }
-                            </div>
+                                </div>
                         </div>
-                        <!-- keep order-right for layout but empty; desktop meta is inside order-left now -->
                         <div class="order-right" aria-hidden="true"></div>
                     </li>
                 }

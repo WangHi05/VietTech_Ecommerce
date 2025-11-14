@@ -1527,7 +1527,6 @@
     background-size: contain;
     border: 1px solid #d1d5db;
     appearance: none;
-    color-adjust: exact;
     cursor: pointer;
     transition: all 0.3s ease;
   }
@@ -2360,10 +2359,450 @@ html, body {
 }
 
 main {
-  flex: 1 0 auto; /* Chi?m to�n b? kh�ng gian c�n l?i, d?y footer xu?ng */
+  flex: 1 0 auto; /* Chi?m to�n b? kh�ng gian c�n l?i, d?y footer xu?ng */
 }
 
 .site-footer {
-  flex-shrink: 0; /* Footer kh�ng b? co l?i */
-  margin-top: auto; /* �?m b?o footer lu�n ? du?i c�ng */
+  flex-shrink: 0; /* Footer kh�ng b? co l?i */
+  margin-top: auto; /* �?m b?o footer lu�n ? du?i c�ng */
+}
+
+/* === BẮT ĐẦU: CSS CHO TRANG LỊCH SỬ ĐƠN HÀNG (Theme Đa Sắc) === */
+
+/* CSS cho các nút lọc trạng thái (Status Pills) */
+.filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+/* Dấu chấm tròn bên trong pill */
+.status-pill::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* Định nghĩa màu sắc */
+.status-pill.primary { /* Xanh dương */
+  color: #0d6efd;
+  background-color: #e7f0ff;
+}
+.status-pill.primary::before { background-color: #0d6efd; }
+
+.status-pill.warning { /* Cam/Vàng */
+  color: #ffc107;
+  background-color: #fff8e1;
+}
+.status-pill.warning::before { background-color: #ffc107; }
+
+.status-pill.info { /* Tím (cho Đang giao hàng) */
+  color: #6f42c1;
+  background-color: #f3eefc;
+}
+.status-pill.info::before { background-color: #6f42c1; }
+
+.status-pill.success { /* Xanh lá */
+  color: #198754;
+  background-color: #e8f3ee;
+}
+.status-pill.success::before { background-color: #198754; }
+
+.status-pill.danger { /* Đỏ */
+  color: #dc3545;
+  background-color: #fdebec;
+}
+.status-pill.danger::before { background-color: #dc3545; }
+
+/* Trạng thái Active (đậm hơn) */
+.status-pill.primary.active {
+  background-color: #0d6efd;
+  color: #ffffff;
+}
+.status-pill.primary.active::before { background-color: #ffffff; }
+
+.status-pill.warning.active {
+  background-color: #ffc107;
+  color: #000000;
+}
+.status-pill.warning.active::before { background-color: #000000; }
+
+.status-pill.info.active {
+  background-color: #6f42c1;
+  color: #ffffff;
+}
+.status-pill.info.active::before { background-color: #ffffff; }
+
+.status-pill.success.active {
+  background-color: #198754;
+  color: #ffffff;
+}
+.status-pill.success.active::before { background-color: #ffffff; }
+
+.status-pill.danger.active {
+  background-color: #dc3545;
+  color: #ffffff;
+}
+.status-pill.danger.active::before { background-color: #ffffff; }
+
+
+/* CSS cho icon bên trong nút (cho action buttons) */
+.btn .fa-solid {
+  margin-right: 5px;
+}
+
+/* Đảm bảo các nút action trong footer có kích thước phù hợp và bo tròn */
+.order-card-footer .btn {
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px; /* Bo tròn các nút action */
+}
+
+/* === KẾT THÚC: CSS CHO TRANG LỊCH SỬ ĐƠN HÀNG === */
+
+/* ============================================================================
+   IMPROVED ORDER CARD LAYOUT - PROFESSIONAL DESIGN
+   ============================================================================ */
+
+   .order-card {
+    border: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    background: #ffffff;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.order-card:hover {
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+}
+
+.order-card .card-body {
+    padding: 24px;
+}
+
+/* Header Row: ID + Date | Status Badge */
+.order-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 16px;
+}
+
+.order-header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.order-id {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--dark-color);
+    margin: 0;
+}
+
+.order-date {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.order-header-right .badge {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* Shipping Information Section */
+.order-shipping-info {
+    background: #f8fafc;
+    border-left: 3px solid var(--primary-color);
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+}
+
+.shipping-label {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    white-space: nowrap;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.shipping-label i {
+    margin-top: 2px;
+}
+
+.shipping-details {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--dark-color);
+    flex: 1;
+}
+
+.shipping-details strong {
+    font-weight: 600;
+}
+
+/* Order Items Section */
+.order-items-section {
+    margin-bottom: 16px;
+}
+
+.order-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.order-item-row:last-child {
+    border-bottom: none;
+}
+
+.item-info {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex: 1;
+}
+
+.item-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--dark-color);
+}
+
+.item-qty {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.item-price {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    white-space: nowrap;
+}
+
+/* Total Row */
+.order-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 2px solid #f1f5f9;
+}
+
+.total-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark-color);
+}
+
+.total-amount {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Card Footer - Action Buttons */
+.order-card .card-footer {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  padding: 16px 24px;
+}
+
+.order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* === BẮT ĐẦU KHỐI THAY THẾ === */
+/* Style CHUNG cho tất cả các nút action */
+.order-actions .btn {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  
+  /* Cài đặt cơ bản: Không viền, chữ trắng, có bóng mờ */
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.order-actions .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  color: #ffffff; /* Giữ chữ trắng khi hover */
+}
+
+/* Nút Xanh lá (Success): Đã nhận hàng, Mua lại */
+.order-actions .btn-success {
+  background: linear-gradient(135deg, var(--success-color), #059669);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+.order-actions .btn-success:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+/* Nút Cam (Primary): Thay đổi địa chỉ */
+.order-actions .btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), #f97316);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+.order-actions .btn-primary:hover {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+}
+
+/* Nút Đỏ (Danger): Hủy đơn hàng */
+.order-actions .btn-danger {
+  background: linear-gradient(135deg, var(--danger-color), #dc2626);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+.order-actions .btn-danger:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+/* Nút Xám (Secondary): Xem chi tiết */
+.order-actions .btn-secondary {
+  background: linear-gradient(135deg, #64748b, #475569);
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+}
+.order-actions .btn-secondary:hover {
+  background: linear-gradient(135deg, #475569, #334155);
+}
+
+/* Nút Vàng/Amber (Warning): Đánh giá */
+.order-actions .btn-warning {
+  background: linear-gradient(135deg, var(--warning-color), #d97706);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  color: #ffffff; 
+}
+.order-actions .btn-warning:hover {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #ffffff;
+}
+
+/* Nút Bị vô hiệu hóa: Đã đánh giá */
+.order-actions .btn.disabled,
+.order-actions .btn-secondary.disabled {
+  background: #e2e8f0; /* Xám nhạt */
+  color: #64748b; /* Chữ xám đậm */
+  box-shadow: none;
+  opacity: 0.7;
+  transform: none;
+}
+/* === KẾT THÚC KHỐI THAY THẾ === */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .order-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .order-header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .order-shipping-info {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .shipping-label {
+        white-space: normal;
+    }
+
+    .order-item-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .item-price {
+        align-self: flex-end;
+        font-size: 1rem;
+    }
+
+    .order-total-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .order-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .order-actions .btn,
+    .order-actions form {
+        width: 100%;
+    }
+
+    .order-actions .btn {
+        justify-content: center;
+    }
+}
+
+/* Badge Colors */
+.badge.bg-primary {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca) !important;
+}
+
+.badge.bg-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800) !important;
+    color: #000 !important;
+}
+
+.badge.bg-info {
+    background: linear-gradient(135deg, #6f42c1, #5a32a3) !important;
+}
+
+.badge.bg-success {
+    background: linear-gradient(135deg, #198754, #146c43) !important;
+}
+
+.badge.bg-danger {
+    background: linear-gradient(135deg, #dc3545, #b02a37) !important;
+}
+
+.badge.bg-secondary {
+    background: linear-gradient(135deg, #6c757d, #545b62) !important;
 }
