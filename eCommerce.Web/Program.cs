@@ -121,7 +121,7 @@ using (var scope = app.Services.CreateScope())
 }
 // === HẾT CẬP NHẬT SEED DATA ===
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
@@ -130,7 +130,7 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapRazorPages();
+app.MapRazorPages();    
 app.MapControllers();
 
 app.Run();
