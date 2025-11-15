@@ -14,8 +14,8 @@ namespace eCommerce.Core.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public string PaymentMethod { get; set; } = "COD";
-        public string PaymentStatus { get; set; } = "Pending";
-        public string Status { get; set; } = "Pending";
+        public string PaymentStatus { get; set; } = "Chưa thanh toán";
+        public string Status { get; set; } = "Đang chờ";
         public DateTime? PaidAt { get; set; }
         public string? CardHolderName { get; set; }
         public string? CardLast4 { get; set; }

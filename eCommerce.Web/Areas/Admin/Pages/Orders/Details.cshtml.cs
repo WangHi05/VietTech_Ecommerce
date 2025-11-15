@@ -44,10 +44,10 @@ namespace eCommerce.Web.Areas.Admin.Pages.Orders
             return Page();
         }
 
-        // Admin xác nhận đơn (chuyển trạng thái sang "Đang Giao")
+        // Admin xác nhận đơn (chuyển trạng thái sang "Đang giao hàng")
         public async Task<IActionResult> OnPostConfirmAsync(int id)
         {
-            await _orderService.UpdateStatusAsync(id, "Đang Giao");
+            await _orderService.UpdateStatusAsync(id, "Đang giao hàng");
 
             // Load order to get user/email
             var order = await _orderRepo.GetDetailsByIdForAdminAsync(id);

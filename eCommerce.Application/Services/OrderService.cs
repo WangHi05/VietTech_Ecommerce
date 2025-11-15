@@ -46,8 +46,8 @@ namespace eCommerce.Application.Services
         {
             await _orderRepository.UpdatePaymentStateAsync(orderId, status, paymentStatus, paidAt);
             
-            // Tích điểm khi thanh toán thành công (Paid hoặc Succeeded)
-            if ((status == "Paid" || paymentStatus == "Succeeded") && _loyaltyService != null)
+            // Tích điểm khi thanh toán thành công
+            if (paymentStatus == "Đã thanh toán" && _loyaltyService != null)
             {
                 var order = await _orderRepository.GetByIdAsync(orderId);
                 if (order != null && !string.IsNullOrEmpty(order.UserId))

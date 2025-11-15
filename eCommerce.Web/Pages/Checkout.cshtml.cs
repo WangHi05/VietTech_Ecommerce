@@ -140,8 +140,8 @@ namespace eCommerce.Web.Pages
 
                 var cardOrder = CreateOrderFromCart();
                 cardOrder.PaymentMethod = "Card";
-                cardOrder.PaymentStatus = "Pending";
-                cardOrder.Status = "Pending";
+                cardOrder.PaymentStatus = "Chưa thanh toán";
+                cardOrder.Status = "Đang chờ";
                 cardOrder.CardHolderName = (CardName ?? string.Empty).Trim();
                 cardOrder.CardLast4 = ExtractCardLast4(CardNumber);
 
@@ -164,8 +164,8 @@ namespace eCommerce.Web.Pages
             {
                 var codOrder = CreateOrderFromCart();
                 codOrder.PaymentMethod = "COD";
-                codOrder.PaymentStatus = "AwaitingPayment";
-                codOrder.Status = "Pending";
+                codOrder.PaymentStatus = "Chưa thanh toán";
+                codOrder.Status = "Đang chờ";
 
                 var codOrderId = await _orderService.PlaceOrderAsync(codOrder);
 
@@ -356,8 +356,8 @@ namespace eCommerce.Web.Pages
 
             var order = CreateOrderFromCart();
             order.PaymentMethod = "VNPay";
-            order.PaymentStatus = "Succeeded";
-            order.Status = "Paid";
+            order.PaymentStatus = "Đã thanh toán";
+            order.Status = "Hoàn tất";
 
             var id = await _orderService.PlaceOrderAsync(order);
 

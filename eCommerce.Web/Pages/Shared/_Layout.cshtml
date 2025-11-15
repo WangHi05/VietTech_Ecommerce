@@ -55,7 +55,6 @@
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <li><a href="/Orders">Đơn hàng của tôi</a></li>
-                        <li><a href="/Loyalty">Điểm thưởng</a></li>
                     }
                     @if (User.IsInRole("Admin"))
                     {
@@ -86,6 +85,25 @@
                         </svg>
                         <span class="fw-bold text-warning">@userPoints điểm</span>
                     </a>
+                    
+                    <!-- Theme Toggle Button -->
+                    <button id="themeToggle" class="header-action theme-toggle-btn" title="Chuyển đổi Dark/Light mode">
+                        <svg class="theme-icon sun-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="theme-icon moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    
                     <a class="header-action user-avatar-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Quản lý tài khoản">
                         @if (!string.IsNullOrEmpty(profilePictureUrl))
                         {
@@ -282,6 +300,50 @@
                  }
              });
 
+        });
+    </script>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        // Load saved theme immediately to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme-preference') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+            }
+        })();
+
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const sunIcon = document.querySelector('.sun-icon');
+            const moonIcon = document.querySelector('.moon-icon');
+            
+            // Initialize theme on page load
+            const currentTheme = localStorage.getItem('theme-preference') || 'light';
+            if (currentTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+            
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+                
+                const isDark = document.body.classList.contains('dark-theme');
+                
+                // Toggle icons
+                if (isDark) {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                    localStorage.setItem('theme-preference', 'dark');
+                } else {
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                    localStorage.setItem('theme-preference', 'light');
+                }
+            });
         });
     </script>
 

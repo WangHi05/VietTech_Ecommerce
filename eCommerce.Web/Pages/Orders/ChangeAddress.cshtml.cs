@@ -45,9 +45,9 @@ namespace eCommerce.Web.Pages.Orders
             if (order == null) return NotFound();
             if (order.UserId != userId) return Forbid();
 
-            if (order.Status != "Pending")
+            if (order.Status != "Đang chờ")
             {
-                TempData["ErrorMessage"] = "Không thể thay đổi địa chỉ cho đơn hàng ở trạng thái này.";
+                TempData["error"] = "Chỉ có thể thay đổi địa chỉ cho đơn hàng đang chờ.";
                 return RedirectToPage("/Orders/Index");
             }
 
@@ -74,7 +74,7 @@ namespace eCommerce.Web.Pages.Orders
             if (order == null) return NotFound();
             if (order.UserId != userId) return Forbid();
 
-            if (order.Status != "Pending")
+            if (order.Status != "Đang chờ")
             {
                 TempData["ErrorMessage"] = "Đơn hàng đã được xử lý, không thể thay đổi địa chỉ.";
                 return RedirectToPage("/Orders/Index");
