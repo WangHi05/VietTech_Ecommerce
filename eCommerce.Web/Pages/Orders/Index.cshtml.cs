@@ -136,7 +136,7 @@ namespace eCommerce.Web.Pages.Orders
             if (order.Status == "Đang giao hàng")
             {
                 order.Status = "Hoàn tất"; 
-                if (order.PaymentMethod == "cod")
+               if (string.Equals(order.PaymentMethod, "cod", StringComparison.OrdinalIgnoreCase))
                 {
                     order.PaymentStatus = "Đã thanh toán";
                 }

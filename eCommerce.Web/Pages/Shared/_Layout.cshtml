@@ -355,6 +355,15 @@
     @await RenderSectionAsync("Scripts", required: false)
     <script src="~/js/product-interactions.js" asp-append-version="true"></script>
     <script src="~/js/push-subscribe.js" asp-append-version="true"></script>
+
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <df-messenger
+    intent="WELCOME"
+    chat-title="ViettechBot"
+    agent-id="171533f5-f648-4dc9-b27c-1c283ce35c75"
+    language-code="vi"
+    ></df-messenger>
+
 </body>
 </html>
 
