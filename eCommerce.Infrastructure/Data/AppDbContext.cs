@@ -13,14 +13,14 @@ namespace eCommerce.Infrastructure.Data
         }
 
         public DbSet<Product> Products { get; set; }
-    public DbSet<eCommerce.Core.Entities.Review> Reviews { get; set; }
+        public DbSet<eCommerce.Core.Entities.Review> Reviews { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<eCommerce.Core.Entities.Order> Orders { get; set; }
         public DbSet<eCommerce.Core.Entities.OrderItem> OrderItems { get; set; }
-    public DbSet<eCommerce.Core.Entities.PushSubscription> PushSubscriptions { get; set; }
-        
-       
+        public DbSet<eCommerce.Core.Entities.PushSubscription> PushSubscriptions { get; set; }
         public DbSet<Brand> Brands { get; set; }
+        public DbSet<LoyaltyPoint> LoyaltyPoints { get; set; }
+        public DbSet<PointTransaction> PointTransactions { get; set; }
        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -69,6 +69,30 @@ namespace eCommerce.Infrastructure.Data
                 .HasOne(p => p.Brand)
                 .WithMany(b => b.Products)
                 .HasForeignKey(p => p.BrandId);
+
+            // Cấu hình LoyaltyPoint
+            modelBuilder.Entity<LoyaltyPoint>()
+                .HasOne(lp => lp.User)
+                .WithMany()
+                .HasForeignKey(lp => lp.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<LoyaltyPoint>()
+                .HasIndex(lp => lp.UserId)
+                .IsUnique();
+
+            // Cấu hình PointTransaction
+            modelBuilder.Entity<PointTransaction>()
+                .HasOne(pt => pt.User)
+                .WithMany()
+                .HasForeignKey(pt => pt.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PointTransaction>()
+                .HasOne(pt => pt.Order)
+                .WithMany()
+                .HasForeignKey(pt => pt.OrderId)
+                .OnDelete(DeleteBehavior.SetNull);
             
            
             

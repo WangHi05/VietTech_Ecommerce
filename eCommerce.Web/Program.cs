@@ -80,6 +80,9 @@ builder.Services.AddSession();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
 
+// Add loyalty service
+builder.Services.AddScoped<eCommerce.Application.Services.ILoyaltyService, eCommerce.Infrastructure.Services.LoyaltyService>();
+
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 

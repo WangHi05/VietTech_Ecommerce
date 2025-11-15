@@ -101,5 +101,31 @@ namespace eCommerce.Web.Areas.Admin.Pages.Orders
             TempData["success"] = "Đơn hàng đã bị huỷ.";
             return RedirectToPage("./Details", new { id });
         }
+
+        // Admin đánh dấu đơn hàng hoàn thành
+        public async Task<IActionResult> OnPostCompleteAsync(int id)
+        {
+            await _orderService.UpdateStatusAsync(id, "Hoàn thành");
+
+            var order = await _orderRepo.GetDetailsByIdForAdminAsync(id);
+            if (order != null)
+            {
+                var msg = new eCommerce.Web.Services.Notifications.NotificationMessage
+                {
+                    UserId = order.UserId ?? string.Empty,
+                    Title = "Đơn hàng hoàn thành",
+                    Body = $"Đơn #{order.Id} đã được giao thành công!",
+                    Url = $"/Orders/Details?id={order.Id}",
+                    EmailTo = order.Customer?.Email,
+                    EmailSubject = $"Đơn hàng #{order.Id} - Hoàn Thành",
+                    EmailBody = $"Xin chào {order.ShippingName},<br/><br/>Đơn hàng #{order.Id} đã được giao thành công. Cảm ơn bạn đã mua hàng!<br/><br/>Bạn đã nhận được điểm thưởng cho đơn hàng này."
+                };
+
+                try { _notificationQueue.Enqueue(msg); } catch { }
+            }
+
+            TempData["success"] = "Đã đánh dấu đơn hàng hoàn thành và tích điểm cho khách hàng.";
+            return RedirectToPage("./Details", new { id });
+        }
     }
 }
