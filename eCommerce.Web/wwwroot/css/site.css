@@ -17,6 +17,34 @@
     --danger-color: #ef4444; /* Kept as red */
     --warning-color: #f59e0b;
     --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    
+    /* Theme Variables - Light Mode (Default) */
+    --bg-primary: #f1f5f9;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f8fafc;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --card-bg: #ffffff;
+    --card-shadow: rgba(15, 23, 42, 0.1);
+    --input-bg: #ffffff;
+    --input-border: #e2e8f0;
+    --hover-bg: #f8fafc;
+  }
+  
+  /* Dark Theme Variables */
+  .dark-theme {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --card-bg: #1e293b;
+    --card-shadow: rgba(0, 0, 0, 0.3);
+    --input-bg: #334155;
+    --input-border: #475569;
+    --hover-bg: #334155;
   }
   
   /* Global Box Sizing */
@@ -30,9 +58,10 @@
   body {
     font-family: var(--font-family);
     margin: 0;
-    background-color: #f1f5f9;
-    color: var(--dark-color);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   
   .container {
@@ -46,7 +75,7 @@
      ============================================================================ */
   
   header {
-    background-color: #ffffff;
+    background-color: var(--bg-secondary);
     padding: 1rem 0;
     position: sticky;
     top: 0;
@@ -105,7 +134,7 @@
   
   .main-menu a {
     text-decoration: none;
-    color: var(--dark-color);
+    color: var(--text-primary);
     font-weight: 600;
     font-size: 0.95rem;
     transition: all 0.3s ease;
@@ -157,14 +186,19 @@
     border: 2px solid var(--border-color);
     font-size: 0.95rem;
     transition: all 0.3s ease;
-    background-color: #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    box-shadow: 0 2px 4px var(--card-shadow);
   }
   
   .search-input:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1); /* Modified shadow color */
+  }
+  
+  .search-input::placeholder {
+    color: var(--text-muted);
   }
   
   .search-button {
@@ -294,6 +328,28 @@
     border-color: var(--primary-color);
   }
   
+  /* Theme Toggle Button Styles */
+  .theme-toggle-btn {
+    background: none;
+    border: 2px solid var(--input-border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+  }
+  
+  .theme-toggle-btn:hover {
+    background-color: var(--hover-bg);
+    border-color: var(--primary-color);
+    transform: rotate(15deg);
+  }
+  
+  .theme-icon {
+    transition: all 0.3s ease;
+  }
+  
   .nav-right .logout-button {
     background: none;
     border: none;
@@ -310,6 +366,18 @@
   .nav-right .logout-button:hover {
     color: var(--primary-color);
     background-color: #fef3e5; /* Light orange */
+  }
+  
+  /* Notification button styles */
+  #btnEnablePush {
+    color: var(--text-primary) !important;
+    border-color: var(--input-border) !important;
+    background-color: transparent !important;
+  }
+  
+  #btnEnablePush:hover {
+    background-color: var(--hover-bg) !important;
+    border-color: var(--primary-color) !important;
   }
   
   .nav-right .user-avatar-link {
@@ -624,6 +692,7 @@
     max-width: 1540px; /* Match container */
     margin: 40px auto;
     padding: 0 20px;
+    background-color: transparent; /* Let body background show through */
   }
   
   .section-header {
@@ -646,9 +715,9 @@
   
   .category-card {
     text-decoration: none;
-    color: var(--dark-color);
-    background: #ffffff;
-    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    background: var(--card-bg);
+    border: 1px solid var(--input-border);
     border-radius: 12px;
     padding: 20px;
     text-align: center;
@@ -774,7 +843,7 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: white;
+    background: var(--card-bg);
     color: var(--primary-color);
     padding: 12px 24px;
     border-radius: 50px;
@@ -795,10 +864,12 @@
     max-width: 1540px;
     margin: 40px auto;
     padding: 0 20px;
+    background-color: transparent; /* Let body background show through */
   }
   
   .category-products-section {
     margin-bottom: 40px;
+    background-color: transparent; /* Let body background show through */
   }
   
   /* MODIFIED: Căn giữa nút và tiêu đề, bỏ gạch chân */
@@ -835,7 +906,7 @@
   transition: all 0.3s ease;
 
   /* --- Thêm 4 dòng này --- */
-  background-color: #ffffff; /* Nền trắng */
+  background-color: var(--card-bg); /* Nền trắng */
   border: 2px solid var(--primary-color); /* Viền cam */
   padding: 8px 20px; /* Kích thước nút */
   border-radius: 50px; /* Bo tròn */
@@ -862,7 +933,7 @@
     margin-bottom: 50px;
     font-size: 2.5rem;
     font-weight: 800;
-    color: var(--dark-color);
+    color: var(--text-primary);
     letter-spacing: -1px;
     display: none; /* Hide generic h2 */
   }
@@ -915,12 +986,12 @@
      ============================================================================ */
   
   .product-card {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     border-radius: 16px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--input-border);
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px var(--card-shadow);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1204,7 +1275,7 @@
   
   .product-rating-count {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-muted);
   }
   
   /* Product Price Section */
@@ -1234,7 +1305,7 @@
   
   .product-old-price {
     font-size: 1rem;
-    color: #94a3b8;
+    color: var(--text-muted);
     text-decoration: line-through;
     font-weight: 500;
   }
@@ -1256,7 +1327,7 @@
     padding: 0;
     margin: 0 0 16px 0;
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-secondary);
   }
   
   .product-features li {
@@ -1443,10 +1514,10 @@
   }
   
   .form-card {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     padding: 40px;
     border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 20px 60px var(--card-shadow);
     border: none;
   }
   
@@ -1487,14 +1558,14 @@
     background-clip: padding-box;
     transition: all 0.3s ease;
     line-height: 1.5;
-    color: var(--dark-color);
-    background-color: #ffffff;
+    color: var(--text-primary);
+    background-color: var(--input-bg);
     box-sizing: border-box;
   }
   
   .form-control:focus {
-    color: var(--dark-color);
-    background-color: #ffffff;
+    color: var(--text-primary);
+    background-color: var(--input-bg);
     border-color: var(--primary-color);
     outline: 0;
     box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1); /* Orange shadow */
@@ -1521,11 +1592,11 @@
     height: 1em;
     margin-top: 0.25em;
     vertical-align: top;
-    background-color: #fff;
+    background-color: var(--input-bg);
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--input-border);
     appearance: none;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1614,6 +1685,185 @@
   .auth-links a:hover {
     color: var(--accent-color);
     text-decoration: underline;
+  }
+
+  /* Dark mode - Auth pages */
+  .dark-theme .form-card h1,
+  .dark-theme .form-card h2 {
+    color: #f8fafc !important;
+  }
+
+  .dark-theme .form-label,
+  .dark-theme label.form-label,
+  .dark-theme .form-check-label,
+  .dark-theme .form-group label,
+  .dark-theme .auth-container label {
+    color: #f8fafc !important;
+  }
+
+  /* Keep form-floating label dark for better visibility on white input */
+  .dark-theme .form-floating label {
+    color: #64748b !important;
+  }
+
+  /* Keep checkout page labels dark in dark mode */
+  .dark-theme .checkout-form label,
+  .dark-theme .checkout-form .form-check-label,
+  .dark-theme .checkout-summary label {
+    color: #334155 !important;
+  }
+
+  /* Dark mode - Checkout page */
+  .dark-theme .checkout-form h3,
+  .dark-theme .checkout-form h4 {
+    color: #334155;
+  }
+
+  .dark-theme .checkout-form p {
+    color: var(--text-secondary);
+  }
+
+  .dark-theme .checkout-summary {
+    background: var(--card-bg);
+    border-color: var(--input-border);
+  }
+
+  .dark-theme .checkout-summary h4 {
+    color: var(--text-primary);
+  }
+
+  .dark-theme .checkout-summary .summary-row {
+    color: var(--text-secondary);
+  }
+
+  .dark-theme .checkout-summary .summary-row strong {
+    color: var(--text-primary);
+  }
+
+  .dark-theme #card-fields {
+    background: var(--bg-secondary);
+    border-color: var(--input-border);
+  }
+
+  .dark-theme #card-fields label {
+    color: var(--text-primary) !important;
+  }
+
+  .dark-theme #map {
+    border-color: var(--input-border) !important;
+  }
+
+  .dark-theme #vnpay-area p,
+  .dark-theme #cod-area p {
+    color: #334155;
+  }
+
+  .dark-theme #PaymentMethod {
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--input-border);
+  }
+
+  .dark-theme #PaymentMethod option {
+    background: var(--input-bg);
+    color: var(--text-primary);
+  }
+
+  .dark-theme .checkout-summary hr {
+    border-color: var(--input-border);
+    opacity: 1;
+  }
+
+  .dark-theme .checkout-summary h6 {
+    color: #212529;
+  }
+
+  .dark-theme .checkout-summary .small.text-muted {
+    color: #212529 !important;
+  }
+
+  .dark-theme .auth-links a {
+    color: var(--primary-color) !important;
+  }
+
+  .dark-theme .auth-links a:hover {
+    color: #ff8c42 !important;
+  }
+
+  /* Keep alert-warning text dark in dark mode */
+  .dark-theme .alert-warning strong {
+    color: #000000 !important;
+  }
+
+  /* Dark mode - Bootstrap cards (Loyalty page) */
+  .dark-theme .card {
+    background: var(--card-bg);
+    border-color: var(--input-border);
+  }
+
+  .dark-theme .card-body {
+    color: var(--text-secondary);
+  }
+
+  .dark-theme .card-body small {
+    color: var(--text-primary) !important;
+  }
+
+  .dark-theme .card-body strong {
+    color: var(--text-primary);
+  }
+
+  .dark-theme .card-title {
+    color: var(--text-primary);
+  }
+
+  .dark-theme .card-header {
+    background: var(--bg-tertiary);
+    border-bottom-color: var(--input-border);
+  }
+
+  .dark-theme .card-header.bg-primary {
+    background: var(--primary-color) !important;
+  }
+
+  .dark-theme .card-header.bg-success {
+    background: var(--success-color) !important;
+  }
+
+  .dark-theme .card-header.bg-light {
+    background: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+  }
+
+  /* Dark mode - Tables */
+  .dark-theme .table {
+    color: var(--text-secondary);
+    border-color: var(--input-border);
+  }
+
+  .dark-theme .table thead th {
+    color: var(--text-primary);
+    border-bottom-color: var(--input-border);
+    background: var(--bg-tertiary);
+  }
+
+  .dark-theme .table tbody td {
+    border-top-color: var(--input-border);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  .dark-theme .table-hover tbody tr:hover {
+    background: var(--hover-bg) !important;
+  }
+
+  .dark-theme .table-hover tbody tr:hover td {
+    background: var(--hover-bg);
+  }
+
+  /* Dark mode - text-muted override */
+  .dark-theme .text-muted {
+    color: #cbd5e1 !important;
   }
   
   .text-danger {
@@ -1793,13 +2043,13 @@
   /* Complete missing .manage-card .card-body and remaining filter styles */
   .manage-card .card-body {
     padding: 1.5rem;
-    color: var(--dark-color);
+    color: var(--text-primary);
   }
   
   /* Filter section styles - Professional Design */
   .filter-section {
-    background-color: #ffffff;
-    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    border: 1px solid var(--input-border);
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -1810,7 +2060,7 @@
     margin: 0 0 1.5rem 0;
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--dark-color);
+    color: var(--text-primary);
     border-bottom: 2px solid var(--primary-color);
     padding-bottom: 0.75rem;
   }
@@ -1828,7 +2078,7 @@
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
     display: block;
-    color: var(--dark-color);
+    color: var(--text-primary);
   }
   
   .filter-group select,
@@ -1839,8 +2089,8 @@
     border-radius: 8px;
     font-size: 0.9rem;
     transition: all 0.3s ease;
-    background-color: #ffffff;
-    color: var(--dark-color);
+    background-color: var(--input-bg);
+    color: var(--text-primary);
     font-family: var(--font-family);
   }
   
@@ -1863,6 +2113,11 @@
   
   .price-inputs input {
     flex: 1;
+  }
+
+  /* Dark mode - price input placeholders */
+  .dark-theme .price-inputs input::placeholder {
+    color: #cbd5e1;
   }
   
   .filter-buttons {
@@ -1909,8 +2164,8 @@
   }
   
   .sort-bar {
-    background-color: #ffffff;
-    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    border: 1px solid var(--input-border);
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 2rem;
@@ -1918,13 +2173,13 @@
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px var(--card-shadow);
   }
   
   .sort-bar label {
     font-weight: 600;
     white-space: nowrap;
-    color: var(--dark-color);
+    color: var(--text-primary);
   }
   
   .sort-bar select {
@@ -2141,11 +2396,11 @@
    USP (Unique Selling Proposition) Section Styles
    ============================================================================ */
 .usp-section {
-  background-color: #ffffff;
+  background-color: var(--card-bg);
   padding: 40px 0;
   margin: 40px 0;
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+  border-top: 1px solid var(--input-border);
+  border-bottom: 1px solid var(--input-border);
 }
 
 .usp-grid {
@@ -2180,28 +2435,50 @@
 .usp-icon svg {
   width: 40px;
   height: 40px;
+  stroke: currentColor;
+}
+
+/* Make icons lighter in dark mode */
+.dark-theme .usp-icon {
+  color: var(--accent-color);
+  opacity: 0.95;
 }
 
 .usp-item h4 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--dark-color);
+  color: var(--text-primary);
   margin: 0 0 10px 0;
+}
+
+/* Make h4 orange in dark mode */
+.dark-theme .usp-item h4 {
+  color: var(--primary-color);
 }
 
 .usp-item p {
   font-size: 0.95rem;
-  color: #475569;
+  color: var(--text-secondary);
   line-height: 1.5;
   margin: 0;
+}
+
+/* Make description text lighter gray in dark mode */
+.dark-theme .usp-item p {
+  color: #94a3b8;
 }
 
 /* ============================================================================
    TESTIMONIALS (Customer Reviews) Section Styles
    ============================================================================ */
 .testimonial-section {
-  background-color: #f1f5f9; /* Nền xám nhạt */
+  background-color: var(--bg-tertiary); /* Nền xám nhạt */
   padding: 60px 0;
+}
+
+/* Dark mode - testimonial section with dark navy background */
+.dark-theme .testimonial-section {
+  background-color: #1a2332;
 }
 
 .testimonial-header {
@@ -2216,14 +2493,23 @@
 .testimonial-header .section-title {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--dark-color);
+  color: var(--text-primary);
   margin: 0 0 10px 0;
 }
 
 .testimonial-header p {
   font-size: 1.1rem;
-  color: #64748b;
+  color: var(--text-secondary);
   margin: 0;
+}
+
+/* Dark mode - testimonial header with stronger colors */
+.dark-theme .testimonial-header .section-title {
+  color: #f8fafc;
+}
+
+.dark-theme .testimonial-header p {
+  color: #cbd5e1;
 }
 
 .testimonial-grid {
@@ -2237,13 +2523,30 @@
 }
 
 .testimonial-card {
-  background: #ffffff;
-  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  border: 1px solid var(--input-border);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px var(--card-shadow);
   display: flex;
   flex-direction: column;
+}
+
+/* Keep testimonial cards white even in dark mode */
+.dark-theme .testimonial-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Keep text dark in testimonial cards for dark mode */
+.dark-theme .testimonial-card blockquote,
+.dark-theme .testimonial-card .customer-details strong {
+  color: #0f172a;
+}
+
+.dark-theme .testimonial-card .customer-details span {
+  color: #64748b;
 }
 
 .rating-stars {
@@ -2285,12 +2588,12 @@
 .customer-details strong {
   display: block;
   font-weight: 700;
-  color: var(--dark-color);
+  color: var(--text-primary);
 }
 
 .customer-details span {
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 /* ============================================================================
@@ -2493,6 +2796,16 @@ main {
     box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
 }
 
+/* Dark mode - Order cards */
+.dark-theme .order-card {
+    background: var(--card-bg);
+    border-color: var(--input-border);
+}
+
+.dark-theme .order-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
 .order-card .card-body {
     padding: 24px;
 }
@@ -2507,6 +2820,11 @@ main {
     margin-bottom: 16px;
 }
 
+/* Dark mode - Order header */
+.dark-theme .order-header-row {
+    border-bottom-color: var(--input-border);
+}
+
 .order-header-left {
     display: flex;
     align-items: baseline;
@@ -2516,13 +2834,18 @@ main {
 .order-id {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--dark-color);
+    color: var(--text-primary);
     margin: 0;
 }
 
 .order-date {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-muted);
+}
+
+/* Dark mode - Order date */
+.dark-theme .order-date {
+    color: #94a3b8;
 }
 
 .order-header-right .badge {
@@ -2543,6 +2866,11 @@ main {
     gap: 12px;
 }
 
+/* Dark mode - Shipping info */
+.dark-theme .order-shipping-info {
+    background: var(--bg-tertiary);
+}
+
 .shipping-label {
     font-size: 0.9rem;
     color: var(--primary-color);
@@ -2560,12 +2888,18 @@ main {
 .shipping-details {
     font-size: 0.9rem;
     line-height: 1.6;
-    color: var(--dark-color);
+    color: var(--text-secondary);
     flex: 1;
+}
+
+/* Dark mode - Shipping details */
+.dark-theme .shipping-details {
+    color: #cbd5e1;
 }
 
 .shipping-details strong {
     font-weight: 600;
+    color: var(--text-primary);
 }
 
 /* Order Items Section */
@@ -2579,6 +2913,11 @@ main {
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid #f1f5f9;
+}
+
+/* Dark mode - Order item rows */
+.dark-theme .order-item-row {
+    border-bottom-color: var(--input-border);
 }
 
 .order-item-row:last-child {
@@ -2595,18 +2934,23 @@ main {
 .item-name {
     font-size: 0.95rem;
     font-weight: 500;
-    color: var(--dark-color);
+    color: var(--text-primary);
 }
 
 .item-qty {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-muted);
+}
+
+/* Dark mode - Item qty */
+.dark-theme .item-qty {
+    color: #94a3b8;
 }
 
 .item-price {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--dark-color);
+    color: var(--text-primary);
     white-space: nowrap;
 }
 
@@ -2619,10 +2963,15 @@ main {
     border-top: 2px solid #f1f5f9;
 }
 
+/* Dark mode - Total row */
+.dark-theme .order-total-row {
+    border-top-color: var(--input-border);
+}
+
 .total-label {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--dark-color);
+    color: var(--text-primary);
 }
 
 .total-amount {
@@ -2636,6 +2985,12 @@ main {
   background: #f8fafc;
   border-top: 1px solid #e2e8f0;
   padding: 16px 24px;
+}
+
+/* Dark mode - Order card footer */
+.dark-theme .order-card .card-footer {
+  background: var(--bg-tertiary);
+  border-top-color: var(--input-border);
 }
 
 .order-actions {
@@ -2718,8 +3073,8 @@ main {
 /* Nút Bị vô hiệu hóa: Đã đánh giá */
 .order-actions .btn.disabled,
 .order-actions .btn-secondary.disabled {
-  background: #e2e8f0; /* Xám nhạt */
-  color: #64748b; /* Chữ xám đậm */
+  background: var(--input-border); /* Xám nhạt */
+  color: var(--text-muted); /* Chữ xám đậm */
   box-shadow: none;
   opacity: 0.7;
   transform: none;
@@ -2805,4 +3160,80 @@ main {
 
 .badge.bg-secondary {
     background: linear-gradient(135deg, #6c757d, #545b62) !important;
+}
+
+/* ============================================================================
+   THEME TOGGLE BUTTON
+   ============================================================================ */
+
+.theme-toggle-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+    background: var(--hover-bg);
+}
+
+.theme-icon {
+    transition: all 0.3s ease;
+}
+
+.dark-theme .sun-icon {
+    display: none !important;
+}
+
+.dark-theme .moon-icon {
+    display: block !important;
+}
+
+/* Dark mode - Cart page */
+.dark-theme .cart-actions h3 {
+    color: #1e293b;
+}
+
+.dark-theme .voucher-box,
+.dark-theme .shipping-box {
+    background: var(--card-bg);
+    border-color: var(--input-border);
+}
+
+.dark-theme .voucher-box label,
+.dark-theme .shipping-box label {
+    color: var(--text-primary);
+}
+
+.dark-theme .voucher-form select,
+.dark-theme .shipping-form select {
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--input-border);
+}
+
+.dark-theme .voucher-form select option,
+.dark-theme .shipping-form select option {
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+
+.dark-theme .cart-summary {
+    background: var(--card-bg);
+    border-color: var(--input-border);
+}
+
+.dark-theme .cart-summary .summary-row {
+    color: var(--text-secondary);
+    border-bottom-color: var(--input-border);
+}
+
+.dark-theme .cart-summary .summary-row.total {
+    color: var(--text-primary);
+    border-top-color: var(--input-border);
 }

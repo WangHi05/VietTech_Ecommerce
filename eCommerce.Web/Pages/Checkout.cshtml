@@ -9,7 +9,8 @@
 
     <div class="checkout-grid" style="display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start;">
         <div class="checkout-form">
-            <form method="post">
+            <form method="post" id="checkoutForm">
+                <input type="hidden" asp-for="PointsToRedeem" id="formPointsToRedeem" />
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <h3>Thông tin giao hàng</h3>
                 <div class="form-group">
@@ -134,10 +135,29 @@
         <aside class="checkout-summary">
             <h4>Đơn hàng</h4>
             <div class="summary-row"><span>Tạm tính</span><strong>@Model.SubTotal.ToString("N0") ₫</strong></div>
-            <div class="summary-row"><span>Giảm</span><strong>- @Model.Discount.ToString("N0") ₫</strong></div>
+            <div class="summary-row"><span>Giảm giá voucher</span><strong>- @Model.Discount.ToString("N0") ₫</strong></div>
+            @if (Model.PointsDiscount > 0)
+            {
+                <div class="summary-row text-success"><span>Quy đổi điểm (@Model.PointsToRedeem điểm)</span><strong>- @Model.PointsDiscount.ToString("N0") ₫</strong></div>
+            }
             <div class="summary-row"><span>Phí vận chuyển</span><strong>@Model.ShippingFee.ToString("N0") ₫</strong></div>
             <hr />
             <div class="summary-row total"><span>Tổng</span><strong>@Model.Total.ToString("N0") ₫</strong></div>
+            
+            @if (User.Identity?.IsAuthenticated == true && Model.AvailablePoints > 0)
+            {
+                <div style="margin-top: 16px; padding: 12px; background: #f8f9fa; border-radius: 6px;">
+                    <h6 class="mb-2">Sử dụng điểm thưởng</h6>
+                    <p class="small text-muted mb-2">Bạn có <strong>@Model.AvailablePoints điểm</strong> (= @((Model.AvailablePoints / 50 * 1000).ToString("N0"))₫)</p>
+                    <p class="small text-muted mb-2">Quy đổi: 50 điểm = 1,000₫</p>
+                    <div class="mb-2">
+                        <label for="PointsToRedeem" class="form-label small">Số điểm muốn dùng (bội số của 50)</label>
+                        <input type="number" id="pointsInput" value="@Model.PointsToRedeem" class="form-control form-control-sm" min="0" max="@Model.MaxRedeemablePoints" step="50" />
+                        <span id="pointsError" class="text-danger small"></span>
+                    </div>
+                    <button type="button" id="applyPointsBtn" class="btn btn-sm btn-outline-primary w-100">Áp dụng điểm</button>
+                </div>
+            }
         </aside>
     </div>
 
@@ -149,4 +169,84 @@
         
         @* Tải file checkout.js của bạn (CHÚNG TA SẼ SỬA NÓ Ở BƯỚC 2) *@
         <script src="~/js/checkout.js" defer></script>
+        
+        <script>
+            // Loyalty points calculation
+            document.addEventListener('DOMContentLoaded', function() {
+                const applyBtn = document.getElementById('applyPointsBtn');
+                if (!applyBtn) return;
+
+                const pointsInput = document.getElementById('pointsInput');
+                const formPointsInput = document.getElementById('formPointsToRedeem');
+                const pointsError = document.getElementById('pointsError');
+                
+                const availablePoints = @Model.AvailablePoints;
+                const maxPoints = @Model.MaxRedeemablePoints;
+                const subTotal = @Model.SubTotal;
+                const discount = @Model.Discount;
+                const shippingFee = @Model.ShippingFee;
+
+                applyBtn.addEventListener('click', function() {
+                    const points = parseInt(pointsInput.value) || 0;
+                    pointsError.textContent = '';
+
+                    // Validate
+                    if (points < 0) {
+                        pointsError.textContent = 'Số điểm không hợp lệ';
+                        return;
+                    }
+                    if (points > availablePoints) {
+                        pointsError.textContent = 'Bạn không có đủ điểm';
+                        return;
+                    }
+                    if (points > maxPoints) {
+                        pointsError.textContent = 'Số điểm vượt quá giá trị đơn hàng';
+                        return;
+                    }
+                    if (points % 50 !== 0) {
+                        pointsError.textContent = 'Số điểm phải là bội số của 50';
+                        return;
+                    }
+
+                    // Calculate discount
+                    const pointsDiscount = (points / 50) * 1000;
+                    const newTotal = subTotal - discount - pointsDiscount + shippingFee;
+
+                    // Update form input for submission
+                    formPointsInput.value = points;
+
+                    // Update summary display
+                    updateSummary(points, pointsDiscount, newTotal);
+                    
+                    // Show success message
+                    pointsError.className = 'text-success small';
+                    pointsError.textContent = points > 0 ? 'Đã áp dụng ' + points + ' điểm!' : 'Đã hủy sử dụng điểm';
+                });
+
+                function updateSummary(points, pointsDiscount, newTotal) {
+                    // Find or create points discount row
+                    const summaryRows = document.querySelectorAll('.checkout-summary .summary-row');
+                    let pointsRow = document.querySelector('.points-discount-row');
+                    
+                    if (points > 0) {
+                        if (!pointsRow) {
+                            // Create new row
+                            const voucherRow = summaryRows[1]; // After voucher discount
+                            pointsRow = document.createElement('div');
+                            pointsRow.className = 'summary-row text-success points-discount-row';
+                            voucherRow.after(pointsRow);
+                        }
+                        pointsRow.innerHTML = '<span>Quy đổi điểm (' + points + ' điểm)</span><strong>- ' + pointsDiscount.toLocaleString('vi-VN') + ' ₫</strong>';
+                    } else if (pointsRow) {
+                        pointsRow.remove();
+                    }
+
+                    // Update total
+                    const totalRow = document.querySelector('.checkout-summary .summary-row.total strong');
+                    if (totalRow) {
+                        totalRow.textContent = newTotal.toLocaleString('vi-VN') + ' ₫';
+                    }
+                }
+            });
+        </script>
     }

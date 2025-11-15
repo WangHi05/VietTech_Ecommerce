@@ -5,15 +5,27 @@
 @using System.Linq
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @inject eCommerce.Web.Services.ICartService CartService
+@inject eCommerce.Application.Services.ILoyaltyService LoyaltyService
 
 @{
     ApplicationUser? currentUser = null;
     string? profilePictureUrl = null;
+    int userPoints = 0;
     if (SignInManager.IsSignedIn(User))
     {
         // Lấy thông tin người dùng hiện tại để lấy URL ảnh đại diện
         currentUser = await UserManager.GetUserAsync(User);
         profilePictureUrl = currentUser?.ProfilePictureUrl; // Lấy URL ảnh (có thể null)
+        
+        // Lấy điểm thưởng của người dùng
+        if (currentUser != null)
+        {
+            var loyaltyInfo = await LoyaltyService.GetOrCreateLoyaltyPointAsync(currentUser.Id);
+            if (loyaltyInfo != null)
+            {
+                userPoints = loyaltyInfo.TotalPoints;
+            }
+        }
     }
 }
 
@@ -67,6 +79,31 @@
             <div class="nav-right">
                 @if (SignInManager.IsSignedIn(User))
                 {
+                    <a href="/Loyalty" class="header-action loyalty-link" title="Điểm thưởng của bạn" style="text-decoration: none; display: flex; align-items: center; gap: 6px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="fw-bold text-warning">@userPoints điểm</span>
+                    </a>
+                    
+                    <!-- Theme Toggle Button -->
+                    <button id="themeToggle" class="header-action theme-toggle-btn" title="Chuyển đổi Dark/Light mode">
+                        <svg class="theme-icon sun-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="theme-icon moon-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    
                     <a class="header-action user-avatar-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Quản lý tài khoản">
                         @if (!string.IsNullOrEmpty(profilePictureUrl))
                         {
@@ -130,7 +167,6 @@
                 <div class="footer-column">
                     <h4>Hỗ trợ khách hàng</h4>
                     <ul>
-                        <li><a href="/Help/FAQ">Câu hỏi thường gặp (FAQ)</a></li>
                         <li><a href="/Help/Warranty">Chính sách bảo hành</a></li>
                         <li><a href="/Help/Return">Chính sách đổi trả</a></li>
                         <li><a href="/Help/Shipping">Vận chuyển & Giao hàng</a></li>
@@ -264,6 +300,50 @@
                  }
              });
 
+        });
+    </script>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        // Load saved theme immediately to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme-preference') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+            }
+        })();
+
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const sunIcon = document.querySelector('.sun-icon');
+            const moonIcon = document.querySelector('.moon-icon');
+            
+            // Initialize theme on page load
+            const currentTheme = localStorage.getItem('theme-preference') || 'light';
+            if (currentTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            }
+            
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+                
+                const isDark = document.body.classList.contains('dark-theme');
+                
+                // Toggle icons
+                if (isDark) {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'block';
+                    localStorage.setItem('theme-preference', 'dark');
+                } else {
+                    sunIcon.style.display = 'block';
+                    moonIcon.style.display = 'none';
+                    localStorage.setItem('theme-preference', 'light');
+                }
+            });
         });
     </script>
 

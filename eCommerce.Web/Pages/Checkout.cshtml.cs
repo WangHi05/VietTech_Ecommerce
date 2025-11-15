@@ -14,6 +14,7 @@ using System.Text;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace eCommerce.Web.Pages
 {
@@ -22,6 +23,8 @@ namespace eCommerce.Web.Pages
         private readonly ICartService _cartService;
         private readonly IOrderService _orderService;
         private readonly IConfiguration _configuration;
+        private readonly ILoyaltyService _loyaltyService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         [BindProperty]
     public string ShippingMethod { get; set; } = "standard";
@@ -43,28 +46,54 @@ namespace eCommerce.Web.Pages
         public string CardExpiry { get; set; } = string.Empty;
         [BindProperty]
         public string CardCvc { get; set; } = string.Empty;
+        [BindProperty]
+        public int PointsToRedeem { get; set; }
 
         public List<CartItem> Items { get; set; } = new();
         public decimal SubTotal { get; set; }
         public decimal Discount { get; set; }
+        public decimal PointsDiscount { get; set; }
         public decimal ShippingFee { get; set; }
         public decimal Total { get; set; }
         public string? AppliedVoucherCode { get; set; }
+        public int AvailablePoints { get; set; }
+        public int MaxRedeemablePoints { get; set; }
 
-        public CheckoutModel(ICartService cartService, IOrderService orderService, IConfiguration configuration)
+        public CheckoutModel(ICartService cartService, IOrderService orderService, IConfiguration configuration, ILoyaltyService loyaltyService, UserManager<ApplicationUser> userManager)
         {
             _cartService = cartService;
             _orderService = orderService;
             _configuration = configuration;
+            _loyaltyService = loyaltyService;
+            _userManager = userManager;
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int pointsToRedeem = 0)
         {
+            // Set points to redeem from query parameter
+            PointsToRedeem = pointsToRedeem;
+            
             var hasCart = await PrepareCartSummaryAsync();
             if (!hasCart)
             {
                 TempData["Error"] = "Giỏ hàng trống.";
                 return RedirectToPage("/Cart");
+            }
+
+            // Get user's available points
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    var loyaltyInfo = await _loyaltyService.GetOrCreateLoyaltyPointAsync(user.Id);
+                    if (loyaltyInfo != null)
+                    {
+                        AvailablePoints = loyaltyInfo.TotalPoints;
+                        // Max points that can be redeemed based on order total (50 points = 1,000đ)
+                        MaxRedeemablePoints = Math.Min(AvailablePoints, (int)(Total / 1000 * 50));
+                    }
+                }
             }
 
             return Page();
@@ -79,6 +108,26 @@ namespace eCommerce.Web.Pages
                 return RedirectToPage("/Cart");
             }
 
+            // Validate points redemption
+            if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    var loyaltyInfo = await _loyaltyService.GetOrCreateLoyaltyPointAsync(user.Id);
+                    if (loyaltyInfo == null || PointsToRedeem > loyaltyInfo.TotalPoints)
+                    {
+                        ModelState.AddModelError(nameof(PointsToRedeem), "Bạn không có đủ điểm để quy đổi.");
+                        return Page();
+                    }
+                    if (PointsToRedeem % 50 != 0)
+                    {
+                        ModelState.AddModelError(nameof(PointsToRedeem), "Số điểm phải là bội số của 50.");
+                        return Page();
+                    }
+                }
+            }
+
             var method = (PaymentMethod ?? string.Empty).Trim().ToLowerInvariant();
 
             if (method == "card")
@@ -91,12 +140,22 @@ namespace eCommerce.Web.Pages
 
                 var cardOrder = CreateOrderFromCart();
                 cardOrder.PaymentMethod = "Card";
-                cardOrder.PaymentStatus = "Pending";
-                cardOrder.Status = "Pending";
+                cardOrder.PaymentStatus = "Chưa thanh toán";
+                cardOrder.Status = "Đang chờ";
                 cardOrder.CardHolderName = (CardName ?? string.Empty).Trim();
                 cardOrder.CardLast4 = ExtractCardLast4(CardNumber);
 
                 var cardOrderId = await _orderService.PlaceOrderAsync(cardOrder);
+
+                // Redeem points if applicable
+                if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
+                {
+                    var user = await _userManager.GetUserAsync(User);
+                    if (user != null)
+                    {
+                        await _loyaltyService.RedeemPointsAsync(user.Id, PointsToRedeem);
+                    }
+                }
 
                 return RedirectToPage("/Payment/CardOtp", new { orderId = cardOrderId });
             }
@@ -105,10 +164,21 @@ namespace eCommerce.Web.Pages
             {
                 var codOrder = CreateOrderFromCart();
                 codOrder.PaymentMethod = "COD";
-                codOrder.PaymentStatus = "AwaitingPayment";
-                codOrder.Status = "Pending";
+                codOrder.PaymentStatus = "Chưa thanh toán";
+                codOrder.Status = "Đang chờ";
 
                 var codOrderId = await _orderService.PlaceOrderAsync(codOrder);
+
+                // Redeem points if applicable
+                if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
+                {
+                    var user = await _userManager.GetUserAsync(User);
+                    if (user != null)
+                    {
+                        await _loyaltyService.RedeemPointsAsync(user.Id, PointsToRedeem);
+                    }
+                }
+
                 await _cartService.ClearCartAsync();
 
                 return RedirectToPage("/Payment/Result", new { orderId = codOrderId, success = true, method = "cod" });
@@ -147,6 +217,26 @@ namespace eCommerce.Web.Pages
                 Discount = await voucherSvc.GetDiscountAmountAsync(applied, SubTotal);
             }
 
+            // Calculate points discount (50 points = 1,000đ)
+            if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    var loyaltyInfo = await _loyaltyService.GetOrCreateLoyaltyPointAsync(user.Id);
+                    if (loyaltyInfo != null && PointsToRedeem <= loyaltyInfo.TotalPoints)
+                    {
+                        PointsDiscount = (PointsToRedeem / 50) * 1000;
+                        AvailablePoints = loyaltyInfo.TotalPoints;
+                    }
+                    else
+                    {
+                        PointsToRedeem = 0;
+                        PointsDiscount = 0;
+                    }
+                }
+            }
+
             // Simple shipping fee logic: if user selected an explicit method, use mapped fees;
             // otherwise fall back to cart service or 0.
             if (!string.IsNullOrWhiteSpace(ShippingMethod) && ShippingMethod.Equals("express", StringComparison.OrdinalIgnoreCase))
@@ -161,7 +251,7 @@ namespace eCommerce.Web.Pages
             {
                 ShippingFee = await _cartService.GetShippingAsync() ?? 0m;
             }
-            Total = SubTotal - Discount + ShippingFee;
+            Total = SubTotal - Discount - PointsDiscount + ShippingFee;
 
             return true;
         }
@@ -266,10 +356,20 @@ namespace eCommerce.Web.Pages
 
             var order = CreateOrderFromCart();
             order.PaymentMethod = "VNPay";
-            order.PaymentStatus = "Succeeded";
-            order.Status = "Paid";
+            order.PaymentStatus = "Đã thanh toán";
+            order.Status = "Hoàn tất";
 
             var id = await _orderService.PlaceOrderAsync(order);
+
+            // Redeem points if applicable
+            if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    await _loyaltyService.RedeemPointsAsync(user.Id, PointsToRedeem);
+                }
+            }
 
             var vnPayConfig = _configuration.GetSection("VnPay");
             var tmnCode = vnPayConfig["TmnCode"];
