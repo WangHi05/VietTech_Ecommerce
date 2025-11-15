@@ -52,10 +52,7 @@ namespace eCommerce.Core.Entities
         public double AverageRating { get; set; }
         public int ReviewCount { get; set; }
         
-
-        // === HẾT CÁC TRƯỜNG MỚI ===
-
-        // Thuộc tính để lưu các thông số kỹ thuật dưới dạng JSON
+        [NotMapped]
         public Dictionary<string, string> Specifications { get; set; } = new Dictionary<string, string>();
     }
 }

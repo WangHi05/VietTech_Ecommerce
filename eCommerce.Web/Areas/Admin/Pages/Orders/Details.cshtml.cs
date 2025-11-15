@@ -44,8 +44,33 @@ namespace eCommerce.Web.Areas.Admin.Pages.Orders
             return Page();
         }
 
-        // Admin xác nhận đơn (chuyển trạng thái sang "Đang giao hàng")
         public async Task<IActionResult> OnPostConfirmAsync(int id)
+        {
+            //Chuyển sang "Đang xử lý"
+            await _orderService.UpdateStatusAsync(id, "Đang xử lý");
+
+            var order = await _orderRepo.GetDetailsByIdForAdminAsync(id);
+            if (order != null)
+            {
+                var msg = new eCommerce.Web.Services.Notifications.NotificationMessage
+                {
+                    UserId = order.UserId ?? string.Empty,
+                    Title = "Đơn hàng đang được xử lý", 
+                    Body = $"Đơn #{order.Id} đang được xử lý.", 
+                    Url = $"/Orders/Details?id={order.Id}",
+                    EmailTo = order.Customer?.Email,
+                    EmailSubject = $"Đơn hàng #{order.Id} - Đang Xử Lý", 
+                    EmailBody = $"Xin chào {order.ShippingName},<br/><br/>Đơn hàng #{order.Id} của bạn đã được xác nhận và đang trong quá trình xử lý.<br/><br/>Cảm ơn bạn."
+                };
+
+                try { _notificationQueue.Enqueue(msg); } catch { }
+            }
+
+            TempData["success"] = "Đã xác nhận đơn hàng (Chuyển sang 'Đang xử lý').";
+            return RedirectToPage("./Details", new { id });
+        }
+        // Admin bắt đầu giao hàng (chuyển trạng thái sang "Đang giao hàng")
+        public async Task<IActionResult> OnPostShipAsync(int id)
         {
             await _orderService.UpdateStatusAsync(id, "Đang giao hàng");
 
@@ -72,7 +97,7 @@ namespace eCommerce.Web.Areas.Admin.Pages.Orders
                 catch { }
             }
 
-            TempData["success"] = "Đã xác nhận đơn hàng.";
+            TempData["success"] = "Đã cập nhật trạng thái 'Đang giao hàng'.";
             return RedirectToPage("./Details", new { id });
         }
 
@@ -105,24 +130,41 @@ namespace eCommerce.Web.Areas.Admin.Pages.Orders
         // Admin đánh dấu đơn hàng hoàn thành
         public async Task<IActionResult> OnPostCompleteAsync(int id)
         {
-            await _orderService.UpdateStatusAsync(id, "Hoàn thành");
-
+            // 1. Lấy đơn hàng TRƯỚC KHI CẬP NHẬT
             var order = await _orderRepo.GetDetailsByIdForAdminAsync(id);
-            if (order != null)
+            if (order == null)
             {
-                var msg = new eCommerce.Web.Services.Notifications.NotificationMessage
-                {
-                    UserId = order.UserId ?? string.Empty,
-                    Title = "Đơn hàng hoàn thành",
-                    Body = $"Đơn #{order.Id} đã được giao thành công!",
-                    Url = $"/Orders/Details?id={order.Id}",
-                    EmailTo = order.Customer?.Email,
-                    EmailSubject = $"Đơn hàng #{order.Id} - Hoàn Thành",
-                    EmailBody = $"Xin chào {order.ShippingName},<br/><br/>Đơn hàng #{order.Id} đã được giao thành công. Cảm ơn bạn đã mua hàng!<br/><br/>Bạn đã nhận được điểm thưởng cho đơn hàng này."
-                };
-
-                try { _notificationQueue.Enqueue(msg); } catch { }
+                TempData["error"] = "Không tìm thấy đơn hàng.";
+                return RedirectToPage("./Index");
             }
+
+            // 2. Logic cập nhật đã sửa
+            if (string.Equals(order.PaymentMethod, "cod", StringComparison.OrdinalIgnoreCase))
+            {
+                // Là COD. Admin xác nhận hoàn thành = đã nhận tiền.
+                // Gọi phương thức cập nhật CẢ 2 trạng thái
+                await _orderRepo.UpdatePaymentStateAsync(id, "Hoàn thành", "Đã thanh toán", DateTime.UtcNow);
+            }
+            else
+            {
+                // Không phải COD (đã thanh toán online).
+                // Chỉ cập nhật trạng thái đơn hàng (logic cũ)
+                await _orderService.UpdateStatusAsync(id, "Hoàn thành");
+            }
+
+            // 3. Gửi thông báo (logic này giữ nguyên)
+            var msg = new eCommerce.Web.Services.Notifications.NotificationMessage
+            {
+                UserId = order.UserId ?? string.Empty,
+                Title = "Đơn hàng hoàn thành",
+                Body = $"Đơn #{order.Id} đã được giao thành công!",
+                Url = $"/Orders/Details?id={order.Id}",
+                EmailTo = order.Customer?.Email,
+                EmailSubject = $"Đơn hàng #{order.Id} - Hoàn Thành",
+                EmailBody = $"Xin chào {order.ShippingName},<br/><br/>Đơn hàng #{order.Id} đã được giao thành công. Cảm ơn bạn đã mua hàng!<br/><br/>Bạn đã nhận được điểm thưởng cho đơn hàng này."
+            };
+
+            try { _notificationQueue.Enqueue(msg); } catch { }
 
             TempData["success"] = "Đã đánh dấu đơn hàng hoàn thành và tích điểm cho khách hàng.";
             return RedirectToPage("./Details", new { id });
