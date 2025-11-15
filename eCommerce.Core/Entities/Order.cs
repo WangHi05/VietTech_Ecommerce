@@ -23,8 +23,8 @@ namespace eCommerce.Core.Entities
         // Shipping info
         public string ShippingName { get; set; } = string.Empty;
         public string ShippingAddress { get; set; } = string.Empty;
-    // Phương thức vận chuyển (Standard / Express / Pickup ...)
-    public string ShippingMethod { get; set; } = "standard";
+        // Phương thức vận chuyển (Standard / Express / Pickup ...)
+        public string ShippingMethod { get; set; } = "standard";
         public string ShippingCountry { get; set; } = string.Empty;
         public string ShippingProvince { get; set; } = string.Empty;
 
