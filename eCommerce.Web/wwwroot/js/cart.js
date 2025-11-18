@@ -143,6 +143,8 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (e) { console.error('updateTotalsFromJson failed', e); }
     }
 
+    
+
     // Intercept update quantity forms
     document.querySelectorAll('.update-form').forEach(function (form) {
         form.addEventListener('submit', async function (e) {

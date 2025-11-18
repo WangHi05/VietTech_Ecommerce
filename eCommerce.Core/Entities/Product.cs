@@ -24,6 +24,11 @@ namespace eCommerce.Core.Entities
         [Range(0, int.MaxValue, ErrorMessage = "Số lượng tồn kho không thể là số âm")]
         public int StockQuantity { get; set; }
 
+        [Range(0, int.MaxValue, ErrorMessage = "Mức tồn kho tối thiểu không thể là số âm")]
+        public int MinStockLevel { get; set; } = 10; // Cảnh báo khi tồn kho thấp hơn giá trị này
+
+        public bool IsAvailable => StockQuantity > 0; // Tự động tính còn hàng hay không
+
         public string ImageUrl { get; set; } = string.Empty;
 
         // Foreign key cho Category

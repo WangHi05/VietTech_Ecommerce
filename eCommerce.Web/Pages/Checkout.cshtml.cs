@@ -1,6 +1,9 @@
 using eCommerce.Core.Entities;
 using eCommerce.Web.Services;
+using eCommerce.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using eCommerce.Application.Services;
+using eCommerce.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +28,8 @@ namespace eCommerce.Web.Pages
         private readonly IConfiguration _configuration;
         private readonly ILoyaltyService _loyaltyService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IStockService _stockService;
+        private readonly AppDbContext _context;
 
         [BindProperty]
     public string ShippingMethod { get; set; } = "standard";
@@ -59,13 +64,15 @@ namespace eCommerce.Web.Pages
         public int AvailablePoints { get; set; }
         public int MaxRedeemablePoints { get; set; }
 
-        public CheckoutModel(ICartService cartService, IOrderService orderService, IConfiguration configuration, ILoyaltyService loyaltyService, UserManager<ApplicationUser> userManager)
+        public CheckoutModel(ICartService cartService, IOrderService orderService, IConfiguration configuration, ILoyaltyService loyaltyService, UserManager<ApplicationUser> userManager, IStockService stockService, AppDbContext context)
         {
             _cartService = cartService;
             _orderService = orderService;
             _configuration = configuration;
             _loyaltyService = loyaltyService;
             _userManager = userManager;
+            _stockService = stockService;
+            _context = context;
         }
 
         public async Task<IActionResult> OnGetAsync(int pointsToRedeem = 0)
@@ -108,6 +115,17 @@ namespace eCommerce.Web.Pages
                 return RedirectToPage("/Cart");
             }
 
+            // === KIỂM TRA TỒN KHO TRƯỚC KHI ĐẶT HÀNG ===
+            foreach (var item in Items)
+            {
+                var hasStock = await _stockService.CheckStockAvailability(item.ProductId, item.Quantity);
+                if (!hasStock)
+                {
+                    ModelState.AddModelError(string.Empty, $"Sản phẩm '{item.Name}' không đủ số lượng trong kho.");
+                    return Page();
+                }
+            }
+
             // Validate points redemption
             if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
             {
@@ -147,6 +165,13 @@ namespace eCommerce.Web.Pages
 
                 var cardOrderId = await _orderService.PlaceOrderAsync(cardOrder);
 
+                // Trừ tồn kho
+                var userName = User.Identity?.Name ?? "Guest";
+                foreach (var item in Items)
+                {
+                    await _stockService.DeductStock(item.ProductId, item.Quantity, cardOrderId, userName);
+                }
+
                 // Redeem points if applicable
                 if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
                 {
@@ -168,6 +193,13 @@ namespace eCommerce.Web.Pages
                 codOrder.Status = "Đang chờ";
 
                 var codOrderId = await _orderService.PlaceOrderAsync(codOrder);
+
+                // Trừ tồn kho
+                var userName = User.Identity?.Name ?? "Guest";
+                foreach (var item in Items)
+                {
+                    await _stockService.DeductStock(item.ProductId, item.Quantity, codOrderId, userName);
+                }
 
                 // Redeem points if applicable
                 if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
@@ -213,8 +245,37 @@ namespace eCommerce.Web.Pages
             AppliedVoucherCode = applied;
             if (!string.IsNullOrEmpty(applied))
             {
-                var voucherSvc = new VoucherService();
-                Discount = await voucherSvc.GetDiscountAmountAsync(applied, SubTotal);
+                // Lookup voucher in DB (vouchers created via admin/seed) and compute discount using voucher rules
+                var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Code == applied && v.IsActive && v.StartDate <= DateTime.Now && v.ExpiryDate > DateTime.Now);
+                if (voucher != null)
+                {
+                    // Check min order value
+                    if (SubTotal >= voucher.MinOrderValue)
+                    {
+                        if (voucher.DiscountPercent.HasValue)
+                        {
+                            var disc = Math.Round(SubTotal * voucher.DiscountPercent.Value / 100m, 0);
+                            if (voucher.MaxDiscountAmount.HasValue && disc > voucher.MaxDiscountAmount.Value)
+                                disc = voucher.MaxDiscountAmount.Value;
+                            Discount = disc;
+                        }
+                        else if (voucher.DiscountAmount.HasValue)
+                        {
+                            Discount = voucher.DiscountAmount.Value;
+                        }
+                    }
+                    else
+                    {
+                        // does not meet min order; leave Discount = 0 (checkout will show 0)
+                        Discount = 0m;
+                    }
+                }
+                else
+                {
+                    // fallback: no DB voucher found (possibly older in-memory codes) - try legacy service
+                    var voucherSvc = new VoucherService();
+                    Discount = await voucherSvc.GetDiscountAmountAsync(applied, SubTotal);
+                }
             }
 
             // Calculate points discount (50 points = 1,000đ)
@@ -360,6 +421,13 @@ namespace eCommerce.Web.Pages
             order.Status = "Hoàn tất";
 
             var id = await _orderService.PlaceOrderAsync(order);
+
+            // Trừ tồn kho
+            var userName = User.Identity?.Name ?? "Guest";
+            foreach (var item in Items)
+            {
+                await _stockService.DeductStock(item.ProductId, item.Quantity, id, userName);
+            }
 
             // Redeem points if applicable
             if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)

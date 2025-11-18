@@ -1,0 +1,72 @@
+@page
+@using eCommerce.Core.Entities
+@model eCommerce.Web.Pages.VouchersModel
+@{
+    ViewData["Title"] = "Kho voucher";
+}
+<h2>Kho voucher</h2>
+<div class="row">
+    @foreach (var voucher in Model.AvailableVouchers)
+    {
+        <div class="col-md-4 mb-3">
+            @{
+                // Xác định loại badge: freeship, percent, amount
+                var badgeClass = "amount";
+                var isFreeShip = (!voucher.DiscountPercent.HasValue && voucher.DiscountAmount == 0m) || (voucher.Code?.ToUpper().Contains("SHIP") == true);
+                if (isFreeShip) badgeClass = "freeship";
+                else if (voucher.DiscountPercent.HasValue) badgeClass = "percent";
+
+                // Class cho card để đổi nền
+                var cardTypeClass = badgeClass == "freeship" ? "freeship-card" : (badgeClass == "percent" ? "percent-card" : "amount-card");
+            }
+            <div class="card voucher-card @cardTypeClass">
+                <div class="voucher-badge @badgeClass">
+                    @if (badgeClass == "freeship")
+                    {
+                        <span class="d-flex align-items-center">
+                            <!-- Inline SVG truck icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="me-1" aria-hidden="true">
+                                <path d="M1 3h13v13H1z"></path>
+                                <path d="M14 8h6l3 3v5h-9"></path>
+                                <circle cx="7" cy="19" r="1"></circle>
+                                <circle cx="18" cy="19" r="1"></circle>
+                            </svg>
+                            <span>Freeship</span>
+                        </span>
+                    }
+                    else if (badgeClass == "percent")
+                    {
+                        <span>@(voucher.DiscountPercent.HasValue ? voucher.DiscountPercent.Value.ToString("N0") : "0")%<small> OFF</small></span>
+                    }
+                    else
+                    {
+                        <span>@(voucher.DiscountAmount.HasValue ? voucher.DiscountAmount.Value.ToString("N0") : "0")₫</span>
+                    }
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="card-title mb-1">@voucher.Code</h5>
+                    </div>
+                    <p class="card-text text-muted small">@voucher.Description</p>
+                    <div class="voucher-info mb-2">
+                        <strong>Đơn tối thiểu:</strong> @voucher.MinOrderValue.ToString("N0")₫
+                    </div>
+
+                    <div class="voucher-expiry mt-2 text-muted small">HSD: @voucher.ExpiryDate.ToString("dd/MM/yyyy")</div>
+                    <div class="voucher-actions">
+                        @if (Model.UserVoucherIds.Contains(voucher.Id))
+                        {
+                            <button class="btn btn-outline-secondary btn-sm" disabled>Đã lưu</button>
+                        }
+                        else
+                        {
+                            <form method="post" asp-page-handler="Collect" asp-route-voucherId="@voucher.Id" class="d-inline">
+                                <button class="btn btn-primary btn-sm">Lưu voucher</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

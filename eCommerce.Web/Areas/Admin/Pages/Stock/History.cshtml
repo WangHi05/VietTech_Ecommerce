@@ -1,0 +1,183 @@
+@page
+@model eCommerce.Web.Areas.Admin.Pages.Stock.HistoryModel
+@{
+    ViewData["Title"] = "Lịch sử tồn kho";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0"><i class="bi bi-clock-history"></i> Lịch sử thay đổi tồn kho</h3>
+                    <div>
+                        <a asp-page="/Stock/Import" class="btn btn-success me-2">
+                            <i class="bi bi-box-arrow-in-down"></i> Nhập hàng
+                        </a>
+                        <a asp-page="/Stock/Adjust" class="btn btn-warning">
+                            <i class="bi bi-gear"></i> Điều chỉnh
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Bộ lọc -->
+                    <form method="get" class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">Sản phẩm</label>
+                            <select name="productId" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Tất cả sản phẩm --</option>
+                                @foreach (var product in Model.Products)
+                                {
+                                    <option value="@product.Id" selected="@(Model.ProductId == product.Id)">
+                                        @product.Name
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Loại thay đổi</label>
+                            <select name="type" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Tất cả --</option>
+                                <option value="Import" selected="@(Model.Type == "Import")">Nhập hàng</option>
+                                <option value="Export" selected="@(Model.Type == "Export")">Xuất hàng (Đơn)</option>
+                                <option value="Return" selected="@(Model.Type == "Return")">Hoàn trả</option>
+                                <option value="Adjust" selected="@(Model.Type == "Adjust")">Điều chỉnh</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Số bản ghi</label>
+                            <select name="limit" class="form-select" onchange="this.form.submit()">
+                                <option value="50" selected="@(Model.Limit == 50)">50</option>
+                                <option value="100" selected="@(Model.Limit == 100)">100</option>
+                                <option value="200" selected="@(Model.Limit == 200)">200</option>
+                                <option value="500" selected="@(Model.Limit == 500)">500</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <a href="@Url.Page("/Stock/History")" class="btn btn-secondary w-100">
+                                <i class="bi bi-arrow-clockwise"></i> Reset
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Bảng lịch sử -->
+                    @if (Model.StockHistories.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Thời gian</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Loại</th>
+                                        <th>Số lượng</th>
+                                        <th>Trước</th>
+                                        <th>Sau</th>
+                                        <th>Lý do</th>
+                                        <th>Người thực hiện</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var history in Model.StockHistories)
+                                    {
+                                        <tr>
+                                            <td class="text-nowrap">
+                                                @history.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                            </td>
+                                            <td>
+                                                <a asp-page="/ProductDetails/Detail" asp-route-id="@history.ProductId" class="text-decoration-none">
+                                                    @history.Product?.Name
+                                                </a>
+                                            </td>
+                                            <td>
+                                                @switch (history.Type)
+                                                {
+                                                    case "Import":
+                                                        <span class="badge bg-success">
+                                                            <i class="bi bi-box-arrow-in-down"></i> Nhập
+                                                        </span>
+                                                        break;
+                                                    case "Export":
+                                                        <span class="badge bg-danger">
+                                                            <i class="bi bi-box-arrow-up"></i> Xuất
+                                                        </span>
+                                                        break;
+                                                    case "Return":
+                                                        <span class="badge bg-info">
+                                                            <i class="bi bi-arrow-return-left"></i> Trả
+                                                        </span>
+                                                        break;
+                                                    case "Adjust":
+                                                        <span class="badge bg-warning">
+                                                            <i class="bi bi-gear"></i> Điều chỉnh
+                                                        </span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (history.Type == "Export")
+                                                {
+                                                    <span class="text-danger">-@history.Quantity</span>
+                                                }
+                                                else if (history.Type == "Import" || history.Type == "Return")
+                                                {
+                                                    <span class="text-success">+@history.Quantity</span>
+                                                }
+                                                else
+                                                {
+                                                    var diff = history.AfterQuantity - history.BeforeQuantity;
+                                                    if (diff > 0)
+                                                    {
+                                                        <span class="text-success">+@diff</span>
+                                                    }
+                                                    else if (diff < 0)
+                                                    {
+                                                        <span class="text-danger">@diff</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">0</span>
+                                                    }
+                                                }
+                                            </td>
+                                            <td>@history.BeforeQuantity</td>
+                                            <td>
+                                                <strong>@history.AfterQuantity</strong>
+                                            </td>
+                                            <td>
+                                                <small>@history.Reason</small>
+                                                @if (history.OrderId.HasValue)
+                                                {
+                                                    <br />
+                                                    <a asp-area="Admin" asp-page="/Orders/Details" asp-route-id="@history.OrderId" 
+                                                       class="badge bg-secondary text-decoration-none">
+                                                        Đơn #@history.OrderId
+                                                    </a>
+                                                }
+                                            </td>
+                                            <td>
+                                                <small>@history.CreatedBy</small>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            <i class="bi bi-info-circle"></i> 
+                            Hiển thị <strong>@Model.StockHistories.Count</strong> bản ghi gần nhất
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> 
+                            Không tìm thấy lịch sử thay đổi nào với bộ lọc hiện tại.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

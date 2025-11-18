@@ -54,7 +54,7 @@ namespace eCommerce.Web.Pages.Payment
                 });
             }
 
-            if (!string.Equals(order.PaymentStatus, "Pending", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(order.PaymentStatus, "Chưa thanh toán", StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToPage("/Payment/Result", new 
                 { 
@@ -94,7 +94,7 @@ namespace eCommerce.Web.Pages.Payment
                 });
             }
 
-            if (!string.Equals(order.PaymentStatus, "Pending", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(order.PaymentStatus, "Chưa thanh toán", StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToPage("/Payment/Result", new 
                 { 
@@ -116,7 +116,7 @@ namespace eCommerce.Web.Pages.Payment
                 });
             }
 
-            await _orderService.UpdatePaymentStateAsync(OrderId, "Paid", "Succeeded", DateTime.UtcNow);
+            await _orderService.UpdatePaymentStateAsync(OrderId, "Hoàn tất", "Đã thanh toán", DateTime.UtcNow);
             await _cartService.ClearCartAsync();
 
             return RedirectToPage("/Payment/Result", new 

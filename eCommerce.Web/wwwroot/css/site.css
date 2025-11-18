@@ -1345,13 +1345,16 @@
   
   /* Stock Status - MODIFIED: Hidden */
   .product-stock {
-    display: none; /* Hide stock status to match SmashPro */
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 16px;
     display: flex;
     align-items: center;
     gap: 6px;
+  }
+  
+  .product-stock i {
+    font-size: 0.9rem;
   }
   
   .product-stock.in-stock {
@@ -1366,12 +1369,19 @@
     color: var(--danger-color);
   }
   
-  .product-stock::before {
-    content: "";
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: currentColor;
+  /* Disable button when out of stock */
+  .btn-primary:disabled,
+  .btn-primary[disabled] {
+    background-color: #94a3b8;
+    border-color: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  .dark-theme .btn-primary:disabled,
+  .dark-theme .btn-primary[disabled] {
+    background-color: #475569;
+    border-color: #475569;
   }
   
   /* Add to Cart Button - MODIFIED: Changed to Orange */
@@ -2347,6 +2357,48 @@
     margin-bottom: 1.5rem;
   }
   
+  .product-stock-detail {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .product-stock-detail i {
+    font-size: 1.1rem;
+  }
+  
+  .product-stock-detail.in-stock {
+    color: var(--success-color);
+    background-color: #d1fae5;
+  }
+  
+  .product-stock-detail.low-stock {
+    color: var(--warning-color);
+    background-color: #fef3c7;
+  }
+  
+  .product-stock-detail.out-of-stock {
+    color: var(--danger-color);
+    background-color: #fee2e2;
+  }
+  
+  .dark-theme .product-stock-detail.in-stock {
+    background-color: rgba(16, 185, 129, 0.15);
+  }
+  
+  .dark-theme .product-stock-detail.low-stock {
+    background-color: rgba(245, 158, 11, 0.15);
+  }
+  
+  .dark-theme .product-stock-detail.out-of-stock {
+    background-color: rgba(239, 68, 68, 0.15);
+  }
+  
   .product-actions {
     margin-bottom: 1.5rem;
   }
@@ -3236,4 +3288,77 @@ main {
 .dark-theme .cart-summary .summary-row.total {
     color: var(--text-primary);
     border-top-color: var(--input-border);
+}
+
+/* Voucher card custom styles */
+.voucher-card {
+  position: relative;
+  overflow: visible;
+  border-radius: 8px;
+  transition: transform .12s ease, box-shadow .12s ease;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.voucher-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(20,20,20,0.08);
+}
+.voucher-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  color: #fff;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.voucher-badge.percent,
+.voucher-badge.amount { background: linear-gradient(90deg,#ff9a3c,#ff6b00); }
+.voucher-badge.freeship { background: linear-gradient(90deg,#10b981,#34d399); }
+
+/* Backgrounds for the whole card per type */
+.voucher-card.freeship-card { background: linear-gradient(180deg, rgba(16,185,129,0.06), rgba(52,211,153,0.03)); border-color: rgba(16,185,129,0.12); }
+.voucher-card.percent-card { background: linear-gradient(180deg, rgba(255,154,60,0.06), rgba(255,107,0,0.03)); border-color: rgba(255,154,60,0.12); }
+.voucher-card.amount-card { background: linear-gradient(180deg, rgba(59,130,246,0.03), rgba(6,182,212,0.02)); border-color: rgba(59,130,246,0.06); }
+
+.voucher-badge svg { vertical-align: middle; margin-right: 6px; }
+.voucher-badge.freeship span { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Badge animation and card border accents */
+@keyframes badge-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.18); transform: scale(1); }
+  50% { box-shadow: 0 0 18px 6px rgba(16,185,129,0.06); transform: scale(1.04); }
+ 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.00); transform: scale(1); }
+}
+
+.voucher-badge.freeship {
+  animation: badge-pulse 3.6s ease-in-out infinite;
+}
+
+.voucher-badge { transition: transform .12s ease, box-shadow .12s ease; display: inline-block; }
+.voucher-badge:hover { transform: scale(1.06); }
+
+/* Strong colored left border as visual accent */
+.voucher-card.freeship-card { border-left: 4px solid #10b981; }
+.voucher-card.percent-card { border-left: 4px solid #ff9a3c; }
+.voucher-card.amount-card { border-left: 4px solid #3b82f6; }
+
+.voucher-card { transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease; }
+.voucher-card:hover { box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
+.voucher-badge small { font-weight: 600; font-size: 0.6em; margin-left:4px; opacity:0.9; }
+.voucher-expiry { font-size: .8rem; }
+.voucher-info { color: #374151; }
+.voucher-actions .btn { min-width: 110px; }
+.voucher-card .card-body { padding: 1rem 1rem 1.25rem 1rem; }
+
+/* Disabled / saved state */
+.voucher-card .btn[disabled],
+.voucher-card .btn[disabled]:hover {
+  background: #f3f4f6; color: #6b7280; border-color: #e5e7eb;
+}
+
+@media (max-width: 576px) {
+  .voucher-badge { top: 8px; right: 8px; font-size: .85rem; padding:4px 8px; }
+  .voucher-actions .btn { width: 100%; }
 }

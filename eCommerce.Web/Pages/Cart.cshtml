@@ -6,10 +6,7 @@
 
 <h1>Giỏ Hàng Của Bạn</h1>
 
-@if (TempData["Message"] != null)
-{
-    <div class="alert alert-success">@TempData["Message"]</div>
-}
+@* Success message removed to avoid persistent green banner on AJAX actions. Keep error alerts. *@
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">@TempData["Error"]</div>
@@ -63,32 +60,33 @@ else
         <div class="cart-controls">
             <div class="controls-left">
                 <div class="voucher-box">
-                <label>Voucher</label>
+                <label>Voucher đã lưu</label>
                 <form method="post" asp-page-handler="ApplyVoucher" class="voucher-form">
-                    <select name="VoucherCode">
+                    <select name="UserVoucherId">
                         <option value="">-- Chọn voucher --</option>
-                        @foreach (var kv in Model.AvailableVouchers)
+                        @foreach (var uv in Model.UserVouchers)
                         {
-                            <option value="@kv.Key" selected="@(Model.VoucherCode==kv.Key ? "selected" : null)">@kv.Value</option>
+                            <option value="@uv.Id">
+                                @uv.Voucher.Code - 
+                                @if (uv.Voucher.DiscountPercent.HasValue)
+                                {
+                                    <text>Giảm @(uv.Voucher.DiscountPercent?.ToString("N0") ?? "0")%</text>
+                                }
+                                else if (uv.Voucher.DiscountAmount.HasValue)
+                                {
+                                    <text>Giảm @uv.Voucher.DiscountAmount.Value.ToString("N0")₫</text>
+                                }
+                                (HSD: @uv.Voucher.ExpiryDate.ToString("dd/MM/yyyy"))
+                            </option>
                         }
                     </select>
                     <button type="submit" class="btn btn-primary">Áp dụng</button>
                 </form>
+                @if (!Model.UserVouchers.Any())
+                {
+                    <p class="text-muted small mt-2">Bạn chưa lưu voucher nào. <a asp-page="/Vouchers/Index">Xem voucher</a></p>
+                }
                 </div>
-
-                <div class="shipping-box">
-                <label>Phí vận chuyển</label>
-                <form method="post" asp-page-handler="CalculateShipping" class="shipping-form">
-                    <input type="hidden" name="Country" value="Vietnam" />
-                    <select id="provinceSelect" name="Province">
-                        @foreach (var p in Model.PresetProvinces)
-                        {
-                            <option value="@p">@p</option>
-                        }
-                    </select>
-                    <button type="submit" class="btn btn-secondary">Tính phí</button>
-                </form>
-            </div>
 
             </div>
 
@@ -96,7 +94,6 @@ else
                 <div class="cart-summary" data-test="cart-summary">
                 <div class="summary-row" data-test="subtotal"><span>Tạm tính:</span><span class="value">@Model.SubTotal.ToString("N0") ₫</span></div>
                 <div class="summary-row" data-test="discount"><span>Giảm giá:</span><span class="value">- @Model.Discount.ToString("N0") ₫</span></div>
-                <div class="summary-row" data-test="shipping"><span>Phí vận chuyển:</span><span class="value">@Model.ShippingFee.ToString("N0") ₫</span></div>
                 <div class="summary-row total" data-test="total"><span>Tổng cộng:</span><span class="value">@Model.Total.ToString("N0") ₫</span></div>
                 </div>
                 <div class="checkout-actions" style="margin-top:12px;">
