@@ -6,6 +6,9 @@
         const sections = Array.from(document.querySelectorAll('[data-payment-section]'));
         if (!paymentSelect) return;
 
+        const form = paymentSelect.form;
+        const originalAction = form ? (form.getAttribute('action') || window.location.pathname) : window.location.pathname;
+
         function updatePaymentUI() {
             const value = (paymentSelect.value || '').toLowerCase();
             sections.forEach(section => {
@@ -14,15 +17,17 @@
                 section.style.display = isVisible ? 'block' : 'none';
                 section.toggleAttribute('hidden', !isVisible);
             });
+            // Nếu không phải VNPay thì reset lại action
+            if (form && value !== 'vnpay') {
+                form.setAttribute('action', originalAction);
+            }
         }
 
         paymentSelect.addEventListener('change', updatePaymentUI);
         updatePaymentUI(); // chạy 1 lần khi load
 
         const vnpayButton = document.getElementById('vnpayButton');
-        const form = paymentSelect.form;
         if (vnpayButton && form) {
-            const originalAction = form.getAttribute('action') || window.location.pathname;
             vnpayButton.addEventListener('click', function () {
                 paymentSelect.value = 'vnpay';
                 updatePaymentUI();

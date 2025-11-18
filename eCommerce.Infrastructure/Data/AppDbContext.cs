@@ -21,6 +21,9 @@ namespace eCommerce.Infrastructure.Data
         public DbSet<Brand> Brands { get; set; }
         public DbSet<LoyaltyPoint> LoyaltyPoints { get; set; }
         public DbSet<PointTransaction> PointTransactions { get; set; }
+        public DbSet<StockHistory> StockHistories { get; set; }
+        public DbSet<Voucher> Vouchers { get; set; }
+        public DbSet<UserVoucher> UserVouchers { get; set; }
        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

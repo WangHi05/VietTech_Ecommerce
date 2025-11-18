@@ -1,4 +1,5 @@
 using eCommerce.Web.Services;
+using eCommerce.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -8,11 +9,13 @@ namespace eCommerce.Web.Pages.Payment
     {
         private readonly IVnPayService _vnPayService;
         private readonly ILogger<ResultModel> _logger;
+        private readonly IOrderService _orderService;
 
-        public ResultModel(IVnPayService vnPayService, ILogger<ResultModel> logger)
+        public ResultModel(IVnPayService vnPayService, ILogger<ResultModel> logger, IOrderService orderService)
         {
             _vnPayService = vnPayService;
             _logger = logger;
+            _orderService = orderService;
         }
 
         public bool PaymentSuccess { get; set; }
@@ -23,7 +26,7 @@ namespace eCommerce.Web.Pages.Payment
         public string OrderDescription { get; set; } = string.Empty;
 
         // Nhận các param từ redirect hoặc VNPay callback
-        public void OnGet(string orderId = "", bool success = false, string method = null)
+        public async Task OnGet(string orderId = "", bool success = false, string? method = null)
         {
             try
             {
@@ -50,6 +53,27 @@ namespace eCommerce.Web.Pages.Payment
                     OrderDescription = response.OrderDescription;
 
                     _logger.LogInformation($"VNPay payment result for order {OrderId}: {PaymentSuccess}");
+
+                    if (PaymentSuccess)
+                    {
+                        try
+                        {
+                            if (int.TryParse(OrderId, out var oid))
+                            {
+                                // Cập nhật trạng thái thanh toán - OrderService sẽ phụ trách tích điểm khi paymentStatus == "Đã thanh toán"
+                                await _orderService.UpdatePaymentStateAsync(oid, "Hoàn tất", "Đã thanh toán", DateTime.Now);
+                                _logger.LogInformation($"Đã gọi UpdatePaymentStateAsync cho đơn hàng {OrderId}.");
+                            }
+                            else
+                            {
+                                _logger.LogWarning($"OrderId không phải số nguyên: {OrderId}. Bỏ qua cập nhật trạng thái/tích điểm.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, $"Lỗi khi cập nhật trạng thái/tích điểm cho đơn hàng {OrderId}.");
+                        }
+                    }
                 }
 
                 else if (PaymentMethod == "card" || PaymentMethod == "cod")

@@ -83,6 +83,9 @@ builder.Services.AddScoped<IVoucherService, VoucherService>();
 // Add loyalty service
 builder.Services.AddScoped<eCommerce.Application.Services.ILoyaltyService, eCommerce.Infrastructure.Services.LoyaltyService>();
 
+// Add stock management service
+builder.Services.AddScoped<IStockService, StockService>();
+
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 

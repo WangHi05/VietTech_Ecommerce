@@ -35,6 +35,34 @@
                         <i class="bi bi-people-fill"></i> Quản Lý Khách Hàng
                     </a>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-box"></i> Quản Lý Tồn Kho
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a asp-area="Admin" asp-page="/Stock/LowStock" class="dropdown-item">
+                                <i class="bi bi-exclamation-triangle text-warning"></i> Cảnh Báo Tồn Kho
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="Admin" asp-page="/Stock/Import" class="dropdown-item">
+                                <i class="bi bi-box-arrow-in-down text-success"></i> Nhập Hàng
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="Admin" asp-page="/Stock/Adjust" class="dropdown-item">
+                                <i class="bi bi-gear text-warning"></i> Điều Chỉnh
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a asp-area="Admin" asp-page="/Stock/History" class="dropdown-item">
+                                <i class="bi bi-clock-history text-secondary"></i> Lịch Sử
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                  <li>
                     <a href="#" class="nav-link">
                         <i class="bi bi-star me-2"></i>Quản Lý Đánh Giá

@@ -21,11 +21,35 @@
             <h1>@Model.Product.Name</h1>
             <p class="product-detail-price">@Model.Product.Price.ToString("N0") ₫</p>
             <p class="product-detail-description">@Model.Product.Description</p>
+            
+            @if (Model.Product.StockQuantity > 0)
+            {
+                <div class="product-stock-detail @(Model.Product.StockQuantity <= Model.Product.MinStockLevel ? "low-stock" : "in-stock")">
+                    @if (Model.Product.StockQuantity <= Model.Product.MinStockLevel)
+                    {
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <span>Sắp hết hàng - Chỉ còn @Model.Product.StockQuantity sản phẩm</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-check-circle"></i>
+                        <span>Còn @Model.Product.StockQuantity sản phẩm</span>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="product-stock-detail out-of-stock">
+                    <i class="bi bi-x-circle"></i>
+                    <span>Sản phẩm tạm hết hàng</span>
+                </div>
+            }
+            
              <div class="product-actions">
                 <form method="post" asp-page="/Cart" asp-route-handler="Add" class="inline-form">
                     <input type="hidden" name="productId" value="@Model.Product.Id" />
                     <input type="hidden" name="qty" value="1" />
-                    <button type="submit" class="btn btn-primary btn-lg">
+                    <button type="submit" class="btn btn-primary btn-lg" @(Model.Product.StockQuantity <= 0 ? "disabled" : "")>
                         <i class="bi bi-cart-plus" style="margin-right: 12px;" aria-hidden="true"></i>Thêm vào giỏ hàng
                     </button>
                 </form>
