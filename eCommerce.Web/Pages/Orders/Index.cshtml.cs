@@ -135,16 +135,16 @@ namespace eCommerce.Web.Pages.Orders
             // Chỉ cho phép xác nhận khi đang "Đang Giao"
             if (order.Status == "Đang giao hàng")
             {
-                order.Status = "Hoàn tất"; 
-               if (string.Equals(order.PaymentMethod, "cod", StringComparison.OrdinalIgnoreCase))
+                // Nếu là COD thì cập nhật payment state để đảm bảo logic tích điểm (OrderService sẽ tích điểm khi paymentStatus == "Đã thanh toán")
+                if (string.Equals(order.PaymentMethod, "cod", StringComparison.OrdinalIgnoreCase))
                 {
-                    order.PaymentStatus = "Đã thanh toán";
+                    await _orderService.UpdatePaymentStateAsync(id, "Hoàn tất", "Đã thanh toán", DateTime.Now);
                 }
-
-                // Lưu thay đổi vào DB (bạn cần đảm bảo _context có thể truy cập ở đây
-                // hoặc lý tưởng nhất là _orderService có phương thức UpdateAsync)
-                _context.Orders.Update(order);
-                await _context.SaveChangesAsync();
+                else
+                {
+                    // Với các phương thức khác (prepaid) chỉ cập nhật status
+                    await _orderService.UpdateStatusAsync(id, "Hoàn tất");
+                }
 
                 TempData["SuccessMessage"] = "Đã xác nhận hoàn tất đơn hàng #" + id + ". Bạn có thể đánh giá sản phẩm.";
             }
