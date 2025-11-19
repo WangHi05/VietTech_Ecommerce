@@ -1,0 +1,114 @@
+@page
+@model eCommerce.Web.Areas.Admin.Pages.Vouchers.CreateModel
+@{
+    ViewData["Title"] = "Tạo Voucher Mới";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Thêm Voucher Mới</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Thông tin Voucher</h6>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Voucher.Code" class="control-label fw-bold">Mã Voucher (CODE)</label>
+                            <input asp-for="Voucher.Code" class="form-control text-uppercase" placeholder="VD: SALE50" required />
+                            <span asp-validation-for="Voucher.Code" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Voucher.Description" class="control-label fw-bold">Mô tả / Tên chương trình</label>
+                            <input asp-for="Voucher.Description" class="form-control" placeholder="VD: Siêu sale giữa tháng" />
+                            <span asp-validation-for="Voucher.Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="Voucher.DiscountAmount" class="control-label">Giảm theo tiền mặt (VNĐ)</label>
+                            <input asp-for="Voucher.DiscountAmount" class="form-control" type="number" placeholder="Nhập số tiền" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="Voucher.DiscountPercent" class="control-label">Giảm theo phần trăm (%)</label>
+                            <input asp-for="Voucher.DiscountPercent" class="form-control" type="number" max="100" placeholder="0-100" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="Voucher.MaxDiscountAmount" class="control-label">Giảm tối đa (VNĐ)</label>
+                            <input asp-for="Voucher.MaxDiscountAmount" class="form-control" type="number" placeholder="Cho mã %" />
+                            <small class="text-muted">Giới hạn số tiền giảm nếu dùng %.</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Voucher.StartDate" class="control-label">Ngày bắt đầu</label>
+                            <input asp-for="Voucher.StartDate" class="form-control" type="date" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                         <div class="form-group mb-3">
+                            <label asp-for="Voucher.ExpiryDate" class="control-label">Ngày kết thúc (Hết hạn)</label>
+                            <input asp-for="Voucher.ExpiryDate" class="form-control" type="date" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="Voucher.MaxUsage" class="control-label">Tổng số lượng phát hành</label>
+                            <input asp-for="Voucher.MaxUsage" class="form-control" type="number" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="Voucher.MaxUsagePerUser" class="control-label">Lượt dùng tối đa / Khách</label>
+                            <input asp-for="Voucher.MaxUsagePerUser" class="form-control" type="number" />
+                        </div>
+                    </div>
+                     <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="Voucher.MinOrderValue" class="control-label">Đơn tối thiểu (VNĐ)</label>
+                            <input asp-for="Voucher.MinOrderValue" class="form-control" type="number" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3 form-check">
+                    <input class="form-check-input" asp-for="Voucher.IsActive" />
+                    <label class="form-check-label" asp-for="Voucher.IsActive">Kích hoạt voucher này ngay</label>
+                </div>
+
+                <hr />
+
+                <div class="alert alert-info d-flex align-items-center">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" asp-for="SendPushNotification" style="transform: scale(1.3); margin-right: 10px;">
+                        <label class="form-check-label fw-bold" asp-for="SendPushNotification">
+                            <i class="bi bi-bell-fill"></i> Gửi thông báo ngay
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="bi bi-save"></i> Tạo Voucher</button>
+                    <a asp-page="Index" class="btn btn-secondary btn-lg">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

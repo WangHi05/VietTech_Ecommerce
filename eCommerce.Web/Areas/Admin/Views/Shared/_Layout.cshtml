@@ -65,8 +65,34 @@
                 </li>
                  <li>
                     <a href="#" class="nav-link">
-                        <i class="bi bi-star me-2"></i>Quản Lý Đánh Giá
+                        <i class="bi bi-star me"></i>Quản Lý Đánh Giá
                     </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed custom-nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMarketing" aria-expanded="false" aria-controls="collapseMarketing">
+                        <i class="bi bi-megaphone-fill"></i>
+                        <span>Marketing & Push</span>
+                        <i class="bi bi-chevron-down ms-auto rotate-icon"></i>
+                    </a>
+
+                    <div id="collapseMarketing" class="collapse" data-parent="#accordionSidebar">
+                        <ul class="bg-white py-2 collapse-inner rounded list-unstyled custom-submenu">
+                            
+                            <li>
+                                <a class="collapse-item custom-sub-link" asp-area="Admin" asp-page="/Notifications/Send">
+                                    <i class="bi bi-send"></i>
+                                    <span>Gửi thông báo</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="collapse-item custom-sub-link" asp-area="Admin" asp-page="/Vouchers/Index">
+                                    <i class="bi bi-ticket-perforated"></i>
+                                    <span>Quản lý Voucher</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
                 <li>
                     <a asp-area="Admin" asp-page="/Reports/Index" class="nav-link">

@@ -160,7 +160,6 @@ namespace eCommerce.Web.Controllers
         }
     }
 
-    // === CÁC LỚP MODEL (ĐÃ SỬA LỖI NULLABLE) ===
     public class DialogflowRequest
     {
         [JsonPropertyName("queryResult")]

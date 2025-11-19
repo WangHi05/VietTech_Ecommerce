@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using eCommerce.Web.Services;
 using eCommerce.Web.Services.Notifications;
+using WebPush;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,11 +69,12 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<eCommerce.Application.Services.IOrderService, eCommerce.Application.Services.OrderService>();
 
 // Push service (Web Push)
-builder.Services.AddScoped<eCommerce.Web.Services.IPushService, eCommerce.Web.Services.WebPushService>();
+builder.Services.AddScoped<eCommerce.Web.Services.Notifications.IPushService, eCommerce.Web.Services.Notifications.WebPushService>();
 
 // Notification queue + background worker
 builder.Services.AddSingleton<INotificationQueue, NotificationQueue>();
 builder.Services.AddHostedService<NotificationBackgroundService>();
+builder.Services.AddScoped<IPushService, WebPushService>();
 
 // Add cart, voucher and session support
 builder.Services.AddHttpContextAccessor();
@@ -136,4 +138,23 @@ app.UseAuthorization();
 app.MapRazorPages();    
 app.MapControllers();
 
+// --- BẮT ĐẦU ĐOẠN CODE TẠO KEY (CHẠY 1 LẦN RỒI XÓA) ---
+/*
+try 
+{
+    var keys = VapidHelper.GenerateVapidKeys();
+    Console.WriteLine("\n=================================================");
+    Console.WriteLine("COPY 2 DÒNG DƯỚI ĐÂY VÀO APPSETTINGS.JSON:");
+    Console.WriteLine($"PublicKey:  {keys.PublicKey}");
+    Console.WriteLine($"PrivateKey: {keys.PrivateKey}");
+    Console.WriteLine("=================================================\n");
+    
+    // Dừng chương trình lại để bạn kịp copy, không chạy server web lên
+    return; 
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Lỗi: " + ex.Message);
+} */
+// --- KẾT THÚC ĐOẠN CODE TẠO KEY ---
 app.Run();

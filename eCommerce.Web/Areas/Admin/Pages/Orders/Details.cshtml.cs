@@ -57,7 +57,7 @@ namespace eCommerce.Web.Areas.Admin.Pages.Orders
                     UserId = order.UserId ?? string.Empty,
                     Title = "Đơn hàng đang được xử lý", 
                     Body = $"Đơn #{order.Id} đang được xử lý.", 
-                    Url = $"/Orders/Details?id={order.Id}",
+                    Url = $"/Orders/Details/{order.Id}",
                     EmailTo = order.Customer?.Email,
                     EmailSubject = $"Đơn hàng #{order.Id} - Đang Xử Lý", 
                     EmailBody = $"Xin chào {order.ShippingName},<br/><br/>Đơn hàng #{order.Id} của bạn đã được xác nhận và đang trong quá trình xử lý.<br/><br/>Cảm ơn bạn."
@@ -84,7 +84,7 @@ namespace eCommerce.Web.Areas.Admin.Pages.Orders
                     UserId = order.UserId ?? string.Empty,
                     Title = "Đơn hàng đang giao",
                     Body = $"Đơn #{order.Id} đang được giao.",
-                    Url = $"/Orders/Details?id={order.Id}",
+                    Url = $"/Orders/Details/{order.Id}",
                     EmailTo = order.Customer?.Email,
                     EmailSubject = $"Đơn hàng #{order.Id} - Đang Giao",
                     EmailBody = $"Xin chào {order.ShippingName},<br/><br/>Đơn hàng #{order.Id} của bạn đã được xác nhận và đang trên đường giao.<br/><br/>Cảm ơn bạn."
@@ -114,7 +114,7 @@ namespace eCommerce.Web.Areas.Admin.Pages.Orders
                     UserId = order.UserId ?? string.Empty,
                     Title = "Đơn hàng bị huỷ",
                     Body = $"Đơn #{order.Id} của bạn không được xác nhận.",
-                    Url = $"/Orders/Details?id={order.Id}",
+                    Url = $"/Orders/Details/{order.Id}",
                     EmailTo = order.Customer?.Email,
                     EmailSubject = $"Đơn hàng #{order.Id} - Không được xác nhận",
                     EmailBody = $"Xin chào {order.ShippingName},<br/><br/>Rất tiếc, đơn hàng #{order.Id} của bạn đã bị huỷ. Vui lòng liên hệ support nếu cần hỗ trợ.<br/><br/>Cảm ơn."
@@ -158,7 +158,7 @@ namespace eCommerce.Web.Areas.Admin.Pages.Orders
                 UserId = order.UserId ?? string.Empty,
                 Title = "Đơn hàng hoàn thành",
                 Body = $"Đơn #{order.Id} đã được giao thành công!",
-                Url = $"/Orders/Details?id={order.Id}",
+                Url = $"/Orders/Details/{order.Id}",
                 EmailTo = order.Customer?.Email,
                 EmailSubject = $"Đơn hàng #{order.Id} - Hoàn Thành",
                 EmailBody = $"Xin chào {order.ShippingName},<br/><br/>Đơn hàng #{order.Id} đã được giao thành công. Cảm ơn bạn đã mua hàng!<br/><br/>Bạn đã nhận được điểm thưởng cho đơn hàng này."

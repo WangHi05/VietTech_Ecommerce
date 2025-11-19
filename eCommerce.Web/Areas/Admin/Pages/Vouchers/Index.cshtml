@@ -1,0 +1,100 @@
+@page
+@model eCommerce.Web.Areas.Admin.Pages.Vouchers.IndexModel
+@{
+    ViewData["Title"] = "Quản lý Voucher";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Danh sách Voucher</h1>
+        <a asp-page="./Create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="bi bi-plus-lg"></i> Tạo Voucher Mới
+        </a>
+    </div>
+
+    @if (TempData["success"] != null)
+    {
+        <div class="alert alert-success">@TempData["success"]</div>
+    }
+    @if (TempData["error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["error"]</div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Dữ liệu Voucher hiện có</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã (Code)</th>
+                            <th>Mô tả</th>
+                            <th>Giảm giá</th>
+                            <th>Hạn sử dụng</th>
+                            <th>Đã dùng / Tổng</th>
+                            <th>Trạng thái</th>
+                            <th style="width: 100px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Vouchers)
+                        {
+                            // Logic kiểm tra trạng thái để tô màu
+                            bool isExpired = item.ExpiryDate < DateTime.Now;
+                            string statusClass = isExpired ? "text-danger" : (item.IsActive ? "text-success" : "text-muted");
+                            string statusText = isExpired ? "Đã hết hạn" : (item.IsActive ? "Đang chạy" : "Tạm dừng");
+
+                            <tr>
+                                <td class="fw-bold text-primary">@item.Code</td>
+                                <td>@item.Description</td>
+                                <td>
+                                    @if (item.DiscountPercent.HasValue)
+                                    {
+                                        <span class="badge bg-warning text-dark">@item.DiscountPercent%</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">@item.DiscountAmount?.ToString("N0")đ</span>
+                                    }
+                                </td>
+                                <td>
+                                    @item.StartDate.ToString("dd/MM") - @item.ExpiryDate.ToString("dd/MM/yyyy")
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <span class="me-2">@item.UsedCount/@item.MaxUsage</span>
+                                    </div>
+                                </td>
+                                <td class="@statusClass fw-bold">
+                                    @statusText
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <form method="post" asp-page-handler="Delete" asp-route-id="@item.Id" onsubmit="return confirm('Bạn có chắc chắn muốn xóa voucher @item.Code không?');">
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                        
+                                        @* <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-secondary btn-sm" title="Sửa">
+                                            <i class="bi bi-pencil"></i>
+                                        </a> *@
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (!Model.Vouchers.Any())
+            {
+                <div class="text-center py-4 text-muted">
+                    Chưa có voucher nào. Hãy tạo mới ngay!
+                </div>
+            }
+        </div>
+    </div>
+</div>

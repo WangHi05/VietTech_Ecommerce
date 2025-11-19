@@ -15,52 +15,37 @@
     }
 </div>
 
-
 @if (Model.SearchResults != null && Model.SearchResults.Any())
 {
-    <div class="product-grid">
-        @foreach (var product in Model.SearchResults)
-        {
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="@product.ImageUrl" alt="@product.Name" onerror="this.onerror=null;this.src='[https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Not+Found](https://placehold.co/400x300/E2E8F0/4A5568?text=Image+Not+Found)';">
-                </div>
-                <div class="product-info">
-                    <h3>@product.Name</h3>
-                    <p class="product-price">@product.Price.ToString("N0") ₫</p>
-                    @if (product.StockQuantity > 0)
-                    {
-                        <div class="product-stock @(product.StockQuantity <= product.MinStockLevel ? "low-stock" : "in-stock")">
-                            @if (product.StockQuantity <= product.MinStockLevel)
-                            {
-                                <i class="bi bi-exclamation-triangle"></i>
-                                <span>Sắp hết hàng (còn @product.StockQuantity)</span>
-                            }
-                            else
-                            {
-                                <i class="bi bi-check-circle"></i>
-                                <span>Còn @product.StockQuantity sản phẩm</span>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="product-stock out-of-stock">
-                            <i class="bi bi-x-circle"></i>
-                            <span>Hết hàng</span>
-                        </div>
-                    }
-                    <form method="post" asp-page="/Cart" asp-route-handler="Add" class="inline-form">
-                        <input type="hidden" name="productId" value="@product.Id" />
-                        <input type="hidden" name="qty" value="1" />
-                        <button type="submit" class="btn-primary" @(product.StockQuantity <= 0 ? "disabled" : "")><i class="bi bi-cart-plus" style="margin-right: 12px;" aria-hidden="true"></i>Thêm vào giỏ</button>
-                    </form>
-                </div>
-            </div>
-        }
+    @* --- PHẦN 1: KẾT QUẢ TÌM KIẾM CHÍNH (Highlight = true) --- *@
+    <div class="section-search-results mb-5">
+        <h3 class="border-bottom pb-2 mb-3"><i class="bi bi-search"></i> Sản phẩm cần tìm</h3>
+        <div class="product-grid">
+            @foreach (var product in Model.SearchResults)
+            {
+                <partial name="_ProductCard" model="product" view-data='new ViewDataDictionary(ViewData) { { "IsHighlight", true } }' />
+            }
+        </div>
     </div>
+
+    @* --- PHẦN 2: SẢN PHẨM LIÊN QUAN (Highlight = false) --- *@
+    @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
+    {
+        <div class="section-related-products mt-5 p-4 bg-light rounded">
+            <h3 class="border-bottom pb-2 mb-3 text-muted">
+                <i class="bi bi-stars"></i> Có thể bạn cũng thích
+            </h3>
+            <div class="product-grid">
+                @foreach (var product in Model.RelatedProducts)
+                {
+                    @* Không truyền IsHighlight, mặc định sẽ là false *@
+                    <partial name="_ProductCard" model="product" />
+                }
+            </div>
+        </div>
+    }
 }
 else
 {
-    <p class="text-center">Không tìm thấy sản phẩm nào phù hợp.</p>
+    <p class="text-center mt-4">Không tìm thấy sản phẩm nào phù hợp.</p>
 }
