@@ -3362,3 +3362,92 @@ main {
   .voucher-badge { top: 8px; right: 8px; font-size: .85rem; padding:4px 8px; }
   .voucher-actions .btn { width: 100%; }
 }
+
+/* Làm nổi bật kết quả chính */
+.highlight-card {
+  border: 2px solid #007bff; /* Viền xanh cho sản phẩm tìm thấy */
+  transform: scale(1.02); /* Phóng to nhẹ */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Phần đề xuất bên dưới */
+.section-related-products {
+  opacity: 0.9;
+  background-color: #f8f9fa; /* Nền xám nhẹ để phân biệt */
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* --- CSS cho Menu Chính (Nav Link) --- */
+.custom-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: #4e73df; /* Màu chữ chính (có thể đổi theo theme) */
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.custom-nav-link:hover {
+    background-color: rgba(78, 115, 223, 0.1); /* Nền nhạt khi hover */
+    color: #2e59d9; /* Màu đậm hơn khi hover */
+    text-decoration: none;
+}
+
+.custom-nav-link i.bi-megaphone-fill {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+/* Hiệu ứng xoay mũi tên khi mở menu (nếu bạn thêm icon chevron) */
+.custom-nav-link[aria-expanded="true"] .rotate-icon {
+    transform: rotate(180deg);
+}
+.rotate-icon {
+    transition: transform 0.3s;
+    font-size: 0.8rem;
+}
+
+/* --- CSS cho Menu Con (Submenu) --- */
+.custom-submenu {
+    background: #fff;
+    margin: 5px 10px;
+    border-left: 4px solid #4e73df; /* Đường viền màu xanh bên trái */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Đổ bóng nhẹ tạo chiều sâu */
+    padding-left: 0; /* Reset padding của UL */
+}
+
+/* CSS cho từng Link con */
+.custom-sub-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: #6c757d; /* Màu xám nhẹ */
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    border-radius: 5px;
+    margin: 2px 5px;
+}
+
+.custom-sub-link:hover {
+    background-color: #f8f9fa;
+    color: #4e73df; /* Đổi màu xanh khi hover */
+    transform: translateX(5px); /* Hiệu ứng trượt nhẹ sang phải */
+}
+
+/* Căn chỉnh Icon trong menu con */
+.custom-sub-link i {
+    margin-right: 8px;
+    width: 20px; /* Cố định chiều rộng để text thẳng hàng */
+    text-align: center;
+    font-size: 1rem;
+}
+
+/* Trạng thái Active (khi đang ở trang đó) */
+.custom-sub-link.active {
+    background-color: #eaecf4;
+    color: #4e73df;
+    font-weight: bold;
+}

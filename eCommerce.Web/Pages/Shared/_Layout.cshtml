@@ -199,10 +199,7 @@
     </footer>
     </div>
 
-    <script>
-        // Expose VAPID public key to client JS for push subscription
-        window.VAPID_PUBLIC_KEY = '@(Configuration["Vapid:PublicKey"] ?? "")';
-    </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const slides = document.querySelector(".slides");
@@ -348,7 +345,9 @@
         });
     </script>
 
-    
+    <script>
+    window.VAPID_PUBLIC_KEY = 'BFS4wKIiodJt2TFQsdjPw_K8zBKsKJ2VoxR0NyQn87ed7Jm7nE7Oxyli5SY1zcNxTY92LdZj79b9L_7t55MfMk0';
+    </script>
     
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -358,10 +357,11 @@
     <script src="~/js/push-subscribe.js" asp-append-version="true"></script>
 
     <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
     <df-messenger
     intent="WELCOME"
-    chat-title="TestBox_Tien"
-    agent-id="b074daef-4bae-4fc9-b8c7-12fa6698a88d"
+    chat-title="VietTech Bot"
+    agent-id="171533f5-f648-4dc9-b27c-1c283ce35c75"
     language-code="vi"
     ></df-messenger>
 
