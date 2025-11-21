@@ -32,6 +32,7 @@
                         <tr>
                             <th>Mã (Code)</th>
                             <th>Mô tả</th>
+                            <th>Vùng áp dụng</th>
                             <th>Giảm giá</th>
                             <th>Hạn sử dụng</th>
                             <th>Đã dùng / Tổng</th>
@@ -50,6 +51,7 @@
                             <tr>
                                 <td class="fw-bold text-primary">@item.Code</td>
                                 <td>@item.Description</td>
+                                    <td>@(string.IsNullOrEmpty(item.Vung) ? "Toàn quốc" : item.Vung)</td>
                                 <td>
                                     @if (item.DiscountPercent.HasValue)
                                     {

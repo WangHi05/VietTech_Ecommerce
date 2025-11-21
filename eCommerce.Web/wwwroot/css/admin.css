@@ -67,6 +67,41 @@ body {
     flex-grow: 1; /* Đẩy phần footer xuống dưới */
 }
 
+/* Dropdown visuals for sidebar (rounded white menu, shadow, spacing) */
+.sidebar .nav-item.dropdown .dropdown-menu {
+    background: #ffffff;
+    border: 0; /* remove default border */
+    border-radius: 12px;
+    padding: 0.5rem 0.25rem;
+    box-shadow: 0 12px 30px rgba(2,6,23,0.10);
+    min-width: 200px;
+    margin-top: 0.4rem;
+}
+.sidebar .nav-item.dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    color: var(--dark-color);
+    font-weight: 600;
+    white-space: nowrap;
+}
+.sidebar .nav-item.dropdown .dropdown-item i.bi {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+.sidebar .nav-item.dropdown .dropdown-item:hover {
+    background: linear-gradient(90deg, rgba(234,88,12,0.06), rgba(245,158,11,0.03));
+    color: var(--primary-color);
+}
+.sidebar .nav-item.dropdown .dropdown-divider {
+    margin: .35rem 0;
+}
+
+/* Make sure collapsed/expanded chevrons align with other menu style */
+.custom-nav-link .rotate-icon { transition: transform .2s ease; }
+.custom-nav-link[aria-expanded="true"] .rotate-icon { transform: rotate(180deg); }
+
 .nav-link {
     display: flex;
     align-items: center;
@@ -98,6 +133,10 @@ body {
     font-size: 1.1rem;
     line-height: 1;
 }
+
+/* Specific colors for Marketing dropdown icons */
+.sidebar .nav-item.dropdown .dropdown-item i.icon-notify { color: #2563eb; /* blue */ }
+.sidebar .nav-item.dropdown .dropdown-item i.icon-voucher { color: #8b5cf6; /* purple */ }
 
 .sidebar-footer {
     padding: 1.5rem;

@@ -2,6 +2,8 @@ using eCommerce.Core.Entities;
 using eCommerce.Infrastructure.Data;
 using eCommerce.Web.Services.Notifications; // Thêm namespace này
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -12,23 +14,40 @@ namespace eCommerce.Web.Pages.Vouchers
     {
         private readonly AppDbContext _context;
         private readonly INotificationQueue _queue; // 1. Inject hàng đợi thông báo
+        private readonly Microsoft.AspNetCore.Identity.UserManager<eCommerce.Core.Entities.ApplicationUser> _userManager;
 
         public List<Voucher> AvailableVouchers { get; set; } = new();
         public List<int> UserVoucherIds { get; set; } = new();
 
-        public IndexModel(AppDbContext context, INotificationQueue queue)
+        public IndexModel(AppDbContext context, INotificationQueue queue, Microsoft.AspNetCore.Identity.UserManager<eCommerce.Core.Entities.ApplicationUser> userManager)
         {
             _context = context;
             _queue = queue;
+            _userManager = userManager;
         }
 
         public async Task OnGetAsync()
         {
-            // Logic lấy voucher (Giữ nguyên code của bạn)
-            AvailableVouchers = await _context.Vouchers
+            // Lấy vùng người dùng từ cookie (nếu có), mặc định Toàn quốc
+            var userRegion = Request.Cookies["region"] ?? "Toàn quốc";
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var u = await _userManager.GetUserAsync(User);
+                if (u != null && !string.IsNullOrEmpty(u.Vung))
+                {
+                    userRegion = u.Vung;
+                }
+            }
+
+            // Logic lấy voucher và lọc theo vùng (Vung). Nếu Vung rỗng hoặc chứa Toàn quốc thì áp dụng cho tất cả.
+            var baseList = await _context.Vouchers
                 .Where(v => v.IsActive && v.ExpiryDate > DateTime.Now && v.StartDate <= DateTime.Now)
-                .OrderByDescending(v => v.ExpiryDate)
                 .ToListAsync();
+
+            AvailableVouchers = baseList
+                .Where(v => string.IsNullOrEmpty(v.Vung) || v.Vung.Trim().Equals("Toàn quốc", System.StringComparison.OrdinalIgnoreCase) || v.Vung.Split(',').Select(s => s.Trim()).Contains(userRegion, StringComparer.OrdinalIgnoreCase))
+                .OrderByDescending(v => v.ExpiryDate)
+                .ToList();
 
             if (User.Identity?.IsAuthenticated == true)
             {

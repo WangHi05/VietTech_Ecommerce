@@ -80,5 +80,26 @@ namespace eCommerce.Web.Controllers
 
             return Ok();
         }
+        [HttpPost("unsubscribe")]
+        [Authorize]
+        public async Task<IActionResult> Unsubscribe([FromBody] SubscribeRequest req)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId) || req == null || string.IsNullOrEmpty(req.endpoint)) 
+                return BadRequest();
+
+            // Tìm subscription khớp với Endpoint và UserId
+            var sub = await _db.UserPushSubscriptions
+                .FirstOrDefaultAsync(s => s.Endpoint == req.endpoint && s.UserId == userId);
+
+            if (sub != null)
+            {
+                _db.UserPushSubscriptions.Remove(sub);
+                await _db.SaveChangesAsync();
+            }
+
+            return Ok();
+        }
+
     }
 }
