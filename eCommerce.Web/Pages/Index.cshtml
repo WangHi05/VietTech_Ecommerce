@@ -248,81 +248,126 @@
             <p>Cảm nhận thực tế từ những khách hàng đã tin tưởng VietTech</p>
         </div>
         
-        <div class="testimonial-grid">
-            <div class="testimonial-card">
-                <div class="rating-stars">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                </div>
-                <blockquote>"Sản phẩm chất lượng tuyệt vời, dịch vụ nhanh chóng. Sẽ tiếp tục ủng hộ!"</blockquote>
-                <div class="customer-info">
-                    <img src="https://placehold.co/40x40/E2E8F0/4A5568?text=A" alt="Avatar" class="customer-avatar">
-                    <div class="customer-details">
-                        <strong>Nguyễn Minh Đức</strong>
-                        <span>Khách hàng thân thiết</span>
+        <div id="testimonial-grid" class="testimonial-grid">
+            @if (Model.Reviews != null && Model.Reviews.Any())
+            {
+                foreach (var r in Model.Reviews)
+                {
+                    <div class="testimonial-card">
+                        <div class="rating-stars">
+                            @for (int i = 0; i < r.Rating; i++) { <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg> }
+                            @for (int i = r.Rating; i < 5; i++) { <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e6e6e6"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg> }
+                        </div>
+                        <blockquote>@Html.Raw(System.Net.WebUtility.HtmlEncode(r.Comment))</blockquote>
+                        <div class="customer-info">
+                            @{ var initial = string.IsNullOrEmpty(r.UserName) ? "K" : r.UserName.Substring(0,1).ToUpper();
+                               var avatarUrl = string.IsNullOrEmpty(r.ProductImage) ? $"https://placehold.co/40x40/E2E8F0/4A5568?text={initial}" : Url.Content("~/" + r.ProductImage.TrimStart('~','/'));
+                            }
+                            <img src="@avatarUrl" alt="Avatar" class="customer-avatar">
+                            <div class="customer-details">
+                                <strong>@r.UserName</strong>
+                                <span>@(r.ProductName)</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="testimonial-card">
-                <div class="rating-stars">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                </div>
-                <blockquote>"Laptop rất tốt, cấu hình mạnh. Cảm thấy thoải mái khi sử dụng. Giá cả phải chăng!"</blockquote>
-                <div class="customer-info">
-                    <img src="https://placehold.co/40x40/E2E8F0/4A5568?text=B" alt="Avatar" class="customer-avatar">
-                    <div class="customer-details">
-                        <strong>Trần Hưng Giang</strong>
-                        <span>Lập trình viên</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="testimonial-card">
-                <div class="rating-stars">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                </div>
-                <blockquote>"Lần đầu mua ở đây, vô cùng hài lòng với mọi thứ. Sẽ giới thiệu bạn bè!"</blockquote>
-                <div class="customer-info">
-                    <img src="https://placehold.co/40x40/E2E8F0/4A5568?text=C" alt="Avatar" class="customer-avatar">
-                    <div class="customer-details">
-                        <strong>Lê Quốc Huy</strong>
-                        <span>Designer</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="testimonial-card">
-                <div class="rating-stars">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>
-                </div>
-                <blockquote>"Hàng chính hãng, chất lượng tốt. Hỗ trợ khách hàng rất tận tình!"</blockquote>
-                <div class="customer-info">
-                    <img src="https://placehold.co/40x40/E2E8F0/4A5568?text=D" alt="Avatar" class="customer-avatar">
-                    <div class="customer-details">
-                        <strong>Phạm Thanh Hương</strong>
-                        <span>Sinh viên</span>
-                    </div>
-                </div>
-            </div>
-            
+                }
+            }
+            else
+            {
+                <div class="text-muted">Chưa có đánh giá nào.</div>
+            }
         </div>
+
+        @{ var totalPages = (int)System.Math.Ceiling((double)Model.TotalReviewsCount / Model.PageSize); }
+        @if (totalPages > 1)
+        {
+            <nav aria-label="Reviews pagination">
+                <ul id="reviews-pagination" class="pagination justify-content-center mt-3">
+                    @for (int p = 1; p <= totalPages; p++)
+                    {
+                        var active = p == Model.PageNumber ? "active" : "";
+                        <li class="page-item @(active)"><a class="page-link" href="?pageNumber=@p" data-page="@p">@p</a></li>
+                    }
+                </ul>
+            </nav>
+        }
+    @section Scripts {
+        <script>
+            (function(){
+                const ul = document.getElementById('reviews-pagination');
+                if (!ul) return;
+
+                function renderReviews(reviews){
+                    const grid = document.getElementById('testimonial-grid');
+                    if (!grid) return;
+                    grid.innerHTML = '';
+                    reviews.forEach(r => {
+                        const card = document.createElement('div');
+                        card.className = 'testimonial-card';
+
+                        const stars = document.createElement('div');
+                        stars.className = 'rating-stars';
+                        for (let i=0;i<r.rating;i++) stars.innerHTML += '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>';
+                        for (let i=r.rating;i<5;i++) stars.innerHTML += '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#e6e6e6"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z"></path></svg>';
+                        card.appendChild(stars);
+
+                        const block = document.createElement('blockquote');
+                        block.textContent = r.comment || '';
+                        card.appendChild(block);
+
+                        const info = document.createElement('div');
+                        info.className = 'customer-info';
+
+                        const img = document.createElement('img');
+                        img.className = 'customer-avatar';
+                        img.src = r.productImage ? (r.productImage.startsWith('/') ? r.productImage : ('/' + r.productImage)) : ('https://placehold.co/40x40/E2E8F0/4A5568?text=' + (r.userName && r.userName.length ? r.userName[0].toUpperCase() : 'K'));
+                        info.appendChild(img);
+
+                        const details = document.createElement('div');
+                        details.className = 'customer-details';
+                        const strong = document.createElement('strong'); strong.textContent = r.userName || 'Khách'; details.appendChild(strong);
+                        const span = document.createElement('span'); span.textContent = r.productName || ''; details.appendChild(span);
+                        info.appendChild(details);
+
+                        card.appendChild(info);
+                        grid.appendChild(card);
+                    });
+                }
+
+                ul.addEventListener('click', async function (e){
+                    const a = e.target.closest('a.page-link');
+                    if (!a) return;
+                    e.preventDefault();
+                    const page = a.getAttribute('data-page') || a.getAttribute('href').split('pageNumber=')[1] || '1';
+                    const url = window.location.pathname + '?handler=Reviews&pageNumber=' + page;
+                    try{
+                        a.classList.add('disabled');
+                        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                        if (!res.ok) throw new Error('Network error');
+                        const data = await res.json();
+                        renderReviews(data.reviews || []);
+
+                        // update pagination active class
+                        Array.from(ul.querySelectorAll('li.page-item')).forEach(li => li.classList.remove('active'));
+                        const targetLi = a.closest('li.page-item');
+                        if (targetLi) targetLi.classList.add('active');
+
+                        // update URL without reload
+                        const newUrl = '?pageNumber=' + page;
+                        history.pushState(null, '', newUrl);
+
+                        // scroll to testimonial section
+                        const top = document.querySelector('.testimonial-section');
+                        if (top) top.scrollIntoView({ behavior: 'smooth' });
+                    } catch (err){
+                        console.error(err);
+                        alert('Không thể tải đánh giá, thử lại.');
+                    } finally {
+                        a.classList.remove('disabled');
+                    }
+                });
+            })();
+        </script>
+    }
     </div>
 </section>
-@section Scripts {
-}

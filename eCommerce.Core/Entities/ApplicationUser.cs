@@ -12,5 +12,11 @@ namespace eCommerce.Core.Entities
 
         [PersonalData]
         public string? ProfilePictureUrl { get; set; }
+
+        // Vùng / Tỉnh thành của người dùng (ví dụ: Toàn quốc, HCM, HaNoi)
+        [PersonalData]
+        [MaxLength(100)]
+        [System.ComponentModel.DataAnnotations.Display(Name = "Vùng/Tỉnh")]
+        public string? Vung { get; set; }
     }
 }

@@ -48,6 +48,10 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Số điện thoại")]
             public string PhoneNumber { get; set; }
 
+            [Display(Name = "Vùng/Tỉnh")]
+            [MaxLength(100)]
+            public string Vung { get; set; }
+
             [Display(Name = "Ảnh đại diện mới")]
             public IFormFile Upload { get; set; }
         }
@@ -64,6 +68,8 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account.Manage
             {
                 FullName = user.FullName,
                 PhoneNumber = phoneNumber
+                ,
+                Vung = user.Vung
             };
         }
 
@@ -127,6 +133,12 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account.Manage
             {
                 user.FullName = Input.FullName;
                 isProfileUpdated = true; // Ghi nhận có thay đổi
+            }
+
+            if ((Input.Vung ?? string.Empty) != (user.Vung ?? string.Empty))
+            {
+                user.Vung = Input.Vung;
+                isProfileUpdated = true;
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
