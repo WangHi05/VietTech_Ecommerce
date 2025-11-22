@@ -39,14 +39,31 @@ namespace eCommerce.Web.Pages
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                UserVouchers = await _context.UserVouchers
+
+                // determine user's region: prefer profile.Vung, fallback to cookie
+                var userRegion = Request.Cookies["region"] ?? "Toàn quốc";
+                var dbUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                if (dbUser != null && !string.IsNullOrEmpty(dbUser.Vung))
+                {
+                    userRegion = dbUser.Vung;
+                }
+
+                // Load candidate user vouchers from DB (active / within date)
+                var candidate = await _context.UserVouchers
                     .Include(uv => uv.Voucher)
-                    .Where(uv => uv.UserId == userId 
-                        && !uv.IsUsed 
+                    .Where(uv => uv.UserId == userId
+                        && !uv.IsUsed
                         && uv.Voucher.IsActive
                         && uv.Voucher.ExpiryDate > DateTime.Now
                         && uv.Voucher.StartDate <= DateTime.Now)
                     .ToListAsync();
+
+                // Filter by voucher.Vung in memory (split may not translate to SQL)
+                UserVouchers = candidate
+                    .Where(uv => string.IsNullOrEmpty(uv.Voucher.Vung)
+                        || uv.Voucher.Vung.Trim().Equals("Toàn quốc", System.StringComparison.OrdinalIgnoreCase)
+                        || (userRegion != null && uv.Voucher.Vung.Split(',').Select(s => s.Trim()).Contains(userRegion, StringComparer.OrdinalIgnoreCase)))
+                    .ToList();
             }
 
             // Check if voucher is applied (from session)
@@ -209,6 +226,26 @@ namespace eCommerce.Web.Pages
             if (!userVoucher.Voucher.IsActive)
             {
                 var msg = "Voucher không còn khả dụng.";
+                if (isAjax) return new JsonResult(new { success = false, message = msg });
+                TempData["Error"] = msg;
+                return RedirectToPage();
+            }
+
+            // Validate voucher region (Vung)
+            var userRegionForApply = Request.Cookies["region"] ?? "Toàn quốc";
+            var dbUserForApply = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (dbUserForApply != null && !string.IsNullOrEmpty(dbUserForApply.Vung))
+            {
+                userRegionForApply = dbUserForApply.Vung;
+            }
+
+            var appliesRegion = string.IsNullOrEmpty(userVoucher.Voucher.Vung)
+                || userVoucher.Voucher.Vung.Trim().Equals("Toàn quốc", System.StringComparison.OrdinalIgnoreCase)
+                || (userRegionForApply != null && userVoucher.Voucher.Vung.Split(',').Select(s => s.Trim()).Contains(userRegionForApply, StringComparer.OrdinalIgnoreCase));
+
+            if (!appliesRegion)
+            {
+                var msg = "Voucher này không áp dụng cho vùng của bạn.";
                 if (isAjax) return new JsonResult(new { success = false, message = msg });
                 TempData["Error"] = msg;
                 return RedirectToPage();

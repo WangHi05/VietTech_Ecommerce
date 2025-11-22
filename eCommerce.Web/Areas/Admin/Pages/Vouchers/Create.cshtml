@@ -68,6 +68,16 @@
                 </div>
 
                 <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Voucher.Vung" class="control-label">Vùng áp dụng (ví dụ: Toàn quốc, HCM, HaNoi)</label>
+                            <input asp-for="Voucher.Vung" class="form-control" placeholder="Nhập vùng, phân tách bằng dấu phẩy nếu nhiều" />
+                            <span asp-validation-for="Voucher.Vung" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-md-4">
                         <div class="form-group mb-3">
                             <label asp-for="Voucher.MaxUsage" class="control-label">Tổng số lượng phát hành</label>

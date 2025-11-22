@@ -182,6 +182,8 @@ namespace eCommerce.Web.Pages
                     }
                 }
 
+                // Handle voucher usage (make one-time use)
+                await ProcessVoucherAfterOrderAsync(cardOrderId);
                 return RedirectToPage("/Payment/CardOtp", new { orderId = cardOrderId });
             }
 
@@ -211,6 +213,8 @@ namespace eCommerce.Web.Pages
                     }
                 }
 
+                // Handle voucher usage (make one-time use)
+                await ProcessVoucherAfterOrderAsync(codOrderId);
                 await _cartService.ClearCartAsync();
 
                 return RedirectToPage("/Payment/Result", new { orderId = codOrderId, success = true, method = "cod" });
@@ -247,6 +251,23 @@ namespace eCommerce.Web.Pages
             {
                 // Lookup voucher in DB (vouchers created via admin/seed) and compute discount using voucher rules
                 var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Code == applied && v.IsActive && v.StartDate <= DateTime.Now && v.ExpiryDate > DateTime.Now);
+                if (voucher != null)
+                {
+                    // Kiểm tra vùng áp dụng (Vung). Nếu voucher đặt vùng và user không thuộc vùng đó thì coi như voucher không hợp lệ ở đây.
+                    var userRegion = Request.Cookies["region"] ?? "Toàn quốc";
+                    if (User.Identity?.IsAuthenticated == true)
+                    {
+                        var u = await _userManager.GetUserAsync(User);
+                        if (u != null && !string.IsNullOrEmpty(u.Vung)) userRegion = u.Vung;
+                    }
+
+                    var applies = string.IsNullOrEmpty(voucher.Vung) || voucher.Vung.Trim().Equals("Toàn quốc", System.StringComparison.OrdinalIgnoreCase)
+                                  || voucher.Vung.Split(',').Select(s => s.Trim()).Contains(userRegion, StringComparer.OrdinalIgnoreCase);
+                    if (!applies)
+                    {
+                        voucher = null; // treat as not found/usable for this user
+                    }
+                }
                 if (voucher != null)
                 {
                     // Check min order value
@@ -513,7 +534,47 @@ namespace eCommerce.Web.Pages
 
             await _cartService.ClearCartAsync();
 
+            // Handle voucher usage (make one-time use)
+            await ProcessVoucherAfterOrderAsync(id);
+
             return Redirect(redirectUrl);
+        }
+
+        // Mark voucher as used after an order: remove user's UserVoucher (one-time per user)
+        // and update/remove Voucher based on MaxUsage.
+        private async Task ProcessVoucherAfterOrderAsync(int orderId)
+        {
+            try
+            {
+                var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
+                if (order == null || string.IsNullOrEmpty(order.VoucherCode)) return;
+
+                var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Code == order.VoucherCode);
+                if (voucher == null) return;
+
+                // If the order belongs to a user, remove the UserVoucher entry so it can't be reused
+                if (!string.IsNullOrEmpty(order.UserId))
+                {
+                    var uv = await _context.UserVouchers.FirstOrDefaultAsync(x => x.UserId == order.UserId && x.VoucherId == voucher.Id);
+                    if (uv != null)
+                    {
+                        _context.UserVouchers.Remove(uv);
+                    }
+                }
+
+                // Update used count and remove voucher if it's exhausted
+                voucher.UsedCount = voucher.UsedCount + 1;
+                if (voucher.MaxUsage <= voucher.UsedCount)
+                {
+                    _context.Vouchers.Remove(voucher);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                // swallow — voucher processing should not break order flow
+            }
         }
     }
 }

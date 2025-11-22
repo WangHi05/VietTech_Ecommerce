@@ -2566,12 +2566,14 @@
 
 .testimonial-grid {
   display: grid;
-  /* Tương tự USP, tự động điều chỉnh số cột */
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* Use fixed column width to avoid single items stretching to full width.
+     When there are fewer cards than columns, they stay centered. */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 320px));
   gap: 24px;
   max-width: 1540px;
   margin: 0 auto;
   padding: 0 20px;
+  justify-content: center;
 }
 
 .testimonial-card {
@@ -3351,6 +3353,9 @@ main {
 .voucher-info { color: #374151; }
 .voucher-actions .btn { min-width: 110px; }
 .voucher-card .card-body { padding: 1rem 1rem 1.25rem 1rem; }
+
+/* Reserve vertical space for the optional 'Vùng' line so cards stay even */
+.voucher-region { min-height: 20px; }
 
 /* Disabled / saved state */
 .voucher-card .btn[disabled],

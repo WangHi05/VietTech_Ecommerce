@@ -41,5 +41,10 @@ namespace eCommerce.Core.Entities
 
         // Navigation property
         public ICollection<UserVoucher> UserVouchers { get; set; } = new List<UserVoucher>();
+
+        // Vùng áp dụng: ví dụ "Toàn quốc", "HCM", "Hà Nội" hoặc danh sách phân tách bằng dấu phẩy
+        [StringLength(200)]
+        [System.ComponentModel.DataAnnotations.Display(Name = "Vùng áp dụng")]
+        public string? Vung { get; set; }
     }
 }

@@ -260,13 +260,16 @@
     @await RenderSectionAsync("Scripts", required: false)
     <script src="~/js/product-interactions.js" asp-append-version="true"></script>
     <script src="~/js/push-subscribe.js" asp-append-version="true"></script>
-</body>
-</html>
 
-<script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+   <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
 <df-messenger
   intent="WELCOME"
   chat-title="TestBot_CuaHen"
   agent-id="c9c584b8-31f8-4a3f-bb3e-e21ee83f3d56"
   language-code="vi"
-></df-messenger>                        
+></df-messenger>       
+
+</body>
+</html>
+
+                 
