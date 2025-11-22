@@ -1,10 +1,14 @@
 #nullable disable
 
 using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 using eCommerce.Core.Entities;
+using eCommerce.Infrastructure.Data;
+using eCommerce.Web.Services.Notifications;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -18,15 +22,21 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly AppDbContext _context;
+        private readonly INotificationQueue _queue;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IWebHostEnvironment webHostEnvironment)
+            IWebHostEnvironment webHostEnvironment,
+            AppDbContext context,
+            INotificationQueue queue)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _webHostEnvironment = webHostEnvironment;
+            _context = context;
+            _queue = queue;
         }
 
         public string Username { get; set; }
@@ -135,7 +145,8 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account.Manage
                 isProfileUpdated = true; // Ghi nhận có thay đổi
             }
 
-            if ((Input.Vung ?? string.Empty) != (user.Vung ?? string.Empty))
+            var previousVung = user.Vung ?? string.Empty;
+            if ((Input.Vung ?? string.Empty) != previousVung)
             {
                 user.Vung = Input.Vung;
                 isProfileUpdated = true;
@@ -166,6 +177,44 @@ namespace eCommerce.Web.Areas.Identity.Pages.Account.Manage
                        }
                  } else {
                       StatusMessage = "Hồ sơ của bạn đã được cập nhật";
+
+                      // If user's Vung changed, enqueue push notifications for recent vouchers matching new region
+                      try
+                      {
+                          var newVung = (user.Vung ?? string.Empty).Trim();
+                          if (!string.IsNullOrEmpty(newVung) && !string.Equals(newVung, previousVung, StringComparison.OrdinalIgnoreCase))
+                          {
+                              var now = DateTime.UtcNow;
+                              var recentVouchers = await _context.Vouchers
+                                  .Where(v => v.IsActive && v.ExpiryDate > now)
+                                  .ToListAsync();
+
+                              // Only notify vouchers that explicitly target the user's new region.
+                              // Do NOT notify vouchers with empty Vung or "Toàn quốc" here.
+                              var matching = recentVouchers.Where(v => !string.IsNullOrEmpty(v.Vung)
+                                  && !v.Vung.Trim().Equals("Toàn quốc", StringComparison.OrdinalIgnoreCase)
+                                  && v.Vung.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).Contains(newVung, StringComparer.OrdinalIgnoreCase))
+                                  .ToList();
+
+                              foreach (var v in matching)
+                              {
+                                  var discountText = v.DiscountPercent.HasValue ? $"{v.DiscountPercent}%" : $"{v.DiscountAmount:N0}đ";
+                                  var msg = new NotificationMessage
+                                  {
+                                      UserId = user.Id,
+                                      Title = $"Có voucher phù hợp với vùng của bạn: {v.Code}",
+                                      Body = $"{v.Description}. Giảm {discountText}. HSD: {v.ExpiryDate:dd/MM}.",
+                                      Url = "/Vouchers",
+                                      EnqueuedAt = DateTime.UtcNow
+                                  };
+                                  _queue.Enqueue(msg);
+                              }
+                          }
+                      }
+                      catch
+                      {
+                          // swallow errors from notification sending
+                      }
                  }
             }
             else if (!isProfileUpdated && ModelState.IsValid)
