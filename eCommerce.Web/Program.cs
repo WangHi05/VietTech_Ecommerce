@@ -91,6 +91,9 @@ builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 
+// Add SignalR for real-time chat
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -137,6 +140,7 @@ app.UseAuthorization();
 
 app.MapRazorPages();    
 app.MapControllers();
+app.MapHub<eCommerce.Web.Hubs.ChatHub>("/chatHub");
 
 // --- BẮT ĐẦU ĐOẠN CODE TẠO KEY (CHẠY 1 LẦN RỒI XÓA) ---
 /*

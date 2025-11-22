@@ -1,0 +1,197 @@
+@page
+@model eCommerce.Web.Areas.Admin.Pages.Messages.ChatModel
+@{
+    ViewData["Title"] = "Chat - " + Model.ProductName;
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-chat-dots"></i> Chat về sản phẩm: @Model.ProductName
+                    </h5>
+                </div>
+                <div class="card-body" id="chatMessages" style="height: 500px; overflow-y: auto;">
+                    <div class="text-center text-muted py-3">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Đang tải...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div id="imagePreview" class="mb-2" style="display: none;">
+                        <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 8px;">
+                        <button type="button" class="btn btn-sm btn-danger ms-2" id="btnRemoveImage">
+                            <i class="bi bi-x"></i> Xóa ảnh
+                        </button>
+                    </div>
+                    <div class="input-group">
+                        <input type="file" id="chatImageInput" accept="image/*" style="display: none;">
+                        <button class="btn btn-outline-secondary" type="button" id="btnAttachImage" title="Đính kèm ảnh">
+                            <i class="bi bi-image"></i>
+                        </button>
+                        <input type="text" class="form-control" id="chatInput" placeholder="Nhập tin nhắn...">
+                        <button class="btn btn-primary" type="button" id="btnSendMessage">
+                            <i class="bi bi-send"></i> Gửi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script>
+        const productId = @Model.ProductId;
+        let connection = null;
+        let uploadedImageUrl = null;
+
+        (async function() {
+            await initializeChat();
+        })();
+
+        async function initializeChat() {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on("ReceiveMessage", function(message) {
+                appendMessage(message);
+            });
+
+            try {
+                await connection.start();
+                await connection.invoke("JoinProductChat", productId);
+                await loadMessages();
+            } catch (err) {
+                console.error('SignalR Error:', err);
+                alert('Không thể kết nối chat: ' + err.message);
+            }
+        }
+
+        async function loadMessages() {
+            try {
+                const response = await fetch(`/api/chat/messages/${productId}`);
+                const messages = await response.json();
+                
+                const container = document.getElementById('chatMessages');
+                container.innerHTML = '';
+                
+                messages.forEach(msg => appendMessage(msg));
+                scrollToBottom();
+            } catch (err) {
+                console.error('Load messages error:', err);
+            }
+        }
+
+        function appendMessage(msg) {
+            const container = document.getElementById('chatMessages');
+            const isFromSeller = msg.isFromSeller;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `mb-3 ${isFromSeller ? 'text-end' : 'text-start'}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = `d-inline-block p-3 rounded ${isFromSeller ? 'bg-primary text-white' : 'bg-light'}`;
+            bubble.style.maxWidth = '70%';
+            
+            const senderName = document.createElement('small');
+            senderName.className = 'd-block fw-bold mb-1';
+            senderName.textContent = msg.senderName + (isFromSeller ? ' (Seller)' : ' (Customer)');
+            bubble.appendChild(senderName);
+            
+            if (msg.imageUrl) {
+                const img = document.createElement('img');
+                img.src = msg.imageUrl;
+                img.className = 'd-block mb-2 rounded';
+                img.style.maxWidth = '100%';
+                img.style.cursor = 'pointer';
+                img.onclick = () => window.open(msg.imageUrl, '_blank');
+                bubble.appendChild(img);
+            }
+            
+            if (msg.content) {
+                const content = document.createElement('div');
+                content.textContent = msg.content;
+                bubble.appendChild(content);
+            }
+            
+            const time = document.createElement('small');
+            time.className = 'd-block mt-1 opacity-75';
+            time.textContent = new Date(msg.createdAt).toLocaleString('vi-VN');
+            bubble.appendChild(time);
+            
+            messageDiv.appendChild(bubble);
+            container.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        document.getElementById('btnSendMessage')?.addEventListener('click', sendMessage);
+        document.getElementById('chatInput')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+            
+            if (!content && !uploadedImageUrl) return;
+            
+            try {
+                await connection.invoke("SendMessage", productId, content, uploadedImageUrl);
+                input.value = '';
+                uploadedImageUrl = null;
+                document.getElementById('imagePreview').style.display = 'none';
+            } catch (err) {
+                console.error('Send message error:', err);
+                alert('Không thể gửi tin nhắn: ' + err.message);
+            }
+        }
+
+        document.getElementById('btnAttachImage')?.addEventListener('click', function() {
+            document.getElementById('chatImageInput').click();
+        });
+
+        document.getElementById('chatImageInput')?.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            try {
+                const response = await fetch('/api/chat/upload-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error('Upload failed');
+                
+                const result = await response.json();
+                uploadedImageUrl = result.url;
+                
+                document.getElementById('previewImg').src = result.url;
+                document.getElementById('imagePreview').style.display = 'block';
+            } catch (err) {
+                console.error('Upload error:', err);
+                alert('Không thể tải ảnh lên: ' + err.message);
+            }
+        });
+
+        document.getElementById('btnRemoveImage')?.addEventListener('click', function() {
+            uploadedImageUrl = null;
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('chatImageInput').value = '';
+        });
+    </script>
+}

@@ -53,6 +53,9 @@
                         <i class="bi bi-cart-plus" style="margin-right: 12px;" aria-hidden="true"></i>Thêm vào giỏ hàng
                     </button>
                 </form>
+                <button type="button" class="btn btn-outline-primary btn-lg ms-2" id="btnOpenChat">
+                    <i class="bi bi-chat-dots"></i> Chat với người bán
+                </button>
             </div>
              <hr />
             <h4>Thông số kỹ thuật</h4>
@@ -103,5 +106,524 @@ else
     <p>Không tìm thấy sản phẩm bạn yêu cầu.</p>
 }
 
-@section Scripts {
+<!-- Chat Popup - Facebook Messenger Style -->
+<style>
+    .chat-popup {
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+        width: 380px;
+        height: 550px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+        display: none;
+        flex-direction: column;
+        z-index: 9999;
+        animation: slideUp 0.3s ease;
     }
+    .chat-popup.show {
+        display: flex;
+    }
+    @@keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .chat-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 14px 16px;
+        border-radius: 12px 12px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .chat-header .chat-title {
+        font-size: 15px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .chat-header .btn-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0.9;
+        padding: 0;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+    .chat-header .btn-close:hover {
+        background: rgba(255,255,255,0.2);
+        opacity: 1;
+    }
+    .chat-messages {
+        background: #f0f2f5;
+        padding: 16px;
+        overflow-y: auto;
+        flex: 1;
+    }
+    .chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: #c4c4c4;
+        border-radius: 3px;
+    }
+    .message-bubble {
+        max-width: 70%;
+        margin-bottom: 8px;
+        animation: slideIn 0.3s ease;
+    }
+    @@keyframes slideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .message-bubble.own {
+        margin-left: auto;
+    }
+    .message-content {
+        padding: 10px 14px;
+        border-radius: 18px;
+        word-wrap: break-word;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .message-bubble.own .message-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+    .message-bubble.other .message-content {
+        background: white;
+        color: #050505;
+        border-bottom-left-radius: 4px;
+    }
+    .message-time {
+        font-size: 11px;
+        color: #65676b;
+        margin-top: 4px;
+        padding: 0 8px;
+    }
+    .message-image {
+        max-width: 100%;
+        border-radius: 12px;
+        margin-bottom: 6px;
+        cursor: pointer;
+    }
+    .chat-input-wrapper {
+        padding: 12px 16px;
+        background: white;
+        border-radius: 0 0 12px 12px;
+        border-top: 1px solid #e4e6eb;
+    }
+    .chat-input-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .chat-input {
+        flex: 1;
+        border: none;
+        background: #f0f2f5;
+        border-radius: 20px;
+        padding: 10px 16px;
+        font-size: 15px;
+        outline: none;
+    }
+    .chat-input:focus {
+        background: #e4e6eb;
+    }
+    .chat-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: #f0f2f5;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .chat-btn:hover {
+        background: #e4e6eb;
+        transform: scale(1.1);
+    }
+    .chat-btn.send {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .chat-btn.send:hover {
+        transform: scale(1.1);
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+    .image-preview-container {
+        position: relative;
+        padding: 8px;
+        background: #f0f2f5;
+        border-radius: 12px;
+        margin-bottom: 8px;
+    }
+    .preview-image {
+        max-width: 150px;
+        border-radius: 8px;
+    }
+    .remove-preview {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    .sender-name {
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        padding: 0 8px;
+    }
+    .chat-bubble-btn {
+        position: fixed !important;
+        bottom: 100px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        z-index: 9998;
+        transition: all 0.3s ease;
+    }
+    .chat-bubble-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+    .chat-bubble-btn.hidden {
+        display: none;
+    }
+    .chat-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #ff3b30;
+        color: white;
+        border-radius: 50%;
+        min-width: 24px;
+        height: 24px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        border: 2px solid white;
+        animation: bounceIn 0.5s ease;
+    }
+    .chat-badge.show {
+        display: flex;
+    }
+    @@keyframes bounceIn {
+        0% { transform: scale(0); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+</style>
+
+<!-- Floating Chat Button -->
+<button class="chat-bubble-btn" id="chatBubbleBtn">
+    <i class="bi bi-messenger"></i>
+    <span class="chat-badge" id="chatBadge">0</span>
+</button>
+
+<div class="chat-popup" id="chatPopup">
+    <div class="chat-header">
+        <div class="chat-title">
+            <i class="bi bi-messenger"></i>
+            <span>@(Model.Product?.Name ?? "Sản phẩm")</span>
+        </div>
+        <button type="button" class="btn-close" id="btnCloseChat">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="text-center text-muted py-3">
+            <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Đang tải...</span>
+            </div>
+        </div>
+    </div>
+    <div class="chat-input-wrapper">
+        <div id="imagePreview" class="image-preview-container" style="display: none;">
+            <img id="previewImg" src="" alt="Preview" class="preview-image">
+            <button type="button" class="remove-preview" id="btnRemoveImage">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+        <div class="chat-input-container">
+            <input type="file" id="chatImageInput" accept="image/*" style="display: none;">
+            <button class="chat-btn" type="button" id="btnAttachImage" title="Gửi ảnh">
+                <i class="bi bi-image-fill"></i>
+            </button>
+            <input type="text" class="chat-input" id="chatInput" placeholder="Aa">
+            <button class="chat-btn send" type="button" id="btnSendMessage" title="Gửi">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @if (Model.Product != null)
+    {
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productId = @Model.Product.Id;
+            let connection = null;
+            let uploadedImageUrl = null;
+            let unreadCount = 0;
+
+            const chatBubbleBtn = document.getElementById('chatBubbleBtn');
+            const chatPopup = document.getElementById('chatPopup');
+            const chatBadge = document.getElementById('chatBadge');
+            
+            initializeBackgroundConnection();
+            
+            if (chatBubbleBtn) {
+                chatBubbleBtn.addEventListener('click', async function() {
+                    chatPopup.classList.add('show');
+                    chatBubbleBtn.classList.add('hidden');
+                    unreadCount = 0;
+                    updateBadge();
+                    await initializeChat();
+                });
+            }
+            
+            const chatBtn = document.getElementById('btnOpenChat');
+            if (chatBtn) {
+                chatBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    chatPopup.classList.add('show');
+                    chatBubbleBtn.classList.add('hidden');
+                    unreadCount = 0;
+                    updateBadge();
+                    await initializeChat();
+                });
+            }
+
+        function updateBadge() {
+            if (unreadCount > 0) {
+                chatBadge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                chatBadge.classList.add('show');
+            } else {
+                chatBadge.classList.remove('show');
+            }
+        }
+
+        async function initializeBackgroundConnection() {
+            const bgConnection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
+
+            bgConnection.on("ReceiveMessage", function(message) {
+                if (message.isFromSeller && !chatPopup.classList.contains('show')) {
+                    unreadCount++;
+                    updateBadge();
+                    
+                    if (Notification.permission === "granted") {
+                        new Notification("Tin nhắn mới từ người bán", {
+                            body: message.content || "Bạn có tin nhắn mới",
+                            icon: "/favicon.ico"
+                        });
+                    }
+                }
+            });
+
+            try {
+                await bgConnection.start();
+                await bgConnection.invoke("JoinProductChat", productId);
+                
+                if (Notification.permission === "default") {
+                    Notification.requestPermission();
+                }
+            } catch (err) {
+                console.error('Background connection error:', err);
+            }
+        }
+
+        async function initializeChat() {
+            if (connection) return;
+
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on("ReceiveMessage", function(message) {
+                appendMessage(message);
+            });
+
+            try {
+                await connection.start();
+                await connection.invoke("JoinProductChat", productId);
+                await loadMessages();
+            } catch (err) {
+                console.error('SignalR Error:', err);
+            }
+        }
+
+        async function loadMessages() {
+            try {
+                const response = await fetch(`/api/chat/messages/${productId}`);
+                const messages = await response.json();
+                
+                const container = document.getElementById('chatMessages');
+                container.innerHTML = '';
+                
+                messages.forEach(msg => appendMessage(msg));
+                scrollToBottom();
+            } catch (err) {
+                console.error('Load messages error:', err);
+            }
+        }
+
+        function appendMessage(msg) {
+            const container = document.getElementById('chatMessages');
+            const isOwn = msg.isFromSeller === false;
+            
+            const messageWrapper = document.createElement('div');
+            messageWrapper.className = `d-flex ${isOwn ? 'justify-content-end' : 'justify-content-start'}`;
+            
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `message-bubble ${isOwn ? 'own' : 'other'}`;
+            
+            if (!isOwn) {
+                const senderName = document.createElement('div');
+                senderName.className = 'sender-name';
+                senderName.textContent = msg.senderName;
+                messageBubble.appendChild(senderName);
+            }
+            
+            if (msg.imageUrl) {
+                const img = document.createElement('img');
+                img.src = msg.imageUrl;
+                img.className = 'message-image';
+                img.alt = 'Image';
+                messageBubble.appendChild(img);
+            }
+            
+            if (msg.content && msg.content.trim()) {
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                contentDiv.textContent = msg.content;
+                messageBubble.appendChild(contentDiv);
+            }
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = `message-time ${isOwn ? 'text-end' : 'text-start'}`;
+            const msgTime = new Date(msg.createdAt);
+            timeDiv.textContent = msgTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            messageBubble.appendChild(timeDiv);
+            
+            messageWrapper.appendChild(messageBubble);
+            container.appendChild(messageWrapper);
+            scrollToBottom();
+        }
+
+            function scrollToBottom() {
+                const container = document.getElementById('chatMessages');
+                container.scrollTop = container.scrollHeight;
+            }
+
+            document.getElementById('btnSendMessage')?.addEventListener('click', sendMessage);
+            document.getElementById('chatInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+
+            async function sendMessage() {
+                const input = document.getElementById('chatInput');
+                const content = input.value.trim();
+                
+                if (!content && !uploadedImageUrl) return;
+                
+                try {
+                    await connection.invoke("SendMessage", productId, content, uploadedImageUrl);
+                    input.value = '';
+                    uploadedImageUrl = null;
+                    document.getElementById('imagePreview').style.display = 'none';
+                } catch (err) {
+                    console.error('Send message error:', err);
+                }
+            }
+
+            document.getElementById('btnAttachImage')?.addEventListener('click', function() {
+                document.getElementById('chatImageInput').click();
+            });
+
+            document.getElementById('chatImageInput')?.addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const formData = new FormData();
+                formData.append('image', file);
+                
+                try {
+                    const response = await fetch('/api/chat/upload-image', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    uploadedImageUrl = result.url;
+                    
+                    document.getElementById('previewImg').src = result.url;
+                    document.getElementById('imagePreview').style.display = 'block';
+                } catch (err) {
+                    console.error('Upload error:', err);
+                    alert('Không thể tải ảnh lên');
+                }
+            });
+
+            document.getElementById('btnRemoveImage')?.addEventListener('click', function() {
+                uploadedImageUrl = null;
+                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('chatImageInput').value = '';
+            });
+
+            document.getElementById('btnCloseChat')?.addEventListener('click', async function() {
+                chatPopup.classList.remove('show');
+                chatBubbleBtn.classList.remove('hidden');
+                unreadCount = 0;
+                updateBadge();
+                
+                if (connection) {
+                    await connection.invoke("LeaveProductChat", productId);
+                }
+            });
+        });
+    </script>
+    }
+}
+
