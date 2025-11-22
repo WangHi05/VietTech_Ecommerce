@@ -24,6 +24,7 @@ namespace eCommerce.Infrastructure.Data
         public DbSet<StockHistory> StockHistories { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<UserVoucher> UserVouchers { get; set; }
+        public DbSet<Message> Messages { get; set; }
        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

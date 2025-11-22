@@ -35,6 +35,12 @@
                         <i class="bi bi-people-fill"></i> Quản Lý Khách Hàng
                     </a>
                 </li>
+                <li>
+                    <a asp-area="Admin" asp-page="/Messages/Index" class="nav-link" style="position: relative;">
+                        <i class="bi bi-chat-dots-fill"></i> Quản Lý Tin Nhắn
+                        <span id="messageNotificationBadge" class="badge bg-danger rounded-pill" style="display: none; position: absolute; top: 8px; right: 20px; font-size: 11px;">0</span>
+                    </a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-box"></i> Quản Lý Tồn Kho
@@ -143,6 +149,79 @@
                      link.classList.add("active");
                 }
             });
+        });
+    </script>
+    
+    <!-- SignalR for Admin Notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script>
+        // Initialize SignalR for admin notifications
+        let adminNotificationCount = 0;
+        const badge = document.getElementById('messageNotificationBadge');
+        
+        async function initAdminNotifications() {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
+            
+            connection.on("ReceiveMessage", function(message) {
+                // Only show notification if message is from customer (not seller)
+                if (message.isFromSeller === false) {
+                    adminNotificationCount++;
+                    updateAdminBadge();
+                    
+                    // Show browser notification
+                    if (Notification.permission === "granted") {
+                        new Notification("Tin nhắn mới từ khách hàng", {
+                            body: message.content || "Bạn có tin nhắn mới",
+                            icon: "/favicon.ico"
+                        });
+                    }
+                    
+                    // Play sound (optional)
+                    try {
+                        const audio = new Audio('/sounds/notification.mp3');
+                        audio.play().catch(e => console.log('Audio play failed:', e));
+                    } catch (e) {
+                        console.log('Sound notification failed:', e);
+                    }
+                }
+            });
+            
+            try {
+                await connection.start();
+                console.log('Admin notification system started');
+                
+                // Request notification permission
+                if (Notification.permission === "default") {
+                    Notification.requestPermission();
+                }
+            } catch (err) {
+                console.error('Admin notification error:', err);
+                // Retry after 5 seconds
+                setTimeout(initAdminNotifications, 5000);
+            }
+        }
+        
+        function updateAdminBadge() {
+            if (adminNotificationCount > 0) {
+                badge.textContent = adminNotificationCount > 99 ? '99+' : adminNotificationCount;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        // Reset count when visiting Messages page
+        if (window.location.pathname.includes('/Messages')) {
+            adminNotificationCount = 0;
+            updateAdminBadge();
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initAdminNotifications();
         });
     </script>
     

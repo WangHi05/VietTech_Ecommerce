@@ -1,0 +1,375 @@
+@page
+@model eCommerce.Web.Areas.Admin.Pages.Messages.IndexModel
+@{
+    ViewData["Title"] = "Quản lý tin nhắn khách hàng";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-chat-dots"></i> Tin nhắn từ khách hàng</h2>
+    </div>
+
+    @if (!Model.ProductChats.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Chưa có tin nhắn nào từ khách hàng.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var chat in Model.ProductChats)
+            {
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@chat.ProductName</h5>
+                            <p class="card-text text-muted small">
+                                <i class="bi bi-chat-left-text"></i> @chat.LastMessage
+                            </p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i> @chat.LastMessageTime.ToLocalTime().ToString("g")
+                                </small>
+                            </p>
+                            @if (chat.UnreadCount > 0)
+                            {
+                                <span class="badge bg-danger">@chat.UnreadCount tin nhắn mới</span>
+                            }
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-primary btn-sm w-100 open-chat-btn" 
+                                    data-product-id="@chat.ProductId" 
+                                    data-product-name="@chat.ProductName">
+                                <i class="bi bi-reply"></i> Trả lời
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Chat Popup Container -->
+<div id="chatPopupsContainer" style="position: fixed; bottom: 0; right: 20px; display: flex; gap: 10px; z-index: 1050;"></div>
+
+<style>
+    .admin-chat-popup {
+        width: 350px;
+        height: 500px;
+        background: white;
+        border-radius: 8px 8px 0 0;
+        box-shadow: 0 -2px 16px rgba(0,0,0,0.2);
+        display: flex;
+        flex-direction: column;
+        animation: slideUpChat 0.3s ease;
+    }
+    @@keyframes slideUpChat {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+    .admin-chat-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 16px;
+        border-radius: 8px 8px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+    }
+    .admin-chat-header .chat-title {
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 250px;
+    }
+    .admin-chat-header .btn-minimize {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 4px 8px;
+        opacity: 0.9;
+    }
+    .admin-chat-header .btn-minimize:hover {
+        opacity: 1;
+        background: rgba(255,255,255,0.2);
+        border-radius: 4px;
+    }
+    .admin-chat-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        background: #f0f2f5;
+    }
+    .admin-chat-body::-webkit-scrollbar {
+        width: 6px;
+    }
+    .admin-chat-body::-webkit-scrollbar-thumb {
+        background: #c4c4c4;
+        border-radius: 3px;
+    }
+    .admin-chat-footer {
+        padding: 12px;
+        background: white;
+        border-top: 1px solid #e4e6eb;
+    }
+    .admin-chat-input-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    .admin-chat-input {
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        padding: 8px 16px;
+        font-size: 14px;
+        outline: none;
+    }
+    .admin-chat-input:focus {
+        border-color: #667eea;
+    }
+    .admin-send-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    .admin-send-btn:hover {
+        transform: scale(1.1);
+    }
+    .chat-minimized {
+        height: 48px;
+        overflow: hidden;
+    }
+    .message-item {
+        max-width: 70%;
+        margin-bottom: 12px;
+    }
+    .message-item.own {
+        margin-left: auto;
+    }
+    .message-bubble {
+        padding: 10px 14px;
+        border-radius: 18px;
+        word-wrap: break-word;
+        font-size: 14px;
+    }
+    .message-item.own .message-bubble {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+    .message-item.other .message-bubble {
+        background: white;
+        color: #050505;
+        border-bottom-left-radius: 4px;
+    }
+    .message-time {
+        font-size: 11px;
+        color: #65676b;
+        margin-top: 4px;
+    }
+    .message-image {
+        max-width: 100%;
+        border-radius: 12px;
+        margin-bottom: 6px;
+    }
+</style>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+<script>
+    const openChats = new Map();
+    const MAX_OPEN_CHATS = 3;
+    
+    document.querySelectorAll('.open-chat-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = parseInt(this.dataset.productId);
+            const productName = this.dataset.productName;
+            
+            // Check if already open
+            if (openChats.has(productId)) {
+                const popup = openChats.get(productId);
+                popup.classList.remove('chat-minimized');
+                return;
+            }
+            
+            // Check max limit
+            if (openChats.size >= MAX_OPEN_CHATS) {
+                alert('Bạn chỉ có thể mở tối đa ' + MAX_OPEN_CHATS + ' cuộc hội thoại cùng lúc.');
+                return;
+            }
+            
+            openChatPopup(productId, productName);
+        });
+    });
+    
+    function openChatPopup(productId, productName) {
+        const container = document.getElementById('chatPopupsContainer');
+        
+        const popup = document.createElement('div');
+        popup.className = 'admin-chat-popup';
+        popup.dataset.productId = productId;
+        
+        popup.innerHTML = `
+            <div class="admin-chat-header">
+                <div class="chat-title">${productName}</div>
+                <div>
+                    <button class="btn-minimize" onclick="toggleMinimize(${productId})">
+                        <i class="bi bi-dash-lg"></i>
+                    </button>
+                    <button class="btn-minimize" onclick="closeChat(${productId})">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="admin-chat-body" id="chatBody${productId}">
+                <div class="text-center text-muted py-3">
+                    <div class="spinner-border spinner-border-sm"></div>
+                </div>
+            </div>
+            <div class="admin-chat-footer">
+                <div class="admin-chat-input-group">
+                    <input type="text" class="admin-chat-input" id="chatInput${productId}" placeholder="Aa">
+                    <button class="admin-send-btn" onclick="sendMessage(${productId})">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(popup);
+        openChats.set(productId, popup);
+        
+        // Initialize chat
+        initializeChat(productId);
+        
+        // Enter key to send
+        document.getElementById('chatInput' + productId).addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage(productId);
+            }
+        });
+    }
+    
+    function toggleMinimize(productId) {
+        const popup = openChats.get(productId);
+        if (popup) {
+            popup.classList.toggle('chat-minimized');
+        }
+    }
+    
+    function closeChat(productId) {
+        const popup = openChats.get(productId);
+        if (popup) {
+            popup.remove();
+            openChats.delete(productId);
+            
+            // Disconnect SignalR if needed
+            if (chatConnections.has(productId)) {
+                const conn = chatConnections.get(productId);
+                conn.stop();
+                chatConnections.delete(productId);
+            }
+        }
+    }
+    
+    const chatConnections = new Map();
+    
+    async function initializeChat(productId) {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .withAutomaticReconnect()
+            .build();
+        
+        connection.on("ReceiveMessage", function(message) {
+            if (message.productId === productId) {
+                appendMessage(productId, message);
+            }
+        });
+        
+        try {
+            await connection.start();
+            await connection.invoke("JoinProductChat", productId);
+            chatConnections.set(productId, connection);
+            await loadMessages(productId);
+        } catch (err) {
+            console.error('SignalR Error:', err);
+        }
+    }
+    
+    async function loadMessages(productId) {
+        try {
+            const response = await fetch(`/api/chat/messages/${productId}`);
+            const messages = await response.json();
+            
+            const container = document.getElementById('chatBody' + productId);
+            container.innerHTML = '';
+            
+            messages.forEach(msg => appendMessage(productId, msg));
+            scrollToBottom(productId);
+        } catch (err) {
+            console.error('Load messages error:', err);
+        }
+    }
+    
+    function appendMessage(productId, msg) {
+        const container = document.getElementById('chatBody' + productId);
+        const isOwn = msg.isFromSeller === true;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message-item ${isOwn ? 'own' : 'other'} d-flex ${isOwn ? 'justify-content-end' : 'justify-content-start'}`;
+        
+        let content = '';
+        if (msg.imageUrl) {
+            content += `<img src="${msg.imageUrl}" class="message-image" alt="Image">`;
+        }
+        if (msg.content && msg.content.trim()) {
+            content += `<div class="message-bubble">${msg.content}</div>`;
+        }
+        
+        const time = new Date(msg.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        content += `<div class="message-time ${isOwn ? 'text-end' : 'text-start'}">${time}</div>`;
+        
+        messageDiv.innerHTML = content;
+        container.appendChild(messageDiv);
+        scrollToBottom(productId);
+    }
+    
+    function scrollToBottom(productId) {
+        const container = document.getElementById('chatBody' + productId);
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+    
+    async function sendMessage(productId) {
+        const input = document.getElementById('chatInput' + productId);
+        const content = input.value.trim();
+        
+        if (!content) return;
+        
+        try {
+            const connection = chatConnections.get(productId);
+            if (connection) {
+                await connection.invoke("SendMessage", productId, content, null);
+                input.value = '';
+            }
+        } catch (err) {
+            console.error('Send error:', err);
+        }
+    }
+</script>
+}
