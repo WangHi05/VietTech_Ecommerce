@@ -60,18 +60,40 @@ namespace eCommerce.Web.Areas.Admin.Pages.Vouchers
             _context.Vouchers.Add(Voucher);
             await _context.SaveChangesAsync();
 
-            // 2. Gửi thông báo hàng loạt
+            // 2. Gửi thông báo hàng loạt (lọc theo vùng nếu Voucher.Vung được đặt)
             if (SendPushNotification)
             {
-                var subscribedUserIds = await _context.UserPushSubscriptions
-                    .Select(x => x.UserId)
-                    .Distinct()
+                // Lấy danh sách subscription kèm Vung của user để có thể lọc
+                var subsWithRegion = await _context.UserPushSubscriptions
+                    .Join(_context.Users, s => s.UserId, u => u.Id, (s, u) => new { s.UserId, Vung = u.Vung })
                     .ToListAsync();
 
-                if (subscribedUserIds.Any())
+                if (subsWithRegion.Any())
                 {
-                    foreach (var userId in subscribedUserIds)
+                    // Nếu voucher không đặt vùng hoặc Toàn quốc thì thông báo tất cả
+                    var voucherVung = Voucher.Vung?.Trim();
+                    var notifyAll = string.IsNullOrEmpty(voucherVung) || voucherVung.Equals("Toàn quốc", System.StringComparison.OrdinalIgnoreCase);
+
+                    foreach (var entry in subsWithRegion)
                     {
+                        // Nếu không phải notifyAll, kiểm tra vùng của user
+                        if (!notifyAll)
+                        {
+                            var userVung = entry.Vung?.Trim();
+                            if (string.IsNullOrEmpty(userVung)) continue; // user không khai vùng -> không gửi
+
+                            // voucherVung có thể là danh sách vùng: "Hà Nội, Cần Thơ"
+                            var voucherRegions = voucherVung.Split(',', System.StringSplitOptions.RemoveEmptyEntries)
+                                .Select(s => s.Trim())
+                                .ToList();
+
+                            // userVung có thể cũng chứa nhiều vùng (rare) - so sánh case-insensitive
+                            var userRegions = userVung.Split(',', System.StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+
+                            var intersects = voucherRegions.Any(vr => userRegions.Any(ur => string.Equals(vr, ur, System.StringComparison.OrdinalIgnoreCase)));
+                            if (!intersects) continue; // không cùng vùng -> skip
+                        }
+
                         // Tạo nội dung thông báo dựa trên Entity Voucher
                         var discountText = Voucher.DiscountPercent.HasValue 
                                             ? $"{Voucher.DiscountPercent}%" 
@@ -79,7 +101,7 @@ namespace eCommerce.Web.Areas.Admin.Pages.Vouchers
 
                         var msg = new NotificationMessage
                         {
-                            UserId = userId,
+                            UserId = entry.UserId,
                             Title = $"🎁 Mã mới: {Voucher.Code}", 
                             Body = $"{Voucher.Description}. Giảm {discountText}. HSD: {Voucher.ExpiryDate:dd/MM}.",
                             Url = "/Vouchers", 

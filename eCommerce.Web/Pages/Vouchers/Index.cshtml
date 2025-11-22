@@ -49,14 +49,7 @@
                     </div>
                     <p class="card-text text-muted small">@voucher.Description</p>
                     <div class="text-muted small mb-2 voucher-region">
-                        @if (!string.IsNullOrEmpty(voucher.Vung))
-                        {
-                            <strong>Vùng:</strong> @voucher.Vung
-                        }
-                        else
-                        {
-                            @:&nbsp;
-                        }
+                        <strong>Vùng:</strong> @(string.IsNullOrEmpty(voucher.Vung) ? "Toàn quốc" : voucher.Vung)
                     </div>
                     <div class="voucher-info mb-2">
                         <strong>Đơn tối thiểu:</strong> @voucher.MinOrderValue.ToString("N0")₫
