@@ -93,7 +93,7 @@
     @if (Model.Products != null && Model.Products.Any())
     {
         @* Nhóm sản phẩm theo Category *@
-        var productsByCategory = Model.Products.GroupBy(p => p.CategoryId).Take(4);
+        var productsByCategory = Model.Products.GroupBy(p => p.CategoryId).Take(5);
         
         @foreach (var categoryGroup in productsByCategory)
         {
@@ -113,7 +113,7 @@
                 </div>
 
                 <div class="product-grid">
-                    @foreach (var product in categoryGroup.Take(4))
+                    @foreach (var product in categoryGroup.Take(5))
                     {
                         <div class="product-card">
                             <div class="product-image">

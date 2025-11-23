@@ -3456,3 +3456,38 @@ main {
     color: #4e73df;
     font-weight: bold;
 }
+
+/* Voucher cards: chữ layout đồng đều, nút luôn ở đáy */
+.voucher-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;           /* Cho card chiếm toàn bộ chiều cao cột của grid */
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.voucher-card .card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  flex: 1 1 auto;         /* body chiếm không gian chính, đẩy actions xuống đáy */
+}
+
+.voucher-actions {
+  margin-top: auto;       /* đẩy vùng chứa nút xuống đáy card */
+}
+
+/* Dành chỗ cho dòng 'Vùng' (giữ cho card đồng đều khi không có vùng) */
+.voucher-region {
+  min-height: 24px;
+}
+
+/* Đảm bảo trên desktop mỗi card có chiều cao tối thiểu — điều chỉnh nếu cần */
+@media (min-width: 768px) {
+  .voucher-card { min-height: 260px; }
+}
+
+/* Responsive: trên màn nhỏ nút bọc xuống 2 dòng nếu cần */
+.voucher-actions .btn {
+  white-space: normal;
+  word-break: break-word;
+}
