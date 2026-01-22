@@ -1,5 +1,5 @@
 # Giai đoạn 1: Build code
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy toàn bộ source code vào trong Docker
@@ -11,7 +11,7 @@ RUN dotnet restore "eCommerce.Web/eCommerce.Web.csproj"
 RUN dotnet publish "eCommerce.Web/eCommerce.Web.csproj" -c Release -o /app/out
 
 # Giai đoạn 2: Chạy ứng dụng
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /app/out .
 
