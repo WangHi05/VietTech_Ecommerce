@@ -110,6 +110,14 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<AppDbContext>();
 
+        // Auto migrate database when in Production
+        if (!app.Environment.IsDevelopment())
+        {
+            Console.WriteLine("--> Running database migrations...");
+            context.Database.Migrate();
+            Console.WriteLine("--> Migrations completed!");
+        }
+
         // Lấy UserManager và RoleManager
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
