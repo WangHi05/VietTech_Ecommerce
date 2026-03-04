@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using eCommerce.Web.Services;
 using eCommerce.Web.Services.Notifications;
+using Microsoft.Extensions.Caching.Memory;
 using WebPush;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -93,7 +94,21 @@ builder.Services.AddControllers();
 
 // Add SignalR for real-time chat
 builder.Services.AddSignalR();
+//----------------------Proxy-----------------------------------
+// 1. Kích hoạt dịch vụ Memory Cache của ASP.NET Core
+builder.Services.AddMemoryCache();
+// 2. Đăng ký Service thật
+builder.Services.AddScoped<ProductService>();
 
+// 3. Đăng ký Proxy sử dụng Interface IProductService
+// Khi Controller gọi IProductService, nó sẽ nhận được bản Proxy
+builder.Services.AddScoped<IProductService>(provider =>
+{
+    var realService = provider.GetRequiredService<ProductService>();
+    var cache = provider.GetRequiredService<IMemoryCache>();
+    return new ProductServiceProxy(realService, cache);
+});
+//------------------------Proxy-----------------------------------------
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
