@@ -77,6 +77,7 @@ builder.Services.AddSingleton<INotificationQueue, NotificationQueue>();
 builder.Services.AddHostedService<NotificationBackgroundService>();
 builder.Services.AddScoped<IPushService, WebPushService>();
 
+
 // Add cart, voucher and session support
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession();
