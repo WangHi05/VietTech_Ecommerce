@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace eCommerce.Core.Entities
 {
-    public class Product
+    public class Product : ICloneable
     {
         public int Id { get; set; }
 
@@ -34,6 +35,7 @@ namespace eCommerce.Core.Entities
         // Foreign key cho Category
         public int CategoryId { get; set; }
         // Navigation property cho Category
+        [JsonIgnore] //tránh vòng lặp Json
         public Category? Category { get; set; }
 
         // === CÁC TRƯỜNG MỚI ĐỂ LỌC ===
@@ -42,6 +44,7 @@ namespace eCommerce.Core.Entities
         [Required(ErrorMessage = "Thương hiệu là bắt buộc")]
         public int? BrandId { get; set; }
         // Navigation property cho Brand
+        [JsonIgnore]
         public Brand? Brand { get; set; }
 
         [MaxLength(50)]
@@ -59,5 +62,32 @@ namespace eCommerce.Core.Entities
         
         [NotMapped]
         public Dictionary<string, string> Specifications { get; set; } = new Dictionary<string, string>();
+
+    //--------------------------Prototype----------------------
+
+        public object Clone()
+        {
+            // (Shallow Copy) cho các kiểu dữ liệu giá trị (int, string, decimal)
+            var clone = (Product)this.MemberwiseClone();
+            
+            // DEEP COPY CHO SPECIFICATIONS
+            // tạo một Dictionary mới hoàn toàn và chép dữ liệu từ cái cũ sang
+            if (this.Specifications != null)
+            {
+                clone.Specifications = new Dictionary<string, string>(this.Specifications);
+            }
+            else
+            {
+                clone.Specifications = new Dictionary<string, string>();
+            }
+
+            // 3. Reset các thông tin để Database chấp nhận là bản ghi mới
+            clone.Id = 0;
+            clone.Category = null; // Ngắt vòng lặp JSON
+            clone.Brand = null;
+            
+            return clone;
+        }
+    //--------------------------Prototype-----------------------
     }
 }
