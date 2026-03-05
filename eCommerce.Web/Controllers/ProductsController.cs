@@ -67,5 +67,26 @@ namespace eCommerce.Web.Controllers
 
             return Ok(suggestions);
         }
+
+        //-----------------------Prototype---------------------------
+        [HttpPost("{id}/duplicate")]
+        public async Task<ActionResult> DuplicateProduct(int id)
+        {
+            // Lấy sản phẩm từ Service
+            var originalProduct = await _productService.GetProductByIdAsync(id);
+            if (originalProduct == null) return NotFound();
+
+            // Sử dụng Deep Copy từ Prototype Pattern
+            var clonedProduct = (Product)originalProduct.Clone();
+
+            // Tùy chỉnh tên để phân biệt
+            clonedProduct.Name = $"[COPY] {originalProduct.Name}";
+
+            // Lưu sản phẩm mới
+            await _productService.CreateProductAsync(clonedProduct);
+
+            return Ok(new { id = clonedProduct.Id, message = "Nhân bản sâu thông số thành công!" });
+        }
+        //-----------------------Prototype---------------------------
     }
 }

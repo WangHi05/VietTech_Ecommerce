@@ -46,6 +46,29 @@
                             <a asp-page="./EditProduct" asp-route-id="@product.Id" class="btn btn-sm btn-info"><i class="bi bi-pencil-fill"></i></a>
                             <a asp-page="./DeleteProduct" asp-route-id="@product.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash-fill"></i></a>
                         </td>
+                        <td>
+                            <button class="btn btn-outline-primary btn-sm" onclick="duplicateProduct(@product.Id)" title="Nhân bản sản phẩm">
+                                <i class="fas fa-copy"></i> Nhân bản
+                            </button>
+                        </td>
+                        <script>
+                            function duplicateProduct(id) {
+                                if (confirm("Bạn có muốn nhân bản sản phẩm này không?")) {
+                                    fetch(`/api/products/${id}/duplicate`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' }
+                                    })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            alert("Nhân bản thành công!");
+                                            location.reload(); // Tải lại trang để thấy sản phẩm mới
+                                        } else {
+                                            alert("Có lỗi xảy ra khi nhân bản.");
+                                        }
+                                    });
+                                }
+                            }
+                        </script>
                     </tr>
                 }
             </tbody>
