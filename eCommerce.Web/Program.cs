@@ -84,6 +84,13 @@ builder.Services.AddSession();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IVoucherService, VoucherService>();
 
+// ============================
+//  FACADE PATTERN
+//  Đăng ký CheckoutFacade — bọc 5 subsystems vào 1 giao diện đơn giản
+//  (IOrderService, IStockService, ILoyaltyService, ICartService, AppDbContext)
+// ============================
+builder.Services.AddScoped<ICheckoutFacade, CheckoutFacade>();
+
 // Add loyalty service
 builder.Services.AddScoped<eCommerce.Application.Services.ILoyaltyService, eCommerce.Infrastructure.Services.LoyaltyService>();
 

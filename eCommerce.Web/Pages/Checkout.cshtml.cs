@@ -30,6 +30,7 @@ namespace eCommerce.Web.Pages
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IStockService _stockService;
         private readonly AppDbContext _context;
+        private readonly ICheckoutFacade _checkoutFacade;
 
         [BindProperty]
     public string ShippingMethod { get; set; } = "standard";
@@ -64,15 +65,24 @@ namespace eCommerce.Web.Pages
         public int AvailablePoints { get; set; }
         public int MaxRedeemablePoints { get; set; }
 
-        public CheckoutModel(ICartService cartService, IOrderService orderService, IConfiguration configuration, ILoyaltyService loyaltyService, UserManager<ApplicationUser> userManager, IStockService stockService, AppDbContext context)
+        public CheckoutModel(
+            ICartService cartService,
+            IOrderService orderService,
+            IConfiguration configuration,
+            ILoyaltyService loyaltyService,
+            UserManager<ApplicationUser> userManager,
+            IStockService stockService,
+            AppDbContext context,
+            ICheckoutFacade checkoutFacade)
         {
-            _cartService = cartService;
-            _orderService = orderService;
-            _configuration = configuration;
-            _loyaltyService = loyaltyService;
-            _userManager = userManager;
-            _stockService = stockService;
-            _context = context;
+            _cartService     = cartService;
+            _orderService    = orderService;
+            _configuration   = configuration;
+            _loyaltyService  = loyaltyService;
+            _userManager     = userManager;
+            _stockService    = stockService;
+            _context         = context;
+            _checkoutFacade  = checkoutFacade;
         }
 
         public async Task<IActionResult> OnGetAsync(int pointsToRedeem = 0)
@@ -115,18 +125,6 @@ namespace eCommerce.Web.Pages
                 return RedirectToPage("/Cart");
             }
 
-            // === KIỂM TRA TỒN KHO TRƯỚC KHI ĐẶT HÀNG ===
-            foreach (var item in Items)
-            {
-                var hasStock = await _stockService.CheckStockAvailability(item.ProductId, item.Quantity);
-                if (!hasStock)
-                {
-                    ModelState.AddModelError(string.Empty, $"Sản phẩm '{item.Name}' không đủ số lượng trong kho.");
-                    return Page();
-                }
-            }
-
-            // Validate points redemption
             if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
             {
                 var user = await _userManager.GetUserAsync(User);
@@ -151,73 +149,33 @@ namespace eCommerce.Web.Pages
             if (method == "card")
             {
                 ValidateCardDetails();
-                if (!ModelState.IsValid)
+                if (!ModelState.IsValid) return Page();
+
+                var cardReq = BuildCheckoutRequest("Card");
+                cardReq.CardHolderName = (CardName ?? string.Empty).Trim();
+                cardReq.CardLast4      = ExtractCardLast4(CardNumber);
+                cardReq.ClearCart      = false;
+
+                var cardResult = await _checkoutFacade.PlaceOrderAsync(cardReq);
+                if (!cardResult.Success)
                 {
+                    ModelState.AddModelError(string.Empty, cardResult.ErrorMessage!);
                     return Page();
                 }
 
-                var cardOrder = CreateOrderFromCart();
-                cardOrder.PaymentMethod = "Card";
-                cardOrder.PaymentStatus = "Chưa thanh toán";
-                cardOrder.Status = "Đang chờ";
-                cardOrder.CardHolderName = (CardName ?? string.Empty).Trim();
-                cardOrder.CardLast4 = ExtractCardLast4(CardNumber);
-
-                var cardOrderId = await _orderService.PlaceOrderAsync(cardOrder);
-
-                // Trừ tồn kho
-                var userName = User.Identity?.Name ?? "Guest";
-                foreach (var item in Items)
-                {
-                    await _stockService.DeductStock(item.ProductId, item.Quantity, cardOrderId, userName);
-                }
-
-                // Redeem points if applicable
-                if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
-                {
-                    var user = await _userManager.GetUserAsync(User);
-                    if (user != null)
-                    {
-                        await _loyaltyService.RedeemPointsAsync(user.Id, PointsToRedeem);
-                    }
-                }
-
-                // Handle voucher usage (make one-time use)
-                await ProcessVoucherAfterOrderAsync(cardOrderId);
-                return RedirectToPage("/Payment/CardOtp", new { orderId = cardOrderId });
+                return RedirectToPage("/Payment/CardOtp", new { orderId = cardResult.OrderId });
             }
 
             if (method == "cod")
             {
-                var codOrder = CreateOrderFromCart();
-                codOrder.PaymentMethod = "COD";
-                codOrder.PaymentStatus = "Chưa thanh toán";
-                codOrder.Status = "Đang chờ";
-
-                var codOrderId = await _orderService.PlaceOrderAsync(codOrder);
-
-                // Trừ tồn kho
-                var userName = User.Identity?.Name ?? "Guest";
-                foreach (var item in Items)
+                var codResult = await _checkoutFacade.PlaceOrderAsync(BuildCheckoutRequest("COD"));
+                if (!codResult.Success)
                 {
-                    await _stockService.DeductStock(item.ProductId, item.Quantity, codOrderId, userName);
+                    ModelState.AddModelError(string.Empty, codResult.ErrorMessage!);
+                    return Page();
                 }
 
-                // Redeem points if applicable
-                if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
-                {
-                    var user = await _userManager.GetUserAsync(User);
-                    if (user != null)
-                    {
-                        await _loyaltyService.RedeemPointsAsync(user.Id, PointsToRedeem);
-                    }
-                }
-
-                // Handle voucher usage (make one-time use)
-                await ProcessVoucherAfterOrderAsync(codOrderId);
-                await _cartService.ClearCartAsync();
-
-                return RedirectToPage("/Payment/Result", new { orderId = codOrderId, success = true, method = "cod" });
+                return RedirectToPage("/Payment/Result", new { orderId = codResult.OrderId, success = true, method = "cod" });
             }
 
             if (method == "vnpay")
@@ -229,7 +187,6 @@ namespace eCommerce.Web.Pages
             return Page();
         }
 
-        // VNPay redirect handler — creates order then redirects to VNPay payment page
         public Task<IActionResult> OnPostVnPayAsync()
         {
             return ProcessVnPayAsync();
@@ -249,7 +206,6 @@ namespace eCommerce.Web.Pages
             AppliedVoucherCode = applied;
             if (!string.IsNullOrEmpty(applied))
             {
-                // Lookup voucher in DB (vouchers created via admin/seed) and compute discount using voucher rules
                 var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Code == applied && v.IsActive && v.StartDate <= DateTime.Now && v.ExpiryDate > DateTime.Now);
                 if (voucher != null)
                 {
@@ -265,12 +221,11 @@ namespace eCommerce.Web.Pages
                                   || voucher.Vung.Split(',').Select(s => s.Trim()).Contains(userRegion, StringComparer.OrdinalIgnoreCase);
                     if (!applies)
                     {
-                        voucher = null; // treat as not found/usable for this user
+                        voucher = null;
                     }
                 }
                 if (voucher != null)
                 {
-                    // Check min order value
                     if (SubTotal >= voucher.MinOrderValue)
                     {
                         if (voucher.DiscountPercent.HasValue)
@@ -287,19 +242,16 @@ namespace eCommerce.Web.Pages
                     }
                     else
                     {
-                        // does not meet min order; leave Discount = 0 (checkout will show 0)
                         Discount = 0m;
                     }
                 }
                 else
                 {
-                    // fallback: no DB voucher found (possibly older in-memory codes) - try legacy service
                     var voucherSvc = new VoucherService();
                     Discount = await voucherSvc.GetDiscountAmountAsync(applied, SubTotal);
                 }
             }
 
-            // Calculate points discount (50 points = 1,000đ)
             if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
             {
                 var user = await _userManager.GetUserAsync(User);
@@ -319,15 +271,13 @@ namespace eCommerce.Web.Pages
                 }
             }
 
-            // Simple shipping fee logic: if user selected an explicit method, use mapped fees;
-            // otherwise fall back to cart service or 0.
             if (!string.IsNullOrWhiteSpace(ShippingMethod) && ShippingMethod.Equals("express", StringComparison.OrdinalIgnoreCase))
             {
-                ShippingFee = 50000m; // express flat fee
+                ShippingFee = 50000m;
             }
             else if (!string.IsNullOrWhiteSpace(ShippingMethod) && ShippingMethod.Equals("pickup", StringComparison.OrdinalIgnoreCase))
             {
-                ShippingFee = 0m; // pickup free
+                ShippingFee = 0m;
             }
             else
             {
@@ -336,37 +286,6 @@ namespace eCommerce.Web.Pages
             Total = SubTotal - Discount - PointsDiscount + ShippingFee;
 
             return true;
-        }
-
-        private Order CreateOrderFromCart()
-        {
-            var order = new Order
-            {
-                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
-                CreatedAt = DateTime.UtcNow,
-                ShippingName = ShippingName,
-                ShippingAddress = ShippingAddress,
-                ShippingCountry = Country,
-                ShippingProvince = Province,
-                SubTotal = SubTotal,
-                Discount = Discount,
-                ShippingFee = ShippingFee,
-                VoucherCode = AppliedVoucherCode,
-                Total = Total
-            };
-
-            foreach (var it in Items)
-            {
-                order.Items.Add(new OrderItem
-                {
-                    ProductId = it.ProductId,
-                    Name = it.Name,
-                    Price = it.Price,
-                    Quantity = it.Quantity
-                });
-            }
-
-            return order;
         }
 
         private void ValidateCardDetails()
@@ -436,29 +355,17 @@ namespace eCommerce.Web.Pages
                 }
             }
 
-            var order = CreateOrderFromCart();
-            order.PaymentMethod = "VNPay";
-            order.PaymentStatus = "Đã thanh toán";
-            order.Status = "Hoàn tất";
+            var vnpReq = BuildCheckoutRequest("VNPay");
+            vnpReq.InitialPaymentStatus = "Đã thanh toán";
+            vnpReq.InitialStatus        = "Hoàn tất";
 
-            var id = await _orderService.PlaceOrderAsync(order);
-
-            // Trừ tồn kho
-            var userName = User.Identity?.Name ?? "Guest";
-            foreach (var item in Items)
+            var vnpFacadeResult = await _checkoutFacade.PlaceOrderAsync(vnpReq);
+            if (!vnpFacadeResult.Success)
             {
-                await _stockService.DeductStock(item.ProductId, item.Quantity, id, userName);
+                ModelState.AddModelError(string.Empty, vnpFacadeResult.ErrorMessage!);
+                return Page();
             }
-
-            // Redeem points if applicable
-            if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
-            {
-                var user = await _userManager.GetUserAsync(User);
-                if (user != null)
-                {
-                    await _loyaltyService.RedeemPointsAsync(user.Id, PointsToRedeem);
-                }
-            }
+            var id = vnpFacadeResult.OrderId;
 
             var vnPayConfig = _configuration.GetSection("VnPay");
             var tmnCode = vnPayConfig["TmnCode"];
@@ -468,7 +375,7 @@ namespace eCommerce.Web.Pages
 
             if (string.IsNullOrEmpty(tmnCode) || string.IsNullOrEmpty(hashSecret) || string.IsNullOrEmpty(vnpUrl))
             {
-                TempData["Warning"] = "VNPay chưa được cấu hình. Đơn hàng đã được tạo nhưng không thể thanh toán qua VNPay.";
+                TempData["Warning"] = "VNPay chưa được cấu hình.";
                 await _cartService.ClearCartAsync();
                 return RedirectToPage("/Payment/Result", new { orderId = id, success = false, reason = "VNPay chưa được cấu hình." });
             }
@@ -478,7 +385,6 @@ namespace eCommerce.Web.Pages
                 returnUrl = $"{Request.Scheme}://{Request.Host}/Payment/Result";
             }
 
-            // Lấy IP address
             var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1";
             if (ipAddress == "::1")
             {
@@ -501,7 +407,6 @@ namespace eCommerce.Web.Pages
                 { "vnp_TxnRef", id.ToString() }
             };
 
-            // Tạo chuỗi hash data
             var hashData = new StringBuilder();
             foreach (var kv in vnpParams)
             {
@@ -514,13 +419,11 @@ namespace eCommerce.Web.Pages
                 }
             }
             
-            // Xóa ký tự & cuối cùng
             if (hashData.Length > 0)
             {
                 hashData.Length -= 1;
             }
 
-            // Tính SecureHash
             string secureHash;
             using (var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(hashSecret)))
             {
@@ -528,53 +431,30 @@ namespace eCommerce.Web.Pages
                 secureHash = string.Concat(hashBytes.Select(b => b.ToString("x2")));
             }
 
-            // Tạo URL redirect
             var queryString = hashData.ToString();
             var redirectUrl = $"{vnpUrl}?{queryString}&vnp_SecureHash={secureHash}";
-
-            await _cartService.ClearCartAsync();
-
-            // Handle voucher usage (make one-time use)
-            await ProcessVoucherAfterOrderAsync(id);
 
             return Redirect(redirectUrl);
         }
 
-        // Mark voucher as used after an order: remove user's UserVoucher (one-time per user)
-        // and update/remove Voucher based on MaxUsage.
-        private async Task ProcessVoucherAfterOrderAsync(int orderId)
+        private CheckoutRequest BuildCheckoutRequest(string paymentMethod) => new()
         {
-            try
-            {
-                var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
-                if (order == null || string.IsNullOrEmpty(order.VoucherCode)) return;
-
-                var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Code == order.VoucherCode);
-                if (voucher == null) return;
-
-                // If the order belongs to a user, remove the UserVoucher entry so it can't be reused
-                if (!string.IsNullOrEmpty(order.UserId))
-                {
-                    var uv = await _context.UserVouchers.FirstOrDefaultAsync(x => x.UserId == order.UserId && x.VoucherId == voucher.Id);
-                    if (uv != null)
-                    {
-                        _context.UserVouchers.Remove(uv);
-                    }
-                }
-
-                // Update used count and remove voucher if it's exhausted
-                voucher.UsedCount = voucher.UsedCount + 1;
-                if (voucher.MaxUsage <= voucher.UsedCount)
-                {
-                    _context.Vouchers.Remove(voucher);
-                }
-
-                await _context.SaveChangesAsync();
-            }
-            catch
-            {
-                // swallow — voucher processing should not break order flow
-            }
-        }
+            PaymentMethod    = paymentMethod,
+            ShippingName     = ShippingName,
+            ShippingAddress  = ShippingAddress,
+            ShippingCountry  = Country,
+            ShippingProvince = Province,
+            ShippingMethod   = ShippingMethod,
+            UserId           = User.FindFirstValue(ClaimTypes.NameIdentifier),
+            UserName         = User.Identity?.Name ?? "Guest",
+            PointsToRedeem   = PointsToRedeem,
+            Items            = Items,
+            SubTotal         = SubTotal,
+            Discount         = Discount,
+            PointsDiscount   = PointsDiscount,
+            ShippingFee      = ShippingFee,
+            Total            = Total,
+            VoucherCode      = AppliedVoucherCode
+        };
     }
 }
