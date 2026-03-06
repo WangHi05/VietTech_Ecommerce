@@ -4,11 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eCommerce.Web.Controllers
 {
-    /// <summary>
-    /// TEMPLATE METHOD PATTERN
-    /// Abstract base class kế thừa Controller.
-    /// Định nghĩa bộ khung xử lý đơn hàng — các bước cố định, chỉ bước thanh toán là khác nhau.
-    /// </summary>
+    // TEMPLATE METHOD PATTERN: Định nghĩa bộ khung xử lý đơn hàng
     public abstract class OrderProcessorTemplateMethod : Controller
     {
         protected readonly IOrderRepository _orderRepository;
@@ -20,38 +16,27 @@ namespace eCommerce.Web.Controllers
             _productRepository = productRepository;
         }
 
-        // ============================================================
-        // TEMPLATE METHOD: Bộ khung cố định, không cho override
-        // ============================================================
+        // Template Method: Bộ khung cố định các bước xử lý đơn hàng
         public async Task<IActionResult> PlaceOrderAsync(Order order)
         {
-            // Bước 1: Validate đơn hàng (chung)
             var error = ValidateOrder(order);
             if (error != null)
                 return BadRequest(new { message = error });
 
-            // Bước 2: Kiểm tra tồn kho (chung)
             bool stockOk = await CheckStockAsync(order);
             if (!stockOk)
                 return BadRequest(new { message = "Sản phẩm không đủ hàng" });
 
-            // Bước 3: Xử lý thanh toán (KHÁC NHAU → abstract, subclass tự làm)
             var paymentResult = await ProcessPaymentAsync(order);
             if (paymentResult != "OK")
                 return BadRequest(new { message = $"Lỗi thanh toán: {paymentResult}" });
 
-            // Bước 4: Lưu đơn hàng vào DB (chung)
             await _orderRepository.AddAsync(order);
-
-            // Bước 5: Gửi thông báo (có thể override, mặc định không làm gì)
             await SendConfirmationAsync(order);
 
             return Ok(new { message = "Đặt hàng thành công!", orderId = order.Id });
         }
 
-        // ============================================================
-        // Bước CHUNG — có sẵn, dùng chung cho tất cả
-        // ============================================================
         protected string? ValidateOrder(Order order)
         {
             if (order == null) return "Đơn hàng không hợp lệ";
@@ -71,14 +56,10 @@ namespace eCommerce.Web.Controllers
             return true;
         }
 
-        // ============================================================
-        // Bước KHÁC NHAU — subclass BẮT BUỘC phải implement
-        // ============================================================
+        // Abstract method: Subclass phải implement
         protected abstract Task<string> ProcessPaymentAsync(Order order);
 
-        // ============================================================
-        // Hook — subclass CÓ THỂ override nếu muốn thêm thông báo
-        // ============================================================
+        // Hook: Subclass có thể override
         protected virtual Task SendConfirmationAsync(Order order)
         {
             return Task.CompletedTask;

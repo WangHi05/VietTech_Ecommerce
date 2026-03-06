@@ -2,10 +2,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace eCommerce.Web.Services.Notifications
 {
-    /// <summary>
-    /// TEMPLATE METHOD PATTERN — Class Con (Email)
-    /// Kế thừa NotificationSenderTemplateMethod, chỉ implement cách build HTML và gửi qua SMTP.
-    /// </summary>
     public class EmailNotificationSender : NotificationSenderTemplateMethod
     {
         private readonly IEmailSender _emailSender;
@@ -15,7 +11,6 @@ namespace eCommerce.Web.Services.Notifications
             _emailSender = emailSender;
         }
 
-        // Override bước 2: format thành HTML email
         protected override string BuildMessage(string subject, string body)
         {
             return $@"
@@ -28,13 +23,11 @@ namespace eCommerce.Web.Services.Notifications
                 </div>";
         }
 
-        // Override bước 3: gửi qua IEmailSender (SMTP / Console)
         protected override async Task SendCoreAsync(string userId, string recipientAddress, string subject, string message)
         {
             await _emailSender.SendEmailAsync(recipientAddress, subject, message);
         }
 
-        // Override hook: ghi log ra console
         protected override Task OnSentAsync(string userId, string recipientAddress, string subject)
         {
             Console.WriteLine($"[EmailNotificationSender] Đã gửi email tới {recipientAddress} | Tiêu đề: {subject}");
