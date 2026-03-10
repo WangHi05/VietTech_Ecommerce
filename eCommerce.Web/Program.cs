@@ -117,6 +117,30 @@ builder.Services.AddScoped<IProductService>(provider =>
     return new ProductServiceProxy(realService, cache);
 });
 //------------------------Proxy-----------------------------------------
+
+//---------------------------Observer----------------------------------
+// Đăng ký dịch vụ tích điểm làm Observer
+builder.Services.AddScoped<IOrderObserver, eCommerce.Application.Observers.LoyaltyOrderObserver>();
+
+// Cấu hình OrderService bằng Factory pattern để tự động kết nối với các Observers
+builder.Services.AddScoped<IOrderService>(provider => 
+{
+    var orderRepository = provider.GetRequiredService<IOrderRepository>();
+    var orderService = new eCommerce.Application.Services.OrderService(orderRepository);
+    
+    // Tìm tất cả các IOrderObserver đã được đăng ký và Attach vào Subject
+    var observers = provider.GetServices<IOrderObserver>();
+    foreach(var observer in observers)
+    {
+        orderService.Attach(observer);
+    }
+    
+    return orderService;
+});
+
+// Đăng ký dịch vụ thông báo làm Observer thứ 2
+builder.Services.AddScoped<IOrderObserver, eCommerce.Application.Observers.CustomerNotificationObserver>();
+//---------------------------Observer----------------------------------
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

@@ -6,25 +6,59 @@ using System.Threading.Tasks;
 
 namespace eCommerce.Application.Services
 {
-    public interface IOrderService
+    // Cập nhật interface kế thừa thêm IOrderSubject
+    public interface IOrderService : IOrderSubject
     {
         Task<int> PlaceOrderAsync(Order order);
         Task<Order?> GetOrderByIdAsync(int id);
         Task<List<Order>> GetOrdersByUserAsync(string userId);
         Task UpdatePaymentStateAsync(int orderId, string status, string paymentStatus, DateTime? paidAt = null);
-    Task UpdateStatusAsync(int orderId, string status);
+        Task UpdateStatusAsync(int orderId, string status);
     }
 
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly ILoyaltyService? _loyaltyService;
+        
+        // Danh sách các Observer đang theo dõi Service này
+        private readonly List<IOrderObserver> _observers = new List<IOrderObserver>();
 
-        public OrderService(IOrderRepository orderRepository, ILoyaltyService? loyaltyService = null)
+        // Chỉ cần giữ lại IOrderRepository
+        public OrderService(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
-            _loyaltyService = loyaltyService;
         }
+
+        // --- Triển khai các hàm của IOrderSubject ---
+        public void Attach(IOrderObserver observer)
+        {
+            if (!_observers.Contains(observer))
+            {
+                _observers.Add(observer);
+            }
+        }
+
+        public void Detach(IOrderObserver observer)
+        {
+            _observers.Remove(observer);
+        }
+
+        public async Task NotifyPaymentStatusChangedAsync(Order order, string paymentStatus)
+        {
+            foreach (var observer in _observers)
+            {
+                await observer.OrderPaymentStatusChangedAsync(order, paymentStatus);
+            }
+        }
+
+        public async Task NotifyStatusChangedAsync(Order order, string status)
+        {
+            foreach (var observer in _observers)
+            {
+                await observer.OrderStatusChangedAsync(order, status);
+            }
+        }
+        // ---------------------------------------------
 
         public async Task<int> PlaceOrderAsync(Order order)
         {
@@ -46,14 +80,11 @@ namespace eCommerce.Application.Services
         {
             await _orderRepository.UpdatePaymentStateAsync(orderId, status, paymentStatus, paidAt);
             
-            // Tích điểm khi thanh toán thành công
-            if (paymentStatus == "Đã thanh toán" && _loyaltyService != null)
+            // Lấy order và thông báo cho các Observers thay vì gọi trực tiếp logic
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            if (order != null)
             {
-                var order = await _orderRepository.GetByIdAsync(orderId);
-                if (order != null && !string.IsNullOrEmpty(order.UserId))
-                {
-                    await _loyaltyService.AwardPointsForOrderAsync(order.UserId, orderId, order.Total);
-                }
+                await NotifyPaymentStatusChangedAsync(order, paymentStatus);
             }
         }
 
@@ -61,14 +92,11 @@ namespace eCommerce.Application.Services
         {
             await _orderRepository.UpdateStatusAsync(orderId, status);
 
-            // Nếu đơn hàng hoàn thành, tự động tích điểm (cho trường hợp COD)
-            if (status == "Hoàn thành" && _loyaltyService != null)
+            // Lấy order và thông báo cho các Observers
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            if (order != null)
             {
-                var order = await _orderRepository.GetByIdAsync(orderId);
-                if (order != null && !string.IsNullOrEmpty(order.UserId))
-                {
-                    await _loyaltyService.AwardPointsForOrderAsync(order.UserId, orderId, order.Total);
-                }
+                await NotifyStatusChangedAsync(order, status);
             }
         }
     }
