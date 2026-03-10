@@ -1,4 +1,5 @@
 using eCommerce.Application.Services;
+using eCommerce.Application.Strategies.Payment;
 using eCommerce.Core.Entities;
 using eCommerce.Core.Interfaces;
 using eCommerce.Infrastructure.Data;
@@ -141,6 +142,13 @@ builder.Services.AddScoped<IOrderService>(provider =>
 // Đăng ký dịch vụ thông báo làm Observer thứ 2
 builder.Services.AddScoped<IOrderObserver, eCommerce.Application.Observers.CustomerNotificationObserver>();
 //---------------------------Observer----------------------------------
+
+//---------------------------Strategy---------------------------------
+// Đăng ký các chiến lược thanh toán
+builder.Services.AddScoped<IPaymentStrategy, eCommerce.Application.Strategies.Payment.CodPaymentStrategy>();
+builder.Services.AddScoped<IPaymentStrategy, eCommerce.Application.Strategies.Payment.VnPayPaymentStrategy>();
+
+//---------------------------Strategy---------------------------------
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

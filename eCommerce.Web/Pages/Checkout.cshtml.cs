@@ -3,6 +3,7 @@ using eCommerce.Web.Services;
 using eCommerce.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using eCommerce.Application.Services;
+using eCommerce.Application.Strategies.Payment;
 using eCommerce.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -31,10 +32,11 @@ namespace eCommerce.Web.Pages
         private readonly IStockService _stockService;
         private readonly AppDbContext _context;
         private readonly ICheckoutFacade _checkoutFacade;
+        private readonly IEnumerable<IPaymentStrategy> _paymentStrategies;
 
         [BindProperty]
-    public string ShippingMethod { get; set; } = "standard";
-    [BindProperty]
+        public string ShippingMethod { get; set; } = "standard";
+        [BindProperty]
         public string ShippingName { get; set; } = string.Empty;
         [BindProperty]
         public string ShippingAddress { get; set; } = string.Empty;
@@ -45,13 +47,13 @@ namespace eCommerce.Web.Pages
         [BindProperty]
         public string PaymentMethod { get; set; } = "card";
         [BindProperty]
-        public string CardName { get; set; } = string.Empty;
+        public string? CardName { get; set; } = string.Empty;
         [BindProperty]
-        public string CardNumber { get; set; } = string.Empty;
+        public string? CardNumber { get; set; } = string.Empty;
         [BindProperty]
-        public string CardExpiry { get; set; } = string.Empty;
+        public string? CardExpiry { get; set; } = string.Empty;
         [BindProperty]
-        public string CardCvc { get; set; } = string.Empty;
+        public string? CardCvc { get; set; } = string.Empty;
         [BindProperty]
         public int PointsToRedeem { get; set; }
 
@@ -73,7 +75,8 @@ namespace eCommerce.Web.Pages
             UserManager<ApplicationUser> userManager,
             IStockService stockService,
             AppDbContext context,
-            ICheckoutFacade checkoutFacade)
+            ICheckoutFacade checkoutFacade,
+            IEnumerable<IPaymentStrategy> paymentStrategies)
         {
             _cartService     = cartService;
             _orderService    = orderService;
@@ -83,6 +86,7 @@ namespace eCommerce.Web.Pages
             _stockService    = stockService;
             _context         = context;
             _checkoutFacade  = checkoutFacade;
+            _paymentStrategies = paymentStrategies;
         }
 
         public async Task<IActionResult> OnGetAsync(int pointsToRedeem = 0)
@@ -118,73 +122,55 @@ namespace eCommerce.Web.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var hasCart = await PrepareCartSummaryAsync();
-            if (!hasCart)
+            // BƯỚC 1: Tải lại giỏ hàng và tính toán tiền NGAY LẬP TỨC. 
+            // Dòng này giải quyết triệt để lỗi đơn hàng 0đ
+            await PrepareCartSummaryAsync();
+
+            // BƯỚC 2: Loại bỏ lỗi validation của Thẻ nếu khách không chọn thanh toán bằng thẻ
+            // Dòng này giải quyết triệt để lỗi chữ màu đỏ khi mua COD
+            if (PaymentMethod != "card")
             {
-                TempData["Error"] = "Giỏ hàng trống.";
-                return RedirectToPage("/Cart");
+                ModelState.Remove(nameof(CardName));
+                ModelState.Remove(nameof(CardNumber));
+                ModelState.Remove(nameof(CardExpiry));
+                ModelState.Remove(nameof(CardCvc));
             }
 
-            if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
+            // BƯỚC 3: Bây giờ mới kiểm tra xem form có hợp lệ hay không
+            if (!ModelState.IsValid)
             {
-                var user = await _userManager.GetUserAsync(User);
-                if (user != null)
-                {
-                    var loyaltyInfo = await _loyaltyService.GetOrCreateLoyaltyPointAsync(user.Id);
-                    if (loyaltyInfo == null || PointsToRedeem > loyaltyInfo.TotalPoints)
-                    {
-                        ModelState.AddModelError(nameof(PointsToRedeem), "Bạn không có đủ điểm để quy đổi.");
-                        return Page();
-                    }
-                    if (PointsToRedeem % 50 != 0)
-                    {
-                        ModelState.AddModelError(nameof(PointsToRedeem), "Số điểm phải là bội số của 50.");
-                        return Page();
-                    }
-                }
+                return Page(); 
             }
 
-            var method = (PaymentMethod ?? string.Empty).Trim().ToLowerInvariant();
-
-            if (method == "card")
+            // BƯỚC 4: Kiểm tra giỏ hàng có trống không
+            if (Items == null || !Items.Any()) 
             {
-                ValidateCardDetails();
-                if (!ModelState.IsValid) return Page();
-
-                var cardReq = BuildCheckoutRequest("Card");
-                cardReq.CardHolderName = (CardName ?? string.Empty).Trim();
-                cardReq.CardLast4      = ExtractCardLast4(CardNumber);
-                cardReq.ClearCart      = false;
-
-                var cardResult = await _checkoutFacade.PlaceOrderAsync(cardReq);
-                if (!cardResult.Success)
-                {
-                    ModelState.AddModelError(string.Empty, cardResult.ErrorMessage!);
-                    return Page();
-                }
-
-                return RedirectToPage("/Payment/CardOtp", new { orderId = cardResult.OrderId });
+                ModelState.AddModelError(string.Empty, "Giỏ hàng của bạn đang trống, không thể đặt hàng.");
+                return Page();
             }
 
-            if (method == "cod")
+            // BƯỚC 5: Xử lý tạo đơn hàng
+            var checkoutResult = await _checkoutFacade.PlaceOrderAsync(BuildCheckoutRequest(PaymentMethod));
+            
+            int newOrderId = checkoutResult.OrderId;
+            var orderForPayment = await _orderService.GetOrderByIdAsync(newOrderId);
+            
+            if (orderForPayment == null)
             {
-                var codResult = await _checkoutFacade.PlaceOrderAsync(BuildCheckoutRequest("COD"));
-                if (!codResult.Success)
-                {
-                    ModelState.AddModelError(string.Empty, codResult.ErrorMessage!);
-                    return Page();
-                }
-
-                return RedirectToPage("/Payment/Result", new { orderId = codResult.OrderId, success = true, method = "cod" });
+                ModelState.AddModelError(string.Empty, "Đã có lỗi xảy ra, không tìm thấy đơn hàng.");
+                return Page();
             }
 
-            if (method == "vnpay")
+            // BƯỚC 6: Gọi Strategy Pattern
+            var strategy = _paymentStrategies.FirstOrDefault(s => s.ProviderName == PaymentMethod);
+            if (strategy == null)
             {
-                return await ProcessVnPayAsync(cartAlreadyPrepared: true);
+                ModelState.AddModelError(string.Empty, "Phương thức thanh toán không hợp lệ.");
+                return Page();
             }
 
-            ModelState.AddModelError(nameof(PaymentMethod), "Phương thức thanh toán không hợp lệ.");
-            return Page();
+            string redirectUrl = await strategy.ExecutePaymentAsync(orderForPayment);
+            return Redirect(redirectUrl);
         }
 
         public Task<IActionResult> OnPostVnPayAsync()

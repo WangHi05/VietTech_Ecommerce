@@ -1,3 +1,4 @@
+using eCommerce.Core.Entities;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
 using eCommerce.Application.Services;
