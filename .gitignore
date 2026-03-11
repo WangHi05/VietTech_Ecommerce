@@ -28,7 +28,9 @@ bld/
 [Oo]bj/
 
 ## App Settings - KHÔNG đưa file cấu hình local lên
+appsettings.json
 appsettings.Development.json
+appsettings.Production.json
 
 ## Misc
 *.DotSettings
