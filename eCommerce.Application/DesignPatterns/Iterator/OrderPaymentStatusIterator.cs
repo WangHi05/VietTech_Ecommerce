@@ -2,10 +2,8 @@ using eCommerce.Core.Entities;
 
 namespace eCommerce.Application.DesignPatterns.Iterator
 {
-    /// <summary>
     /// Concrete Iterator - duyệt orders theo payment status
     /// Không tạo list mới, duyệt trực tiếp và skip phần tử không match
-    /// </summary>
     public class OrderPaymentStatusIterator : IIterator<Order>
     {
         private readonly List<Order> _orders;

@@ -2,9 +2,7 @@ using eCommerce.Core.Entities;
 
 namespace eCommerce.Application.DesignPatterns.Iterator
 {
-    /// <summary>
     /// Concrete Aggregate - chứa danh sách orders và tạo các loại iterator
-    /// </summary>
     public class OrderCollection : IAggregate<Order>
     {
         private readonly List<Order> _orders = new();

@@ -2,9 +2,7 @@ using eCommerce.Core.Entities;
 
 namespace eCommerce.Application.DesignPatterns.Iterator
 {
-    /// <summary>
     /// Concrete Iterator - duyệt toàn bộ orders không filter
-    /// </summary>
     public class OrderIterator : IIterator<Order>
     {
         private readonly List<Order> _orders;
