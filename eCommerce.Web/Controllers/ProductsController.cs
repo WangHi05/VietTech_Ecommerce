@@ -1,4 +1,6 @@
 using eCommerce.Application.Services;
+using eCommerce.Application.Flyweights;
+using eCommerce.Application.ViewModels;
 using eCommerce.Core.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -13,11 +15,13 @@ namespace eCommerce.Web.Controllers
     {
         private readonly IProductService _productService;
 
-        public ProductsController(IProductService productService)
+        private readonly BrandFlyweightFactory _flyweightFactory;
+
+        public ProductsController(IProductService productService, BrandFlyweightFactory flyweightFactory)
         {
             _productService = productService;
+            _flyweightFactory = flyweightFactory;
         }
-
         // GET: api/Products?categoryId=1 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts([FromQuery] int? categoryId)
@@ -88,5 +92,41 @@ namespace eCommerce.Web.Controllers
             return Ok(new { id = clonedProduct.Id, message = "Nhân bản sâu thông số thành công!" });
         }
         //-----------------------Prototype---------------------------
+
+        //----------------------Flyweight-----------------
+        [HttpGet("OptimizedList")]
+        public async Task<ActionResult> GetOptimizedProducts()
+        {
+            var products = await _productService.GetAllProductsAsync();
+            var viewModels = new List<ProductViewModel>();
+
+            foreach (var p in products)
+            {
+                string brandName = p.Brand?.Name ?? "No Brand";
+                string logoUrl = $"/images/brands/{brandName.ToLower()}.png";
+                string warranty = "Bảo hành tiêu chuẩn 12 tháng";
+
+                // Lấy Flyweight từ Factory
+                var sharedBrandInfo = _flyweightFactory.GetBrandFlyweight(brandName, logoUrl, warranty);
+
+                var vm = new ProductViewModel(p.Id, p.Name, p.Price, p.ImageUrl, sharedBrandInfo);
+                viewModels.Add(vm);
+            }
+
+            // BƯỚC MỚI: Đóng gói cả "Dữ liệu" lẫn "Thống kê" vào một Object trả về
+            var result = new 
+            {
+                ThongKeToiUuFlyweight = new 
+                {
+                    TongSoSanPhamLoadLen = viewModels.Count,
+                    SoObjectThuongHieuThucTeTrongRAM = _flyweightFactory.GetCacheSize(),
+                    SoObjectTietKiemDuoc = viewModels.Count - _flyweightFactory.GetCacheSize()
+                },
+                DanhSachSanPham = viewModels
+            };
+
+            // Trả về thẳng JSON
+            return Ok(result);
+        }
     }
 }

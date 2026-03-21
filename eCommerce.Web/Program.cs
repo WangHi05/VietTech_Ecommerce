@@ -1,4 +1,5 @@
 using eCommerce.Application.Services;
+using eCommerce.Application.Flyweights;
 using eCommerce.Application.Strategies.Payment;
 using eCommerce.Core.Entities;
 using eCommerce.Core.Interfaces;
@@ -138,6 +139,8 @@ builder.Services.AddScoped<IOrderService>(provider =>
     
     return orderService;
 });
+// Đăng ký Flyweight Factory để quản lý bộ nhớ đệm cho các thương hiệu
+builder.Services.AddSingleton<BrandFlyweightFactory>();
 
 // Đăng ký dịch vụ thông báo làm Observer thứ 2
 builder.Services.AddScoped<IOrderObserver, eCommerce.Application.Observers.CustomerNotificationObserver>();

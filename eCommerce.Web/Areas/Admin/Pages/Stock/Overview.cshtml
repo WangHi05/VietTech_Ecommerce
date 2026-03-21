@@ -1,0 +1,38 @@
+@page
+@model eCommerce.Web.Areas.Admin.Pages.Stock.OverviewModel
+@{
+    ViewData["Title"] = "Thống Kê Tổng Quan Tồn Kho";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4"><i class="bi bi-diagram-3 me-2"></i>Thống Kê Tồn Kho</h2>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="card-title text-uppercase fw-semibold mb-2" style="opacity: 0.8;">Tổng Tài Sản Lưu Kho</h6>
+                    <div class="d-flex align-items-center">
+                        <h2 class="display-5 fw-bold mb-0 me-2">@Model.TotalStoreStock</h2>
+                        <span class="fs-6">sản phẩm</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-list-nested me-2"></i>Phân bổ tồn kho theo cấu trúc Ngành hàng</h6>
+        </div>
+        <div class="card-body bg-light">
+            <div class="p-4 bg-white border rounded">
+                <ul style="list-style-type: none; padding-left: 0; line-height: 2.2; font-size: 1.05rem;">
+                    @Html.Raw(Model.HtmlInventoryTree)
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

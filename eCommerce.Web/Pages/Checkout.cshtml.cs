@@ -3,6 +3,7 @@ using eCommerce.Web.Services;
 using eCommerce.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using eCommerce.Application.Services;
+using eCommerce.Application.Mediators;
 using eCommerce.Application.Strategies.Payment;
 using eCommerce.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -178,98 +179,32 @@ namespace eCommerce.Web.Pages
             return ProcessVnPayAsync();
         }
 
-        private async Task<bool> PrepareCartSummaryAsync()
+       private async Task<bool> PrepareCartSummaryAsync()
         {
+            // 1. Lấy dữ liệu Items từ CartService (Giữ nguyên)
             Items = await _cartService.GetCartAsync();
-            if (!Items.Any())
-            {
-                return false;
-            }
+            if (!Items.Any()) return false;
+            
+            decimal rawSubTotal = Items.Sum(i => i.Price * i.Quantity);
 
-            SubTotal = Items.Sum(i => i.Price * i.Quantity);
+            // 2. KHỞI TẠO MEDIATOR PATTERN
+            var cartComp = new CartComponent();
+            var shippingComp = new ShippingComponent();
+            var promoComp = new PromotionComponent();
+            
+            var mediator = new OrderCheckoutMediator(cartComp, shippingComp, promoComp);
 
-            var applied = await _cartService.GetAppliedVoucherAsync();
-            AppliedVoucherCode = applied;
-            if (!string.IsNullOrEmpty(applied))
-            {
-                var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Code == applied && v.IsActive && v.StartDate <= DateTime.Now && v.ExpiryDate > DateTime.Now);
-                if (voucher != null)
-                {
-                    // Kiểm tra vùng áp dụng (Vung). Nếu voucher đặt vùng và user không thuộc vùng đó thì coi như voucher không hợp lệ ở đây.
-                    var userRegion = Request.Cookies["region"] ?? "Toàn quốc";
-                    if (User.Identity?.IsAuthenticated == true)
-                    {
-                        var u = await _userManager.GetUserAsync(User);
-                        if (u != null && !string.IsNullOrEmpty(u.Vung)) userRegion = u.Vung;
-                    }
+            // 3. ĐƯA DỮ LIỆU VÀO ĐỂ MEDIATOR TỰ ĐỘNG ĐIỀU PHỐI VÀ TÍNH TOÁN
+            cartComp.SetSubTotal(rawSubTotal);
+            shippingComp.SelectShippingMethod(ShippingMethod ?? "standard");
+            promoComp.ApplyPoints(PointsToRedeem);
+            promoComp.ApplyVoucher(Discount); // Discount lấy từ VoucherService nếu có
 
-                    var applies = string.IsNullOrEmpty(voucher.Vung) || voucher.Vung.Trim().Equals("Toàn quốc", System.StringComparison.OrdinalIgnoreCase)
-                                  || voucher.Vung.Split(',').Select(s => s.Trim()).Contains(userRegion, StringComparer.OrdinalIgnoreCase);
-                    if (!applies)
-                    {
-                        voucher = null;
-                    }
-                }
-                if (voucher != null)
-                {
-                    if (SubTotal >= voucher.MinOrderValue)
-                    {
-                        if (voucher.DiscountPercent.HasValue)
-                        {
-                            var disc = Math.Round(SubTotal * voucher.DiscountPercent.Value / 100m, 0);
-                            if (voucher.MaxDiscountAmount.HasValue && disc > voucher.MaxDiscountAmount.Value)
-                                disc = voucher.MaxDiscountAmount.Value;
-                            Discount = disc;
-                        }
-                        else if (voucher.DiscountAmount.HasValue)
-                        {
-                            Discount = voucher.DiscountAmount.Value;
-                        }
-                    }
-                    else
-                    {
-                        Discount = 0m;
-                    }
-                }
-                else
-                {
-                    var voucherSvc = new VoucherService();
-                    Discount = await voucherSvc.GetDiscountAmountAsync(applied, SubTotal);
-                }
-            }
-
-            if (PointsToRedeem > 0 && User.Identity?.IsAuthenticated == true)
-            {
-                var user = await _userManager.GetUserAsync(User);
-                if (user != null)
-                {
-                    var loyaltyInfo = await _loyaltyService.GetOrCreateLoyaltyPointAsync(user.Id);
-                    if (loyaltyInfo != null && PointsToRedeem <= loyaltyInfo.TotalPoints)
-                    {
-                        PointsDiscount = (PointsToRedeem / 50) * 1000;
-                        AvailablePoints = loyaltyInfo.TotalPoints;
-                    }
-                    else
-                    {
-                        PointsToRedeem = 0;
-                        PointsDiscount = 0;
-                    }
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(ShippingMethod) && ShippingMethod.Equals("express", StringComparison.OrdinalIgnoreCase))
-            {
-                ShippingFee = 50000m;
-            }
-            else if (!string.IsNullOrWhiteSpace(ShippingMethod) && ShippingMethod.Equals("pickup", StringComparison.OrdinalIgnoreCase))
-            {
-                ShippingFee = 0m;
-            }
-            else
-            {
-                ShippingFee = await _cartService.GetShippingAsync() ?? 0m;
-            }
-            Total = SubTotal - Discount - PointsDiscount + ShippingFee;
+            // 4. LẤY KẾT QUẢ CUỐI CÙNG XUẤT RA VIEW
+            SubTotal = cartComp.SubTotal;
+            ShippingFee = shippingComp.Fee;
+            PointsDiscount = promoComp.PointsDiscount;
+            Total = mediator.FinalTotal; // Đã được xử lý ngầm qua Mediator + Decorator
 
             return true;
         }
