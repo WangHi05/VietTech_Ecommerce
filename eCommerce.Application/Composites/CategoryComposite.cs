@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using eCommerce.Application.Visitors;
 
 namespace eCommerce.Application.Composites
 {
@@ -38,6 +39,16 @@ namespace eCommerce.Application.Composites
             
             html += "</ul></li>";
             return html;
+        }
+
+        public void Accept(ICatalogVisitor visitor)
+        {
+            visitor.VisitCategory(this);
+            // Đệ quy: chuyển visitor xuống tất cả component con
+            foreach (var child in _children)
+            {
+                child.Accept(visitor);
+            }
         }
     }
 }
